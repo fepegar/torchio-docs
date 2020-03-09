@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchio.transforms.augmentation.spatial package &mdash; TorchIO 0.13.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.13.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>torchio.transforms.augmentation.spatial package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/torchio.transforms.augmentation.spatial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="torchio-transforms-augmentation-spatial-package">
+<h1>torchio.transforms.augmentation.spatial package<a class="headerlink" href="#torchio-transforms-augmentation-spatial-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-torchio.transforms.augmentation.spatial.random_affine">
+<span id="torchio-transforms-augmentation-spatial-random-affine-module"></span><h2>torchio.transforms.augmentation.spatial.random_affine module<a class="headerlink" href="#module-torchio.transforms.augmentation.spatial.random_affine" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.transforms.augmentation.spatial.random_affine.RandomAffine">
+<em class="property">class </em><code class="descclassname">torchio.transforms.augmentation.spatial.random_affine.</code><code class="descname">RandomAffine</code><span class="sig-paren">(</span><em>scales: Tuple[float</em>, <em>float] = (0.9</em>, <em>1.1)</em>, <em>degrees: float = 10</em>, <em>isotropic: bool = False</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_affine.html#RandomAffine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_affine.RandomAffine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="torchio.transforms.augmentation.html#torchio.transforms.augmentation.random_transform.RandomTransform" title="torchio.transforms.augmentation.random_transform.RandomTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></a></p>
+<dl class="method">
+<dt id="torchio.transforms.augmentation.spatial.random_affine.RandomAffine.apply_affine_transform">
+<code class="descname">apply_affine_transform</code><span class="sig-paren">(</span><em>tensor: torch.Tensor, affine: numpy.ndarray, scaling_params: List[float], rotation_params: List[float], interpolation: torchio.transforms.interpolation.Interpolation</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_affine.html#RandomAffine.apply_affine_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_affine.RandomAffine.apply_affine_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="torchio.transforms.augmentation.spatial.random_affine.RandomAffine.apply_transform">
+<code class="descname">apply_transform</code><span class="sig-paren">(</span><em>sample: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_affine.html#RandomAffine.apply_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_affine.RandomAffine.apply_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="torchio.transforms.augmentation.spatial.random_affine.RandomAffine.get_params">
+<em class="property">static </em><code class="descname">get_params</code><span class="sig-paren">(</span><em>scales: Tuple[float, float], degrees: Tuple[float, float], isotropic: bool</em><span class="sig-paren">)</span> &#x2192; Tuple[List[float], List[float]]<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_affine.html#RandomAffine.get_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_affine.RandomAffine.get_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="torchio.transforms.augmentation.spatial.random_affine.RandomAffine.get_rotation_transform">
+<em class="property">static </em><code class="descname">get_rotation_transform</code><span class="sig-paren">(</span><em>degrees: List[float]</em><span class="sig-paren">)</span> &#x2192; SimpleITK.SimpleITK.Euler3DTransform<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_affine.html#RandomAffine.get_rotation_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_affine.RandomAffine.get_rotation_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="torchio.transforms.augmentation.spatial.random_affine.RandomAffine.get_scaling_transform">
+<em class="property">static </em><code class="descname">get_scaling_transform</code><span class="sig-paren">(</span><em>scaling_params: List[float]</em><span class="sig-paren">)</span> &#x2192; SimpleITK.SimpleITK.ScaleTransform<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_affine.html#RandomAffine.get_scaling_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_affine.RandomAffine.get_scaling_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>scaling_params are inverted so that they are more intuitive
+For example, 1.5 means the objects look 1.5 times larger</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchio.transforms.augmentation.spatial.random_elastic_deformation">
+<span id="torchio-transforms-augmentation-spatial-random-elastic-deformation-module"></span><h2>torchio.transforms.augmentation.spatial.random_elastic_deformation module<a class="headerlink" href="#module-torchio.transforms.augmentation.spatial.random_elastic_deformation" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation">
+<em class="property">class </em><code class="descclassname">torchio.transforms.augmentation.spatial.random_elastic_deformation.</code><code class="descname">RandomElasticDeformation</code><span class="sig-paren">(</span><em>num_control_points: int = 4</em>, <em>deformation_std: float = 15</em>, <em>proportion_to_augment: float = 1</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_elastic_deformation.html#RandomElasticDeformation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="torchio.transforms.augmentation.html#torchio.transforms.augmentation.random_transform.RandomTransform" title="torchio.transforms.augmentation.random_transform.RandomTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></a></p>
+<dl class="method">
+<dt id="torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation.apply_bspline_transform">
+<code class="descname">apply_bspline_transform</code><span class="sig-paren">(</span><em>tensor: torch.Tensor</em>, <em>affine: numpy.ndarray</em>, <em>bspline_params: numpy.ndarray</em>, <em>interpolation: torchio.transforms.interpolation.Interpolation</em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_elastic_deformation.html#RandomElasticDeformation.apply_bspline_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation.apply_bspline_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation.apply_transform">
+<code class="descname">apply_transform</code><span class="sig-paren">(</span><em>sample: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_elastic_deformation.html#RandomElasticDeformation.apply_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation.apply_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation.get_bspline_transform">
+<em class="property">static </em><code class="descname">get_bspline_transform</code><span class="sig-paren">(</span><em>image: SimpleITK.SimpleITK.Image</em>, <em>num_control_points: int</em>, <em>bspline_params: numpy.ndarray</em><span class="sig-paren">)</span> &#x2192; SimpleITK.SimpleITK.BSplineTransformInitializer<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_elastic_deformation.html#RandomElasticDeformation.get_bspline_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation.get_bspline_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation.get_params">
+<em class="property">static </em><code class="descname">get_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_elastic_deformation.html#RandomElasticDeformation.get_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_elastic_deformation.RandomElasticDeformation.get_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchio.transforms.augmentation.spatial.random_flip">
+<span id="torchio-transforms-augmentation-spatial-random-flip-module"></span><h2>torchio.transforms.augmentation.spatial.random_flip module<a class="headerlink" href="#module-torchio.transforms.augmentation.spatial.random_flip" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.transforms.augmentation.spatial.random_flip.RandomFlip">
+<em class="property">class </em><code class="descclassname">torchio.transforms.augmentation.spatial.random_flip.</code><code class="descname">RandomFlip</code><span class="sig-paren">(</span><em>axes: Union[int</em>, <em>Tuple[int]] = 0</em>, <em>flip_probability: float = 0.5</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_flip.html#RandomFlip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_flip.RandomFlip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="torchio.transforms.augmentation.html#torchio.transforms.augmentation.random_transform.RandomTransform" title="torchio.transforms.augmentation.random_transform.RandomTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></a></p>
+<dl class="method">
+<dt id="torchio.transforms.augmentation.spatial.random_flip.RandomFlip.apply_transform">
+<code class="descname">apply_transform</code><span class="sig-paren">(</span><em>sample: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_flip.html#RandomFlip.apply_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_flip.RandomFlip.apply_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="torchio.transforms.augmentation.spatial.random_flip.RandomFlip.get_params">
+<em class="property">static </em><code class="descname">get_params</code><span class="sig-paren">(</span><em>axes: Tuple[int], probability: float</em><span class="sig-paren">)</span> &#x2192; List[bool]<a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_flip.html#RandomFlip.get_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_flip.RandomFlip.get_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="torchio.transforms.augmentation.spatial.random_flip.RandomFlip.parse_axes">
+<em class="property">static </em><code class="descname">parse_axes</code><span class="sig-paren">(</span><em>axes: Union[int, Tuple[int]]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/transforms/augmentation/spatial/random_flip.html#RandomFlip.parse_axes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.spatial.random_flip.RandomFlip.parse_axes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchio.transforms.augmentation.spatial">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-torchio.transforms.augmentation.spatial" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

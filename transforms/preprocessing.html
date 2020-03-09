@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Preprocessing &mdash; TorchIO 0.13.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Augmentation" href="augmentation.html" />
+    <link rel="prev" title="Transforms" href="transforms.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.13.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data/data.html">Handling data</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="transforms.html">Transforms</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#intensity">Intensity</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#normalizationtransform"><code class="docutils literal notranslate"><span class="pre">NormalizationTransform</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rescale"><code class="docutils literal notranslate"><span class="pre">Rescale</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#znormalization"><code class="docutils literal notranslate"><span class="pre">ZNormalization</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#spatial">Spatial</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#centercroporpad"><code class="docutils literal notranslate"><span class="pre">CenterCropOrPad</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#crop"><code class="docutils literal notranslate"><span class="pre">Crop</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pad"><code class="docutils literal notranslate"><span class="pre">Pad</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#resample"><code class="docutils literal notranslate"><span class="pre">Resample</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tocanonical"><code class="docutils literal notranslate"><span class="pre">ToCanonical</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="augmentation.html">Augmentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="others.html">Others</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="transforms.html">Transforms</a> &raquo;</li>
+        
+      <li>Preprocessing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/transforms/preprocessing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="preprocessing">
+<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="intensity">
+<h2>Intensity<a class="headerlink" href="#intensity" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="normalizationtransform">
+<h3><a class="reference internal" href="#torchio.transforms.preprocessing.intensity.NormalizationTransform" title="torchio.transforms.preprocessing.intensity.NormalizationTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">NormalizationTransform</span></code></a><a class="headerlink" href="#normalizationtransform" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.preprocessing.intensity.NormalizationTransform">
+<em class="property">class </em><code class="descclassname">torchio.transforms.preprocessing.intensity.</code><code class="descname">NormalizationTransform</code><span class="sig-paren">(</span><em>masking_method: Union[str, Callable[torch.Tensor, torch.Tensor], None] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/normalization_transform.html#NormalizationTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.preprocessing.intensity.NormalizationTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.transform.Transform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="rescale">
+<h3><a class="reference internal" href="#torchio.transforms.Rescale" title="torchio.transforms.Rescale"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rescale</span></code></a><a class="headerlink" href="#rescale" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.Rescale">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Rescale</code><span class="sig-paren">(</span><em>out_min_max: Tuple[float, float], percentiles: Tuple[int, int] = (0, 100), masking_method: Union[str, Callable[torch.Tensor, torch.Tensor], None] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/rescale.html#Rescale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Rescale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.intensity.normalization_transform.NormalizationTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="znormalization">
+<h3><a class="reference internal" href="#torchio.transforms.ZNormalization" title="torchio.transforms.ZNormalization"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZNormalization</span></code></a><a class="headerlink" href="#znormalization" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.ZNormalization">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">ZNormalization</code><span class="sig-paren">(</span><em>masking_method: Union[str, Callable[torch.Tensor, torch.Tensor], None] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/z_normalization.html#ZNormalization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.ZNormalization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.intensity.normalization_transform.NormalizationTransform</span></code></p>
+<p>Subtract mean and divide by standard deviation</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="spatial">
+<h2>Spatial<a class="headerlink" href="#spatial" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="centercroporpad">
+<h3><a class="reference internal" href="#torchio.transforms.CenterCropOrPad" title="torchio.transforms.CenterCropOrPad"><code class="xref py py-class docutils literal notranslate"><span class="pre">CenterCropOrPad</span></code></a><a class="headerlink" href="#centercroporpad" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.CenterCropOrPad">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">CenterCropOrPad</code><span class="sig-paren">(</span><em>size: Union[int, Tuple[int, int, int]], padding_mode: Optional[str] = None, padding_fill: Optional[float] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/center_crop_pad.html#CenterCropOrPad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.CenterCropOrPad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.spatial.bounds_transform.BoundsTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="crop">
+<h3><a class="reference internal" href="#torchio.transforms.Crop" title="torchio.transforms.Crop"><code class="xref py py-class docutils literal notranslate"><span class="pre">Crop</span></code></a><a class="headerlink" href="#crop" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.Crop">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Crop</code><span class="sig-paren">(</span><em>cropping: Union[int, Tuple[int, int, int]], verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/crop.html#Crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Crop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.spatial.bounds_transform.BoundsTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="pad">
+<h3><a class="reference internal" href="#torchio.transforms.Pad" title="torchio.transforms.Pad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pad</span></code></a><a class="headerlink" href="#pad" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.Pad">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Pad</code><span class="sig-paren">(</span><em>padding: Union[int, Tuple[int, int, int]], padding_mode: str = 'constant', fill: float = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/pad.html#Pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Pad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.spatial.bounds_transform.BoundsTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="resample">
+<h3><a class="reference internal" href="#torchio.transforms.Resample" title="torchio.transforms.Resample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Resample</span></code></a><a class="headerlink" href="#resample" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.Resample">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Resample</code><span class="sig-paren">(</span><em>voxel_sizes: Tuple[float, float, float], antialiasing: bool = True, image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/resample.html#Resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Resample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.transform.Transform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="tocanonical">
+<h3><a class="reference internal" href="#torchio.transforms.ToCanonical" title="torchio.transforms.ToCanonical"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToCanonical</span></code></a><a class="headerlink" href="#tocanonical" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.ToCanonical">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">ToCanonical</code><span class="sig-paren">(</span><em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/to_canonical.html#ToCanonical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.ToCanonical" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.transform.Transform</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="augmentation.html" class="btn btn-neutral float-right" title="Augmentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="transforms.html" class="btn btn-neutral float-left" title="Transforms" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

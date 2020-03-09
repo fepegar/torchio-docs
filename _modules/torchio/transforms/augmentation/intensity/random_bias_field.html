@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchio.transforms.augmentation.intensity.random_bias_field &mdash; TorchIO 0.13.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.13.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torchio.transforms.augmentation.intensity.random_bias_field</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torchio.transforms.augmentation.intensity.random_bias_field</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">INTENSITY</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypeData</span>
+<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RandomTransform</span>
+
+
+<div class="viewcode-block" id="RandomBiasField"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomBiasField">[docs]</a><span class="k">class</span> <span class="nc">RandomBiasField</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Random MRI bias field artifact.</span>
+
+<span class="sd">    The bias field is modelled as a linear combination of</span>
+<span class="sd">    polynomial basis functions, as in K. Van Leemput et al., 1999,</span>
+<span class="sd">    *Automated model-based tissue classification of MR images of the brain*.</span>
+
+<span class="sd">    It was added to NiftyNet by Carole Sudre and used in</span>
+<span class="sd">    C. Sudre et al., 2017, *Longitudinal segmentation of age-related</span>
+<span class="sd">    white matter hyperintensities*.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        coefficients: Tuple of two floats :math:`(a, b)` to specify the</span>
+<span class="sd">            artifact magnitude of each coefficient.</span>
+<span class="sd">            If only one number :math:`n` is specified, all the coefficients</span>
+<span class="sd">            will be equal to :math:`n`.</span>
+<span class="sd">        order: Order of the basis polynomial functions.</span>
+<span class="sd">        proportion_to_augment:</span>
+<span class="sd">        seed:</span>
+<span class="sd">        verbose:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">coefficients</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="n">proportion_to_augment</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coefficients_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_range</span><span class="p">(</span>
+            <span class="n">coefficients</span><span class="p">,</span> <span class="s1">&#39;coefficients_range&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proportion_to_augment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_probability</span><span class="p">(</span>
+            <span class="n">proportion_to_augment</span><span class="p">,</span>
+            <span class="s1">&#39;proportion_to_augment&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_image_dict</span><span class="p">(</span><span class="n">image_dict</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">image_dict</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">INTENSITY</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">do_augmentation</span><span class="p">,</span> <span class="n">coefficients</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coefficients_range</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">proportion_to_augment</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">sample</span><span class="p">[</span><span class="n">image_name</span><span class="p">][</span><span class="s1">&#39;random_bias_coefficients&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coefficients</span>
+            <span class="n">sample</span><span class="p">[</span><span class="n">image_name</span><span class="p">][</span><span class="s1">&#39;random_bias_do_augmentation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">do_augmentation</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">do_augmentation</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">bias_field</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_bias_field</span><span class="p">(</span>
+                <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="n">coefficients</span><span class="p">)</span>
+            <span class="n">image_with_bias</span> <span class="o">=</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">bias_field</span><span class="p">)</span>
+            <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_with_bias</span>
+        <span class="k">return</span> <span class="n">sample</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span>
+            <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">coefficients_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+            <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sampling of the appropriate number of coefficients for the creation</span>
+<span class="sd">        of the bias field map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">random_coefficients</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">x_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x_order</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">z_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">order</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">x_order</span> <span class="o">+</span> <span class="n">y_order</span><span class="p">)):</span>
+                    <span class="n">number</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">*</span><span class="n">coefficients_range</span><span class="p">)</span>
+                    <span class="n">random_coefficients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">number</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+        <span class="n">do_augmentation</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">probability</span>
+        <span class="k">return</span> <span class="n">do_augmentation</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">random_coefficients</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generate_bias_field</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">,</span>
+            <span class="n">order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">coefficients</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the bias field map using a linear combination of polynomial</span>
+<span class="sd">        functions and the coefficients previously sampled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>  <span class="c1"># first axis is channels</span>
+        <span class="n">half_shape</span> <span class="o">=</span> <span class="n">shape</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="n">ranges</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">half_shape</span><span class="p">]</span>
+
+        <span class="n">bias_field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">x_mesh</span><span class="p">,</span> <span class="n">y_mesh</span><span class="p">,</span> <span class="n">z_mesh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">ranges</span><span class="p">))</span>
+
+        <span class="n">x_mesh</span> <span class="o">/=</span> <span class="n">x_mesh</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">y_mesh</span> <span class="o">/=</span> <span class="n">y_mesh</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">z_mesh</span> <span class="o">/=</span> <span class="n">z_mesh</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">x_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">y_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x_order</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">z_order</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">x_order</span> <span class="o">+</span> <span class="n">y_order</span><span class="p">)):</span>
+                    <span class="n">random_coefficient</span> <span class="o">=</span> <span class="n">coefficients</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">new_map</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">random_coefficient</span>
+                        <span class="o">*</span> <span class="n">x_mesh</span> <span class="o">**</span> <span class="n">x_order</span>
+                        <span class="o">*</span> <span class="n">y_mesh</span> <span class="o">**</span> <span class="n">y_order</span>
+                        <span class="o">*</span> <span class="n">z_mesh</span> <span class="o">**</span> <span class="n">z_order</span>
+                    <span class="p">)</span>
+                    <span class="n">bias_field</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">new_map</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># why?</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">bias_field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">bias_field</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bias_field</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchio.data package &mdash; TorchIO 0.13.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.13.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>torchio.data package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/torchio.data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="torchio-data-package">
+<h1>torchio.data package<a class="headerlink" href="#torchio-data-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="torchio.data.inference.html">torchio.data.inference package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.inference.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.inference.html#module-torchio.data.inference.aggregator">torchio.data.inference.aggregator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.inference.html#module-torchio.data.inference.grid_sampler">torchio.data.inference.grid_sampler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.inference.html#module-torchio.data.inference">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torchio.data.sampler.html">torchio.data.sampler package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.sampler.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.sampler.html#module-torchio.data.sampler.label">torchio.data.sampler.label module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.sampler.html#module-torchio.data.sampler.sampler">torchio.data.sampler.sampler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.sampler.html#module-torchio.data.sampler">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-torchio.data.images">
+<span id="torchio-data-images-module"></span><h2>torchio.data.images module<a class="headerlink" href="#module-torchio.data.images" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.data.images.Image">
+<em class="property">class </em><code class="descclassname">torchio.data.images.</code><code class="descname">Image</code><span class="sig-paren">(</span><em>name: str, path: Union[pathlib.Path, str], type_: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/data/images.html#Image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.Image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="torchio.data.images.Image.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>check_nans: bool = True</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, numpy.ndarray]<a class="reference internal" href="_modules/torchio/data/images.html#Image.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.Image.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="torchio.data.images.Image.parse_path">
+<code class="descname">parse_path</code><span class="sig-paren">(</span><em>path: Union[pathlib.Path, str]</em><span class="sig-paren">)</span> &#x2192; pathlib.Path<a class="reference internal" href="_modules/torchio/data/images.html#Image.parse_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.Image.parse_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="torchio.data.images.ImagesDataset">
+<em class="property">class </em><code class="descclassname">torchio.data.images.</code><code class="descname">ImagesDataset</code><span class="sig-paren">(</span><em>subjects: Sequence[torchio.data.images.Subject], transform: Optional[Any] = None, check_nans: bool = True, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/data/images.html#ImagesDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.ImagesDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<dl class="staticmethod">
+<dt id="torchio.data.images.ImagesDataset.parse_subjects_list">
+<em class="property">static </em><code class="descname">parse_subjects_list</code><span class="sig-paren">(</span><em>subjects_list: Sequence[torchio.data.images.Subject]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchio/data/images.html#ImagesDataset.parse_subjects_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.ImagesDataset.parse_subjects_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="torchio.data.images.ImagesDataset.save_sample">
+<em class="property">classmethod </em><code class="descname">save_sample</code><span class="sig-paren">(</span><em>sample: Dict[str, dict], output_paths_dict: Dict[str, Union[pathlib.Path, str]]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchio/data/images.html#ImagesDataset.save_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.ImagesDataset.save_sample" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="torchio.data.images.ImagesDataset.set_transform">
+<code class="descname">set_transform</code><span class="sig-paren">(</span><em>transform: Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchio/data/images.html#ImagesDataset.set_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.ImagesDataset.set_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="torchio.data.images.Subject">
+<em class="property">class </em><code class="descclassname">torchio.data.images.</code><code class="descname">Subject</code><span class="sig-paren">(</span><em>*images</em>, <em>name: Optional[str] = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/data/images.html#Subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.Subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
+<dl class="staticmethod">
+<dt id="torchio.data.images.Subject.parse_images">
+<em class="property">static </em><code class="descname">parse_images</code><span class="sig-paren">(</span><em>images: Sequence[torchio.data.images.Image]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchio/data/images.html#Subject.parse_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.Subject.parse_images" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchio.data.io">
+<span id="torchio-data-io-module"></span><h2>torchio.data.io module<a class="headerlink" href="#module-torchio.data.io" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="torchio.data.io.read_image">
+<code class="descclassname">torchio.data.io.</code><code class="descname">read_image</code><span class="sig-paren">(</span><em>path: Union[pathlib.Path, str], itk_first: bool = False</em><span class="sig-paren">)</span> &#x2192; Tuple[torch.Tensor, numpy.ndarray]<a class="reference internal" href="_modules/torchio/data/io.html#read_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.io.read_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchio.data.io.write_image">
+<code class="descclassname">torchio.data.io.</code><code class="descname">write_image</code><span class="sig-paren">(</span><em>tensor: torch.Tensor, affine: Union[torch.Tensor, numpy.ndarray], path: Union[pathlib.Path, str], itk_first: bool = False</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchio/data/io.html#write_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.io.write_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-torchio.data.queue">
+<span id="torchio-data-queue-module"></span><h2>torchio.data.queue module<a class="headerlink" href="#module-torchio.data.queue" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.data.queue.Queue">
+<em class="property">class </em><code class="descclassname">torchio.data.queue.</code><code class="descname">Queue</code><span class="sig-paren">(</span><em>subjects_dataset: torchio.data.images.ImagesDataset, max_length: int, samples_per_volume: int, patch_size: Union[int, Tuple[int, int, int]], sampler_class: torchio.data.sampler.sampler.ImageSampler, num_workers: int = 0, shuffle_subjects: bool = True, shuffle_patches: bool = True, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/data/queue.html#Queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.queue.Queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<dl class="method">
+<dt id="torchio.data.queue.Queue.fill">
+<code class="descname">fill</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchio/data/queue.html#Queue.fill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.queue.Queue.fill" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="torchio.data.queue.Queue.get_next_subject_sample">
+<code class="descname">get_next_subject_sample</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/torchio/data/queue.html#Queue.get_next_subject_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.queue.Queue.get_next_subject_sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>A StopIteration exception is expected when the queue is empty</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="torchio.data.queue.Queue.get_subjects_iterable">
+<code class="descname">get_subjects_iterable</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Iterator<a class="reference internal" href="_modules/torchio/data/queue.html#Queue.get_subjects_iterable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.queue.Queue.get_subjects_iterable" title="Permalink to this definition">¶</a></dt>
+<dd><p>I need a DataLoader to handle parallelism
+But this loader is always expected to yield single subject samples</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.data.queue.Queue.iterations_per_epoch">
+<code class="descname">iterations_per_epoch</code><a class="headerlink" href="#torchio.data.queue.Queue.iterations_per_epoch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.data.queue.Queue.num_patches">
+<code class="descname">num_patches</code><a class="headerlink" href="#torchio.data.queue.Queue.num_patches" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.data.queue.Queue.num_subjects">
+<code class="descname">num_subjects</code><a class="headerlink" href="#torchio.data.queue.Queue.num_subjects" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="torchio.data.queue.Queue.print">
+<code class="descname">print</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/data/queue.html#Queue.print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.queue.Queue.print" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchio.data">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-torchio.data" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

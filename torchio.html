@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchio package &mdash; TorchIO 0.13.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.13.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data.html">Data handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>torchio package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/torchio.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="torchio-package">
+<h1>torchio package<a class="headerlink" href="#torchio-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="torchio.data.html">torchio.data package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torchio.data.inference.html">torchio.data.inference package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torchio.data.inference.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.data.inference.html#module-torchio.data.inference.aggregator">torchio.data.inference.aggregator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.data.inference.html#module-torchio.data.inference.grid_sampler">torchio.data.inference.grid_sampler module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.data.inference.html#module-torchio.data.inference">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="torchio.data.sampler.html">torchio.data.sampler package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torchio.data.sampler.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.data.sampler.html#module-torchio.data.sampler.label">torchio.data.sampler.label module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.data.sampler.html#module-torchio.data.sampler.sampler">torchio.data.sampler.sampler module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.data.sampler.html#module-torchio.data.sampler">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.html#module-torchio.data.images">torchio.data.images module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.html#module-torchio.data.io">torchio.data.io module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.html#module-torchio.data.queue">torchio.data.queue module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.data.html#module-torchio.data">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torchio.datasets.html">torchio.datasets package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torchio.datasets.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.datasets.html#module-torchio.datasets.ixi">torchio.datasets.ixi module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.datasets.html#module-torchio.datasets">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torchio.transforms.html">torchio.transforms package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="torchio.transforms.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="torchio.transforms.augmentation.html">torchio.transforms.augmentation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torchio.transforms.augmentation.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html">torchio.transforms.augmentation.intensity package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html#module-torchio.transforms.augmentation.intensity.random_bias_field">torchio.transforms.augmentation.intensity.random_bias_field module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html#module-torchio.transforms.augmentation.intensity.random_blur">torchio.transforms.augmentation.intensity.random_blur module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html#module-torchio.transforms.augmentation.intensity.random_ghosting">torchio.transforms.augmentation.intensity.random_ghosting module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html#module-torchio.transforms.augmentation.intensity.random_motion">torchio.transforms.augmentation.intensity.random_motion module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html#module-torchio.transforms.augmentation.intensity.random_noise">torchio.transforms.augmentation.intensity.random_noise module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html#module-torchio.transforms.augmentation.intensity.random_spike">torchio.transforms.augmentation.intensity.random_spike module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html#module-torchio.transforms.augmentation.intensity.random_swap">torchio.transforms.augmentation.intensity.random_swap module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.intensity.html#module-torchio.transforms.augmentation.intensity">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="torchio.transforms.augmentation.spatial.html">torchio.transforms.augmentation.spatial package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.spatial.html#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.spatial.html#module-torchio.transforms.augmentation.spatial.random_affine">torchio.transforms.augmentation.spatial.random_affine module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.spatial.html#module-torchio.transforms.augmentation.spatial.random_elastic_deformation">torchio.transforms.augmentation.spatial.random_elastic_deformation module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.spatial.html#module-torchio.transforms.augmentation.spatial.random_flip">torchio.transforms.augmentation.spatial.random_flip module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.augmentation.spatial.html#module-torchio.transforms.augmentation.spatial">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.transforms.augmentation.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.transforms.augmentation.html#module-torchio.transforms.augmentation.random_transform">torchio.transforms.augmentation.random_transform module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.transforms.augmentation.html#module-torchio.transforms.augmentation">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="torchio.transforms.preprocessing.html">torchio.transforms.preprocessing package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="torchio.transforms.preprocessing.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="torchio.transforms.preprocessing.intensity.html">torchio.transforms.preprocessing.intensity package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.intensity.html#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.intensity.html#module-torchio.transforms.preprocessing.intensity.histogram_standardization">torchio.transforms.preprocessing.intensity.histogram_standardization module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.intensity.html#module-torchio.transforms.preprocessing.intensity.normalization_transform">torchio.transforms.preprocessing.intensity.normalization_transform module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.intensity.html#module-torchio.transforms.preprocessing.intensity.rescale">torchio.transforms.preprocessing.intensity.rescale module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.intensity.html#module-torchio.transforms.preprocessing.intensity.z_normalization">torchio.transforms.preprocessing.intensity.z_normalization module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.intensity.html#module-torchio.transforms.preprocessing.intensity">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="torchio.transforms.preprocessing.spatial.html">torchio.transforms.preprocessing.spatial package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.spatial.html#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.spatial.html#module-torchio.transforms.preprocessing.spatial.bounds_transform">torchio.transforms.preprocessing.spatial.bounds_transform module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.spatial.html#module-torchio.transforms.preprocessing.spatial.center_crop_pad">torchio.transforms.preprocessing.spatial.center_crop_pad module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.spatial.html#module-torchio.transforms.preprocessing.spatial.crop">torchio.transforms.preprocessing.spatial.crop module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.spatial.html#module-torchio.transforms.preprocessing.spatial.pad">torchio.transforms.preprocessing.spatial.pad module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.spatial.html#module-torchio.transforms.preprocessing.spatial.resample">torchio.transforms.preprocessing.spatial.resample module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.spatial.html#module-torchio.transforms.preprocessing.spatial.to_canonical">torchio.transforms.preprocessing.spatial.to_canonical module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="torchio.transforms.preprocessing.spatial.html#module-torchio.transforms.preprocessing.spatial">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="torchio.transforms.preprocessing.html#module-torchio.transforms.preprocessing">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.transforms.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.transforms.html#module-torchio.transforms.interpolation">torchio.transforms.interpolation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.transforms.html#module-torchio.transforms.lambda_transform">torchio.transforms.lambda_transform module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.transforms.html#module-torchio.transforms.transform">torchio.transforms.transform module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchio.transforms.html#module-torchio.transforms">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-torchio.cli">
+<span id="torchio-cli-module"></span><h2>torchio.cli module<a class="headerlink" href="#module-torchio.cli" title="Permalink to this headline">¶</a></h2>
+<p>Console script for torchio.</p>
+</div>
+<div class="section" id="module-torchio.torchio">
+<span id="torchio-torchio-module"></span><h2>torchio.torchio module<a class="headerlink" href="#module-torchio.torchio" title="Permalink to this headline">¶</a></h2>
+<p>Main module.</p>
+<dl class="attribute">
+<dt id="torchio.torchio.TypeCallable">
+<code class="descclassname">torchio.torchio.</code><code class="descname">TypeCallable</code><a class="headerlink" href="#torchio.torchio.TypeCallable" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Callable</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchio.utils">
+<span id="torchio-utils-module"></span><h2>torchio.utils module<a class="headerlink" href="#module-torchio.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="torchio.utils.apply_transform_to_file">
+<code class="descclassname">torchio.utils.</code><code class="descname">apply_transform_to_file</code><span class="sig-paren">(</span><em>input_path: Union[pathlib.Path, str], transform, output_path: Union[pathlib.Path, str], type_: str = 'intensity'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/utils.html#apply_transform_to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.apply_transform_to_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchio.utils.check_consistent_shape">
+<code class="descclassname">torchio.utils.</code><code class="descname">check_consistent_shape</code><span class="sig-paren">(</span><em>sample: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/torchio/utils.html#check_consistent_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.check_consistent_shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchio.utils.create_dummy_dataset">
+<code class="descclassname">torchio.utils.</code><code class="descname">create_dummy_dataset</code><span class="sig-paren">(</span><em>num_images: int, size_range: Tuple[int, int], directory: Union[pathlib.Path, str, None] = None, suffix: str = '.nii.gz', force: bool = False, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/utils.html#create_dummy_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.create_dummy_dataset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchio.utils.get_rotation_and_spacing_from_affine">
+<code class="descclassname">torchio.utils.</code><code class="descname">get_rotation_and_spacing_from_affine</code><span class="sig-paren">(</span><em>affine: numpy.ndarray</em><span class="sig-paren">)</span> &#x2192; Tuple[numpy.ndarray, numpy.ndarray]<a class="reference internal" href="_modules/torchio/utils.html#get_rotation_and_spacing_from_affine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.get_rotation_and_spacing_from_affine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchio.utils.get_stem">
+<code class="descclassname">torchio.utils.</code><code class="descname">get_stem</code><span class="sig-paren">(</span><em>path: Union[pathlib.Path, str]</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/torchio/utils.html#get_stem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.get_stem" title="Permalink to this definition">¶</a></dt>
+<dd><p>‘/home/user/image.nii.gz’ -&gt; ‘image’</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchio.utils.guess_type">
+<code class="descclassname">torchio.utils.</code><code class="descname">guess_type</code><span class="sig-paren">(</span><em>string: str</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="_modules/torchio/utils.html#guess_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.guess_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adapted from
+<a class="reference external" href="https://www.reddit.com/r/learnpython/comments/4599hl/module_to_guess_type_from_a_string/czw3f5s">https://www.reddit.com/r/learnpython/comments/4599hl/module_to_guess_type_from_a_string/czw3f5s</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="torchio.utils.is_image_dict">
+<code class="descclassname">torchio.utils.</code><code class="descname">is_image_dict</code><span class="sig-paren">(</span><em>variable: Any</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/torchio/utils.html#is_image_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.is_image_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchio.utils.nib_to_sitk">
+<code class="descclassname">torchio.utils.</code><code class="descname">nib_to_sitk</code><span class="sig-paren">(</span><em>data: Union[torch.Tensor, numpy.ndarray], affine: Union[torch.Tensor, numpy.ndarray]</em><span class="sig-paren">)</span> &#x2192; SimpleITK.SimpleITK.Image<a class="reference internal" href="_modules/torchio/utils.html#nib_to_sitk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.nib_to_sitk" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchio.utils.sitk_to_nib">
+<code class="descclassname">torchio.utils.</code><code class="descname">sitk_to_nib</code><span class="sig-paren">(</span><em>image: SimpleITK.SimpleITK.Image</em><span class="sig-paren">)</span> &#x2192; Tuple[numpy.ndarray, numpy.ndarray]<a class="reference internal" href="_modules/torchio/utils.html#sitk_to_nib"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.sitk_to_nib" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="torchio.utils.to_tuple">
+<code class="descclassname">torchio.utils.</code><code class="descname">to_tuple</code><span class="sig-paren">(</span><em>1</em>, <em>n=1) -&gt; (1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/utils.html#to_tuple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.utils.to_tuple" title="Permalink to this definition">¶</a></dt>
+<dd><p>to_tuple(1, n=3) -&gt; (1, 1, 1)</p>
+<p>If value is an iterable, n is ignored and tuple(value) is returned
+to_tuple((1,), n=1) -&gt; (1,)
+to_tuple((1, 2), n=1) -&gt; (1, 2)
+to_tuple([1, 2], n=3) -&gt; (1, 2)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-torchio">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-torchio" title="Permalink to this headline">¶</a></h2>
+<p>Top-level package for torchio.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

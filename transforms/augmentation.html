@@ -1,0 +1,464 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Augmentation &mdash; TorchIO 0.13.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Others" href="others.html" />
+    <link rel="prev" title="Preprocessing" href="preprocessing.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.13.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../data/data.html">Handling data</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="transforms.html">Transforms</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Augmentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#randomtransform"><code class="docutils literal notranslate"><span class="pre">RandomTransform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spatial">Spatial</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#randomflip"><code class="docutils literal notranslate"><span class="pre">RandomFlip</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#randomaffine"><code class="docutils literal notranslate"><span class="pre">RandomAffine</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#randomelasticdeformation"><code class="docutils literal notranslate"><span class="pre">RandomElasticDeformation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#intensity">Intensity</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#randommotion"><code class="docutils literal notranslate"><span class="pre">RandomMotion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#randomghosting"><code class="docutils literal notranslate"><span class="pre">RandomGhosting</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#randomspike"><code class="docutils literal notranslate"><span class="pre">RandomSpike</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#randombiasfield"><code class="docutils literal notranslate"><span class="pre">RandomBiasField</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#randomblur"><code class="docutils literal notranslate"><span class="pre">RandomBlur</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#randomnoise"><code class="docutils literal notranslate"><span class="pre">RandomNoise</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#randomswap"><code class="docutils literal notranslate"><span class="pre">RandomSwap</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="others.html">Others</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="transforms.html">Transforms</a> &raquo;</li>
+        
+      <li>Augmentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/transforms/augmentation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="augmentation">
+<h1>Augmentation<a class="headerlink" href="#augmentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="randomtransform">
+<h2><a class="reference internal" href="#torchio.transforms.augmentation.RandomTransform" title="torchio.transforms.augmentation.RandomTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomTransform</span></code></a><a class="headerlink" href="#randomtransform" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.transforms.augmentation.RandomTransform">
+<em class="property">class </em><code class="descclassname">torchio.transforms.augmentation.</code><code class="descname">RandomTransform</code><span class="sig-paren">(</span><em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/random_transform.html#RandomTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.RandomTransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.transform.Transform</span></code></p>
+<p>Base class for stochastic augmentation transforms.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>seed</strong> – Seed for <a class="reference external" href="https://pytorch.org/docs/master/torch.html#module-torch" title="(in PyTorch vmaster (1.5.0a0+65bad41 ))"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch</span></code></a> random number generator.</li>
+<li><strong>verbose</strong> – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, will print the running time of the
+transform.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="staticmethod">
+<dt id="torchio.transforms.augmentation.RandomTransform.parse_range">
+<em class="property">static </em><code class="descname">parse_range</code><span class="sig-paren">(</span><em>nums_range: Union[int, float, Tuple[Union[int, float], Union[int, float]]], name: str</em><span class="sig-paren">)</span> &#x2192; Tuple[Union[int, float], Union[int, float]]<a class="reference internal" href="../_modules/torchio/transforms/augmentation/random_transform.html#RandomTransform.parse_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.RandomTransform.parse_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adapted from <code class="docutils literal notranslate"><span class="pre">torchvision.RandomRotation</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nums_range</strong> – Tuple of two numbers <span class="math notranslate nohighlight">\((n_{min}, n_{max})\)</span>,
+where <span class="math notranslate nohighlight">\(n_{min} \leq n_{max}\)</span>.
+If a single positive number <span class="math notranslate nohighlight">\(n\)</span> is provided,
+a tuple <span class="math notranslate nohighlight">\((-n, n)\)</span> will be returned.</li>
+<li><strong>name</strong> – Name of the parameter, so that an informative error message
+can be printed.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A tuple of two numbers <span class="math notranslate nohighlight">\((n_{min}, n_{max})\)</span>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> – if <code class="xref py py-attr docutils literal notranslate"><span class="pre">nums_range</span></code> is negative</li>
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> – if <span class="math notranslate nohighlight">\(n_{min} \gt n_{max}\)</span>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="spatial">
+<h2>Spatial<a class="headerlink" href="#spatial" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="randomflip">
+<h3><a class="reference internal" href="#torchio.transforms.RandomFlip" title="torchio.transforms.RandomFlip"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomFlip</span></code></a><a class="headerlink" href="#randomflip" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomFlip">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomFlip</code><span class="sig-paren">(</span><em>axes: Union[int</em>, <em>Tuple[int]] = 0</em>, <em>flip_probability: float = 0.5</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_flip.html#RandomFlip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomFlip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="randomaffine">
+<h3><a class="reference internal" href="#torchio.transforms.RandomAffine" title="torchio.transforms.RandomAffine"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomAffine</span></code></a><a class="headerlink" href="#randomaffine" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomAffine">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomAffine</code><span class="sig-paren">(</span><em>scales: Tuple[float</em>, <em>float] = (0.9</em>, <em>1.1)</em>, <em>degrees: Union[float</em>, <em>Tuple[float</em>, <em>float]] = 10</em>, <em>isotropic: bool = False</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_affine.html#RandomAffine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomAffine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>Random affine transformation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>scales</strong> – Tuple <span class="math notranslate nohighlight">\((a, b)\)</span> defining the scaling
+magnitude. The scaling values along each dimension are
+<span class="math notranslate nohighlight">\((s_1, s_2, s_3)\)</span>, where <span class="math notranslate nohighlight">\(s_i \sim \mathcal{U}(a, b)\)</span>.</li>
+<li><strong>degrees</strong> – Tuple <span class="math notranslate nohighlight">\((a, b)\)</span> defining the rotation range in degrees.
+The rotation angles around each axis are
+<span class="math notranslate nohighlight">\((\theta_1, \theta_2, \theta_3)\)</span>,
+where <span class="math notranslate nohighlight">\(\theta_i \sim \mathcal{U}(a, b)\)</span>.
+If only one value <span class="math notranslate nohighlight">\(d\)</span> is provided,
+<span class="math notranslate nohighlight">\(\theta_i \sim \mathcal{U}(-d, d)\)</span>.</li>
+<li><strong>isotropic</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the scaling factor along all dimensions is the
+same, i.e. <span class="math notranslate nohighlight">\(s_1 = s_2 = s_3\)</span>.</li>
+<li><strong>image_interpolation</strong> – Interpolation type to use for resampling.
+The available interpolation strategies are enumerated in
+<code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.interpolation.Interpolation</span></code>.
+For more information, visit
+<a class="reference external" href="https://itk.org/Doxygen/html/group__ImageInterpolators.html">ITK</a>
+and <a class="reference external" href="https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html">Simple ITK</a>
+docs on image interpolation.</li>
+<li><strong>seed</strong> – </li>
+<li><strong>verbose</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Rotations are performed around the center of the image.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The image minimum is used as default value to fill missing values
+during resampling.
+This behavior might become customizable in the future.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="k">import</span> <span class="n">RandomAffine</span><span class="p">,</span> <span class="n">Interpolation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">images_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># instance of torchio.ImagesDataset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">RandomAffine</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">scales</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">degrees</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">isotropic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">image_interpolation</span><span class="o">=</span><span class="n">Interpolation</span><span class="o">.</span><span class="n">BSPLINE</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="randomelasticdeformation">
+<h3><a class="reference internal" href="#torchio.transforms.RandomElasticDeformation" title="torchio.transforms.RandomElasticDeformation"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomElasticDeformation</span></code></a><a class="headerlink" href="#randomelasticdeformation" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomElasticDeformation">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomElasticDeformation</code><span class="sig-paren">(</span><em>num_control_points: int = 4</em>, <em>deformation_std: float = 15</em>, <em>proportion_to_augment: float = 1</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_elastic_deformation.html#RandomElasticDeformation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomElasticDeformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="intensity">
+<h2>Intensity<a class="headerlink" href="#intensity" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="randommotion">
+<h3><a class="reference internal" href="#torchio.transforms.RandomMotion" title="torchio.transforms.RandomMotion"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMotion</span></code></a><a class="headerlink" href="#randommotion" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomMotion">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomMotion</code><span class="sig-paren">(</span><em>degrees: float = 10</em>, <em>translation: float = 10</em>, <em>num_transforms: int = 2</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_motion.html#RandomMotion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomMotion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="randomghosting">
+<h3><a class="reference internal" href="#torchio.transforms.RandomGhosting" title="torchio.transforms.RandomGhosting"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGhosting</span></code></a><a class="headerlink" href="#randomghosting" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomGhosting">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomGhosting</code><span class="sig-paren">(</span><em>num_ghosts_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = (4</em>, <em>10)</em>, <em>axes: Tuple[int</em>, <em>...] = (0</em>, <em>1</em>, <em>2)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_ghosting.html#RandomGhosting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomGhosting" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="randomspike">
+<h3><a class="reference internal" href="#torchio.transforms.RandomSpike" title="torchio.transforms.RandomSpike"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSpike</span></code></a><a class="headerlink" href="#randomspike" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomSpike">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomSpike</code><span class="sig-paren">(</span><em>num_spikes_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = 1</em>, <em>intensity_range: Union[float</em>, <em>Tuple[float</em>, <em>float]] = (0.1</em>, <em>1)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_spike.html#RandomSpike"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomSpike" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="randombiasfield">
+<h3><a class="reference internal" href="#torchio.transforms.RandomBiasField" title="torchio.transforms.RandomBiasField"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBiasField</span></code></a><a class="headerlink" href="#randombiasfield" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomBiasField">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBiasField</code><span class="sig-paren">(</span><em>coefficients: Union[float</em>, <em>Tuple[float</em>, <em>float]] = 0.5</em>, <em>order: int = 3</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_bias_field.html#RandomBiasField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBiasField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>Random MRI bias field artifact.</p>
+<p>The bias field is modelled as a linear combination of
+polynomial basis functions, as in K. Van Leemput et al., 1999,
+<em>Automated model-based tissue classification of MR images of the brain</em>.</p>
+<p>It was added to NiftyNet by Carole Sudre and used in
+C. Sudre et al., 2017, <em>Longitudinal segmentation of age-related
+white matter hyperintensities</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>coefficients</strong> – Tuple of two floats <span class="math notranslate nohighlight">\((a, b)\)</span> to specify the
+artifact magnitude of each coefficient.
+If only one number <span class="math notranslate nohighlight">\(n\)</span> is specified, all the coefficients
+will be equal to <span class="math notranslate nohighlight">\(n\)</span>.</li>
+<li><strong>order</strong> – Order of the basis polynomial functions.</li>
+<li><strong>proportion_to_augment</strong> – </li>
+<li><strong>seed</strong> – </li>
+<li><strong>verbose</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="randomblur">
+<h3><a class="reference internal" href="#torchio.transforms.RandomBlur" title="torchio.transforms.RandomBlur"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBlur</span></code></a><a class="headerlink" href="#randomblur" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomBlur">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBlur</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>4)</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_blur.html#RandomBlur"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBlur" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="randomnoise">
+<h3><a class="reference internal" href="#torchio.transforms.RandomNoise" title="torchio.transforms.RandomNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomNoise</span></code></a><a class="headerlink" href="#randomnoise" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomNoise">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomNoise</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>0.25)</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_noise.html#RandomNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomNoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="randomswap">
+<h3><a class="reference internal" href="#torchio.transforms.RandomSwap" title="torchio.transforms.RandomSwap"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSwap</span></code></a><a class="headerlink" href="#randomswap" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.transforms.RandomSwap">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomSwap</code><span class="sig-paren">(</span><em>patch_size: Union[int</em>, <em>Tuple[int</em>, <em>int</em>, <em>int]] = 15</em>, <em>num_iterations: int = 100</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_swap.html#RandomSwap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomSwap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="others.html" class="btn btn-neutral float-right" title="Others" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="preprocessing.html" class="btn btn-neutral float-left" title="Preprocessing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

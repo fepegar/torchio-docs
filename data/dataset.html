@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Images dataset &mdash; TorchIO 0.13.4 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Transforms" href="../transforms/transforms.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="data.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.13.4
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Images dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Images dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subject">Subject</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#image">Image</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../transforms/transforms.html">Transforms</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="data.html">&lt;no title&gt;</a> &raquo;</li>
+        
+      <li>Images dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/data/dataset.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="images-dataset">
+<h1>Images dataset<a class="headerlink" href="#images-dataset" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>Images dataset<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.data.images.ImagesDataset">
+<em class="property">class </em><code class="descclassname">torchio.data.images.</code><code class="descname">ImagesDataset</code><span class="sig-paren">(</span><em>subjects: Sequence[torchio.data.images.Subject], transform: Optional[Any] = None, check_nans: bool = True, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/images.html#ImagesDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.ImagesDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+</dd></dl>
+
+<div class="section" id="subject">
+<h3>Subject<a class="headerlink" href="#subject" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.data.images.Subject">
+<em class="property">class </em><code class="descclassname">torchio.data.images.</code><code class="descname">Subject</code><span class="sig-paren">(</span><em>*images</em>, <em>name: Optional[str] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/images.html#Subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.Subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="image">
+<h3>Image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="torchio.data.images.Image">
+<em class="property">class </em><code class="descclassname">torchio.data.images.</code><code class="descname">Image</code><span class="sig-paren">(</span><em>name: str, path: Union[pathlib.Path, str], type_: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/images.html#Image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.Image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../transforms/transforms.html" class="btn btn-neutral float-right" title="Transforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="data.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

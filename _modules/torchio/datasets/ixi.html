@@ -1,0 +1,440 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchio.datasets.ixi &mdash; TorchIO 0.13.9 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.13.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../transforms/transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Medical image datasets</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torchio.datasets.ixi</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torchio.datasets.ixi</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The `Information eXtraction from Images (IXI)`_</span>
+<span class="sd">dataset contains &quot;nearly 600 MR images from normal, healthy subjects&quot;,</span>
+<span class="sd">including &quot;T1, T2 and PD-weighted images,</span>
+<span class="sd">MRA images and Diffusion-weighted images (15 directions)&quot;.</span>
+
+
+<span class="sd">.. note ::</span>
+<span class="sd">    This data is made available under the</span>
+<span class="sd">    Creative Commons CC BY-SA 3.0 license.</span>
+<span class="sd">    If you use it please acknowledge the source of the IXI data, e.g.</span>
+<span class="sd">    `the IXI website &lt;https://brain-development.org/ixi-dataset/&gt;`_.</span>
+
+<span class="sd">.. _Information eXtraction from Images (IXI): https://brain-development.org/ixi-dataset/</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Adapted from</span>
+<span class="c1"># https://pytorch.org/docs/stable/_modules/torchvision/datasets/mnist.html#MNIST</span>
+
+
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="k">import</span> <span class="n">NamedTemporaryFile</span>
+<span class="kn">from</span> <span class="nn">..transforms</span> <span class="k">import</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">ImagesDataset</span><span class="p">,</span> <span class="n">Subject</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">INTENSITY</span><span class="p">,</span> <span class="n">LABEL</span><span class="p">,</span> <span class="n">TypePath</span>
+<span class="kn">from</span> <span class="nn">torchvision.datasets.utils</span> <span class="k">import</span> <span class="n">download_and_extract_archive</span>
+
+
+<div class="viewcode-block" id="IXI"><a class="viewcode-back" href="../../../datasets.html#torchio.datasets.ixi.IXI">[docs]</a><span class="k">class</span> <span class="nc">IXI</span><span class="p">(</span><span class="n">ImagesDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Full IXI dataset.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        root: Root directory to which the dataset will be downloaded.</span>
+<span class="sd">        transform: An instance of</span>
+<span class="sd">            :class:`~torchio.transforms.transform.Transform`.</span>
+<span class="sd">        download: If set to ``True``, will download the data into :attr:`root`.</span>
+<span class="sd">        modalities: List of modalities to be downloaded. They must be in</span>
+<span class="sd">            ``(&#39;T1&#39;, &#39;T2&#39;, &#39;PD&#39;, &#39;MRA&#39;, &#39;DTI&#39;)``.</span>
+
+<span class="sd">    .. warning:: The size of this dataset is multiple GB.</span>
+<span class="sd">        If you set :attr:`download` to ``True``, it will take some time</span>
+<span class="sd">        to be downloaded if it is not already present.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; import torchvision</span>
+<span class="sd">        &gt;&gt;&gt; transforms = [</span>
+<span class="sd">        ...     torchio.ToCanonical(),  # to RAS</span>
+<span class="sd">        ...     torchio.Resample((1, 1, 1)),  # to 1 mm iso</span>
+<span class="sd">        ... ]</span>
+<span class="sd">        &gt;&gt;&gt; ixi_dataset = torchio.datasets.IXI(</span>
+<span class="sd">        ...     &#39;path/to/ixi_root/&#39;,</span>
+<span class="sd">        ...     modalities=(&#39;T1&#39;, &#39;T2&#39;),</span>
+<span class="sd">        ...     transform=torchvision.transforms.Compose(transforms),</span>
+<span class="sd">        ...     download=True,</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; print(&#39;Number of subjects in dataset:&#39;, len(ixi_dataset))  # 577</span>
+<span class="sd">        &gt;&gt;&gt; sample_subject = ixi_dataset[0]</span>
+<span class="sd">        &gt;&gt;&gt; print(&#39;Keys in subject sample:&#39;, tuple(sample_subject.keys()))  # (&#39;T1&#39;, &#39;T2&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; print(&#39;Shape of T1 data:&#39;, sample_subject[&#39;T1&#39;][torchio.DATA].shape)  # [1, 180, 268, 268]</span>
+<span class="sd">        &gt;&gt;&gt; print(&#39;Shape of T2 data:&#39;, sample_subject[&#39;T2&#39;][torchio.DATA].shape)  # [1, 241, 257, 188]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">base_url</span> <span class="o">=</span> <span class="s1">&#39;http://biomedic.doc.ic.ac.uk/brain-development/downloads/IXI/IXI-</span><span class="si">{modality}</span><span class="s1">.tar&#39;</span>
+    <span class="n">md5_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;T1&#39;</span><span class="p">:</span> <span class="s1">&#39;34901a0593b41dd19c1a1f746eac2d58&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;T2&#39;</span><span class="p">:</span> <span class="s1">&#39;e3140d78730ecdd32ba92da48c0a9aaa&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;PD&#39;</span><span class="p">:</span> <span class="s1">&#39;88ecd9d1fa33cb4a2278183b42ffd749&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;MRA&#39;</span><span class="p">:</span> <span class="s1">&#39;29be7d2fee3998f978a55a9bdaf3407e&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;DTI&#39;</span><span class="p">:</span> <span class="s1">&#39;636573825b1c8b9e8c78f1877df3ee66&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">:</span> <span class="n">TypePath</span><span class="p">,</span>
+            <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">modalities</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;T1&#39;</span><span class="p">,</span> <span class="s1">&#39;T2&#39;</span><span class="p">],</span>
+            <span class="p">):</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="n">modalities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">modality</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">md5_dict</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">f</span><span class="s1">&#39;Modality &quot;</span><span class="si">{modality}</span><span class="s1">&quot; must be&#39;</span>
+                    <span class="n">f</span><span class="s1">&#39; one of {tuple(self.md5_dict.keys())}&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">modalities</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_exists</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">modalities</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Dataset not found.&#39;</span>
+                <span class="s1">&#39; You can use download=True to download it&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">subjects_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subjects_list</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">modalities</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">modalities</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="n">modalities</span><span class="p">:</span>
+            <span class="n">modality_dir</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="n">modality</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">modality_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="n">exists</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exists</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">exists</span>
+
+    <span class="k">def</span> <span class="nf">_get_subjects_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">modalities</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of files for each modality is not the same</span>
+<span class="sd">        E.g. 581 for T1, 578 for T2</span>
+<span class="sd">        Let&#39;s just use the first modality as reference for now</span>
+<span class="sd">        I.e. only subjects with all modalities will be included</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">sglob</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pattern</span><span class="p">)))</span>
+
+        <span class="k">def</span> <span class="nf">get_subject_id</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">one_modality</span> <span class="o">=</span> <span class="n">modalities</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="n">sglob</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="n">one_modality</span><span class="p">,</span> <span class="s1">&#39;*.nii.gz&#39;</span><span class="p">)</span>
+        <span class="n">subjects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">filepath</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+            <span class="n">subject_id</span> <span class="o">=</span> <span class="n">get_subject_id</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">one_modality</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">INTENSITY</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="n">modalities</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="n">globbed</span> <span class="o">=</span> <span class="n">sglob</span><span class="p">(</span>
+                    <span class="n">root</span> <span class="o">/</span> <span class="n">modality</span><span class="p">,</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{subject_id}</span><span class="s1">-</span><span class="si">{modality}</span><span class="s1">.nii.gz&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">globbed</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">globbed</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+                    <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">modality</span><span class="p">,</span> <span class="n">globbed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">INTENSITY</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">skip_subject</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">skip_subject</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">skip_subject</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">subjects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Subject</span><span class="p">(</span><span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subject_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">subjects</span>
+
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">modalities</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the IXI data if it doesn&#39;t exist already.&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="n">modalities</span><span class="p">:</span>
+            <span class="n">modality_dir</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="n">modality</span>
+            <span class="k">if</span> <span class="n">modality_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="k">continue</span>
+            <span class="n">modality_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># download files</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">)</span>
+            <span class="n">md5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md5_dict</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span>
+
+            <span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.tar&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">download_and_extract_archive</span><span class="p">(</span>
+                    <span class="n">url</span><span class="p">,</span>
+                    <span class="n">download_root</span><span class="o">=</span><span class="n">modality_dir</span><span class="p">,</span>
+                    <span class="n">filename</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">md5</span><span class="o">=</span><span class="n">md5</span><span class="p">,</span>
+                <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IXITiny"><a class="viewcode-back" href="../../../datasets.html#torchio.datasets.ixi.IXITiny">[docs]</a><span class="k">class</span> <span class="nc">IXITiny</span><span class="p">(</span><span class="n">ImagesDataset</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the dataset used in the `notebook`_.</span>
+<span class="sd">    It is a tiny version of IXI, containing 566 :math:`T_1`-weighted brain MR</span>
+<span class="sd">    images and their corresponding brain segmentations,</span>
+<span class="sd">    all with size :math:`83 \times 44 \times 55`.</span>
+
+<span class="sd">    It can be used as a medical image MNIST.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        root: Root directory to which the dataset will be downloaded.</span>
+<span class="sd">        transform: An instance of</span>
+<span class="sd">            :class:`~torchio.transforms.transform.Transform`.</span>
+<span class="sd">        download: If set to ``True``, will download the data into :attr:`root`.</span>
+
+<span class="sd">    .. _notebook: https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://www.dropbox.com/s/ogxjwjxdv5mieah/ixi_tiny.zip?dl=1&#39;</span>
+    <span class="n">md5</span> <span class="o">=</span> <span class="s1">&#39;bfb60f4074283d78622760230bfa1f98&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">root</span><span class="p">:</span> <span class="n">TypePath</span><span class="p">,</span>
+            <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="p">):</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_download</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_exists</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Dataset not found.&#39;</span>
+                <span class="s1">&#39; You can use download=True to download it&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">subjects_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subjects_list</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_subjects_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="n">image_paths</span> <span class="o">=</span> <span class="n">sglob</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="s1">&#39;*.nii.gz&#39;</span><span class="p">)</span>
+        <span class="n">label_paths</span> <span class="o">=</span> <span class="n">sglob</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;*.nii.gz&#39;</span><span class="p">)</span>
+
+        <span class="n">subjects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">image_path</span><span class="p">,</span> <span class="n">label_path</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">image_paths</span><span class="p">,</span> <span class="n">label_paths</span><span class="p">):</span>
+            <span class="n">subject_id</span> <span class="o">=</span> <span class="n">get_subject_id</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+            <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="n">image_path</span><span class="p">,</span> <span class="n">INTENSITY</span><span class="p">))</span>
+            <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="n">label_path</span><span class="p">,</span> <span class="n">LABEL</span><span class="p">))</span>
+            <span class="n">subjects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Subject</span><span class="p">(</span><span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">subject_id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">subjects</span>
+
+    <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Download the tiny IXI data if it doesn&#39;t exist already.&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.zip&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">download_and_extract_archive</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+                <span class="n">download_root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
+                <span class="n">filename</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">md5</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md5</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">ixi_tiny_dir</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s1">&#39;ixi_tiny&#39;</span>
+        <span class="p">(</span><span class="n">ixi_tiny_dir</span> <span class="o">/</span> <span class="s1">&#39;image&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s1">&#39;image&#39;</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">ixi_tiny_dir</span> <span class="o">/</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s1">&#39;label&#39;</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">ixi_tiny_dir</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">sglob</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pattern</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">get_subject_id</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
