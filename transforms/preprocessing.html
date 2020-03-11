@@ -246,6 +246,26 @@ If a single value <span class="math notranslate nohighlight">\(N\)</span> is pro
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Crop</code><span class="sig-paren">(</span><em>cropping: Union[int, Tuple[int, int, int]], verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/crop.html#Crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Crop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.spatial.bounds_transform.BoundsTransform</span></code></p>
 <p>Crop an image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cropping</strong> – Tuple
+<span class="math notranslate nohighlight">\((D_{ini}, D_{fin}, H_{ini}, H_{fin}, W_{ini}, W_{fin})\)</span>
+defining the number of values cropped from the edges of each axis.
+If only three values <span class="math notranslate nohighlight">\((D, H, W)\)</span> are provided, then
+<span class="math notranslate nohighlight">\(D_{ini} = D_{fin} = D\)</span>,
+<span class="math notranslate nohighlight">\(H_{ini} = H_{fin} = H\)</span> and
+<span class="math notranslate nohighlight">\(W_{ini} = W_{fin} = W\)</span>.
+If only one value <span class="math notranslate nohighlight">\(N\)</span> is provided, then
+<span class="math notranslate nohighlight">\(D_{ini} = D_{fin} = H_{ini} = H_{fin} = W_{ini} = W_{fin} = N\)</span>.</li>
+<li><strong>verbose</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -261,6 +281,15 @@ If a single value <span class="math notranslate nohighlight">\(N\)</span> is pro
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>padding</strong> – Tuple
+<span class="math notranslate nohighlight">\((D_{ini}, D_{fin}, H_{ini}, H_{fin}, W_{ini}, W_{fin})\)</span>
+defining the number of values padded to the edges of each axis.
+If only three values <span class="math notranslate nohighlight">\((D, H, W)\)</span> are provided, then
+<span class="math notranslate nohighlight">\(D_{ini} = D_{fin} = D\)</span>,
+<span class="math notranslate nohighlight">\(H_{ini} = H_{fin} = H\)</span> and
+<span class="math notranslate nohighlight">\(W_{ini} = W_{fin} = W\)</span>.
+If only one value <span class="math notranslate nohighlight">\(N\)</span> is provided, then
+<span class="math notranslate nohighlight">\(D_{ini} = D_{fin} = H_{ini} = H_{fin} = W_{ini} = W_{fin} = N\)</span>.</li>
 <li><strong>padding_mode</strong> – <p>Type of padding. Default is <code class="docutils literal notranslate"><span class="pre">constant</span></code>. Should be one of:</p>
 <ul>
 <li><code class="docutils literal notranslate"><span class="pre">constant</span></code> Pads with a constant value (specified in <code class="xref py py-attr docutils literal notranslate"><span class="pre">padding_fill</span></code>).</li>
@@ -272,7 +301,8 @@ If a single value <span class="math notranslate nohighlight">\(N\)</span> is pro
 </ul>
 </li>
 <li><strong>fill</strong> – Value for constant fill. Default is <code class="docutils literal notranslate"><span class="pre">0</span></code>. This value is only
-used when <code class="xref py py-attr docutils literal notranslate"><span class="pre">padding_mode</span></code> is <code class="docutils literal notranslate"><span class="pre">constant</span></code></li>
+used when <code class="xref py py-attr docutils literal notranslate"><span class="pre">padding_mode</span></code> is <code class="docutils literal notranslate"><span class="pre">constant</span></code>.</li>
+<li><strong>verbose</strong> – </li>
 </ul>
 </td>
 </tr>
