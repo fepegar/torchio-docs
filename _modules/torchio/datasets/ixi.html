@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.datasets.ixi &mdash; TorchIO 0.13.12 documentation</title>
+  <title>torchio.datasets.ixi &mdash; TorchIO 0.13.13 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.12
+                0.13.13
               </div>
             
           
@@ -364,6 +364,7 @@
     <span class="k">def</span> <span class="nf">_get_subjects_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
         <span class="n">image_paths</span> <span class="o">=</span> <span class="n">sglob</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="s1">&#39;*.nii.gz&#39;</span><span class="p">)</span>
         <span class="n">label_paths</span> <span class="o">=</span> <span class="n">sglob</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;*.nii.gz&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">image_paths</span> <span class="ow">and</span> <span class="n">label_paths</span>
 
         <span class="n">subjects</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">image_path</span><span class="p">,</span> <span class="n">label_path</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">image_paths</span><span class="p">,</span> <span class="n">label_paths</span><span class="p">):</span>
@@ -376,9 +377,12 @@
 
     <span class="k">def</span> <span class="nf">_download</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Download the tiny IXI data if it doesn&#39;t exist already.&quot;&quot;&quot;</span>
-        <span class="n">ixi_tiny_dir</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s1">&#39;ixi_tiny&#39;</span>
-        <span class="k">if</span> <span class="n">ixi_tiny_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>  <span class="c1"># assume it&#39;s been downloaded</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_exists</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>  <span class="c1"># assume it&#39;s been downloaded</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Root directory for IXITiny found:&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
             <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Root directory for IXITiny not found:&#39;</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Downloading...&#39;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;.zip&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">download_and_extract_archive</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>

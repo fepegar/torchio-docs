@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Preprocessing &mdash; TorchIO 0.13.12 documentation</title>
+  <title>Preprocessing &mdash; TorchIO 0.13.13 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.13.12
+                0.13.13
               </div>
             
           
@@ -216,8 +216,26 @@
 <h3><a class="reference internal" href="#torchio.transforms.CenterCropOrPad" title="torchio.transforms.CenterCropOrPad"><code class="xref py py-class docutils literal notranslate"><span class="pre">CenterCropOrPad</span></code></a><a class="headerlink" href="#centercroporpad" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.CenterCropOrPad">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">CenterCropOrPad</code><span class="sig-paren">(</span><em>size: Union[int, Tuple[int, int, int]], padding_mode: Optional[str] = None, padding_fill: Optional[float] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/center_crop_pad.html#CenterCropOrPad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.CenterCropOrPad" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">CenterCropOrPad</code><span class="sig-paren">(</span><em>size: Union[int, Tuple[int, int, int]], padding_mode: str = 'constant', padding_fill: Optional[float] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/center_crop_pad.html#CenterCropOrPad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.CenterCropOrPad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.spatial.bounds_transform.BoundsTransform</span></code></p>
+<p>Crop and/or pad an image to a target shape.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>size</strong> – Tuple of integers representing target shape <span class="math notranslate nohighlight">\((D, H, W)\)</span>.
+If a single value <span class="math notranslate nohighlight">\(N\)</span> is provided, the target shape is
+<span class="math notranslate nohighlight">\((N, N, N)\)</span>.</li>
+<li><strong>padding_mode</strong> – See <a class="reference internal" href="#torchio.transforms.Pad" title="torchio.transforms.Pad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pad</span></code></a>.</li>
+<li><strong>padding_fill</strong> – Same as <code class="xref py py-attr docutils literal notranslate"><span class="pre">fill</span></code> in
+<a class="reference internal" href="#torchio.transforms.Pad" title="torchio.transforms.Pad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pad</span></code></a>.</li>
+<li><strong>verbose</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -227,6 +245,7 @@
 <dt id="torchio.transforms.Crop">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Crop</code><span class="sig-paren">(</span><em>cropping: Union[int, Tuple[int, int, int]], verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/crop.html#Crop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Crop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.spatial.bounds_transform.BoundsTransform</span></code></p>
+<p>Crop an image.</p>
 </dd></dl>
 
 </div>
@@ -236,6 +255,29 @@
 <dt id="torchio.transforms.Pad">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Pad</code><span class="sig-paren">(</span><em>padding: Union[int, Tuple[int, int, int]], padding_mode: str = 'constant', fill: float = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/pad.html#Pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Pad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.spatial.bounds_transform.BoundsTransform</span></code></p>
+<p>Pad an image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>padding_mode</strong> – <p>Type of padding. Default is <code class="docutils literal notranslate"><span class="pre">constant</span></code>. Should be one of:</p>
+<ul>
+<li><code class="docutils literal notranslate"><span class="pre">constant</span></code> Pads with a constant value (specified in <code class="xref py py-attr docutils literal notranslate"><span class="pre">padding_fill</span></code>).</li>
+<li><code class="docutils literal notranslate"><span class="pre">reflect</span></code> Pads with reflection of image without repeating the last value on the edge.</li>
+<li><code class="docutils literal notranslate"><span class="pre">edge</span></code> Pads with the last value at the edge of the image.</li>
+<li><code class="docutils literal notranslate"><span class="pre">replicate</span></code> Same as <code class="docutils literal notranslate"><span class="pre">edge</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">circular</span></code> Pads with the wrap of the vector along the axis. The first values are used to pad the end and the end values are used to pad the beginning.</li>
+<li><code class="docutils literal notranslate"><span class="pre">wrap</span></code> Same as <code class="docutils literal notranslate"><span class="pre">circular</span></code>.</li>
+</ul>
+</li>
+<li><strong>fill</strong> – Value for constant fill. Default is <code class="docutils literal notranslate"><span class="pre">0</span></code>. This value is only
+used when <code class="xref py py-attr docutils literal notranslate"><span class="pre">padding_mode</span></code> is <code class="docutils literal notranslate"><span class="pre">constant</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
