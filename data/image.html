@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Images dataset &mdash; TorchIO 0.13.9 documentation</title>
+  <title>Images dataset &mdash; TorchIO 0.13.12 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.13.9
+                0.13.12
               </div>
             
           
@@ -168,7 +168,7 @@
   <div class="section" id="images-dataset">
 <h1>Images dataset<a class="headerlink" href="#images-dataset" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code> class is one of the most important in TorchIO.
-It inherits directly from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+65bad41 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
+It inherits directly from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+fbbeee0 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
 Here is a usage example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio</span> <span class="k">import</span> <span class="n">ImagesDataset</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">Subject</span>
@@ -202,8 +202,8 @@ Here is a usage example:</p>
 <p>Base TorchIO dataset.</p>
 <p><a class="reference internal" href="#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a>
 is a reader of 3D medical images that directly
-inherits from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+65bad41 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
-It can be used with a <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.5.0a0+65bad41 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.DataLoader</span></code></a>
+inherits from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+fbbeee0 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
+It can be used with a <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.5.0a0+fbbeee0 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.DataLoader</span></code></a>
 for efficient loading and augmentation.
 It receives a list of subjects, where each subject is an instance of
 <a class="reference internal" href="#torchio.data.images.Subject" title="torchio.data.images.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> containing instances of
