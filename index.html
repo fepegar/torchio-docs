@@ -84,7 +84,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">API</span></p>
+              <p class="caption"><span class="caption-text">Features</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
@@ -155,12 +155,7 @@
             
   <div class="section" id="torchio">
 <h1>TorchIO<a class="headerlink" href="#torchio" title="Permalink to this headline">¶</a></h1>
-<a class="reference external image-reference" href="https://pypi.org/project/torchio/"><img alt="Number of PyPI downloads" src="https://img.shields.io/pypi/dm/torchio.svg" /></a>
-<a class="reference external image-reference" href="https://badge.fury.io/py/torchio"><img alt="PyPI Version" src="https://badge.fury.io/py/torchio.svg" /></a>
-<a class="reference external image-reference" href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i"><img alt="Google Colab Notebook" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
-<a class="reference external image-reference" href="https://travis-ci.org/fepegar/torchio"><img alt="Build status" src="https://travis-ci.org/fepegar/torchio.svg?branch=master" /></a>
-<a class="reference external image-reference" href="https://codecov.io/github/fepegar/torchio"><img alt="Coverage status" src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" /></a>
-<a class="reference external image-reference" href="https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master"><img alt="Code quality" src="https://img.shields.io/scrutinizer/g/fepegar/torchio.svg" /></a>
+<p><a class="reference external" href="https://pypi.org/project/torchio/"><img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/torchio.svg?label=pypi%20downloads&amp;logo=python&amp;logoColor=white" /></a> <a class="reference external" href="https://badge.fury.io/py/torchio"><img alt="PyPI version" src="https://badge.fury.io/py/torchio.svg" /></a> <a class="reference external" href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i"><img alt="Google Colab notebook" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://travis-ci.org/fepegar/torchio"><img alt="Build status" src="https://img.shields.io/travis/fepegar/torchio/master.svg?logo=travis" /></a> <a class="reference external" href="https://codecov.io/github/fepegar/torchio"><img alt="Coverage status" src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" /></a> <a class="reference external" href="https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master"><img alt="Code quality" src="https://img.shields.io/scrutinizer/g/fepegar/torchio.svg" /></a></p>
 <p>TorchIO is a Python package containing a set of tools to efficiently
 read, sample and write 3D medical images in deep learning applications
 written in <a class="reference external" href="https://pytorch.org/">PyTorch</a>,
@@ -171,23 +166,41 @@ simulation of intensity artifacts due to
 <a class="reference external" href="http://mriquestions.com/why-homogeneity.html">MRI magnetic field inhomogeneity</a>
 or <a class="reference external" href="http://proceedings.mlr.press/v102/shaw19a.html">k-space motion artifacts</a>.</p>
 <p>This package has been greatly inspired by <a class="reference external" href="https://niftynet.io/">NiftyNet</a>.</p>
+<div class="contents local topic" id="table-of-contents">
+<p class="topic-title first">Table of contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#installation" id="id1">Installation</a></li>
+<li><a class="reference internal" href="#google-colab-jupyter-notebok" id="id2">Google Colab Jupyter Notebok</a></li>
+<li><a class="reference internal" href="#credits" id="id3">Credits</a></li>
+</ul>
+</div>
 <div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install torchio
+<h2><a class="toc-backref" href="#table-of-contents">Installation</a><a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install torchio
 </pre></div>
 </div>
 </div>
 <div class="section" id="google-colab-jupyter-notebok">
-<h2>Google Colab Jupyter Notebok<a class="headerlink" href="#google-colab-jupyter-notebok" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#table-of-contents">Google Colab Jupyter Notebok</a><a class="headerlink" href="#google-colab-jupyter-notebok" title="Permalink to this headline">¶</a></h2>
 <p>You can preview and run most features in TorchIO in this
 <a class="reference external" href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i">Google Colab Notebook</a>.</p>
 </div>
 <div class="section" id="credits">
-<h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
-<p>If you use this package for your research, please cite the paper:</p>
-<p><a class="reference external" href="https://arxiv.org/abs/2003.04696">TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning</a>.</p>
+<h2><a class="toc-backref" href="#table-of-contents">Credits</a><a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
+<p>If you use this package for your research, please cite the paper: <a class="reference external" href="https://arxiv.org/abs/2003.04696">Pérez-García et al., 2020, <em>TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning</em></a>.</p>
+<p>BibTeX:</p>
+<div class="highlight-latex notranslate"><div class="highlight"><pre><span></span>@misc<span class="nb">{</span>fern2020torchio,
+   title=<span class="nb">{</span>TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning<span class="nb">}</span>,
+   author=<span class="nb">{</span>Fernando Pérez-García and Rachel Sparks and Sebastien Ourselin<span class="nb">}</span>,
+   year=<span class="nb">{</span>2020<span class="nb">}</span>,
+   eprint=<span class="nb">{</span>2003.04696<span class="nb">}</span>,
+   archivePrefix=<span class="nb">{</span>arXiv<span class="nb">}</span>,
+   primaryClass=<span class="nb">{</span>eess.IV<span class="nb">}</span>
+<span class="nb">}</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">API</span></p>
+<p class="caption"><span class="caption-text">Features</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="data/data.html">Handling data</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data/image.html">Images dataset</a></li>
