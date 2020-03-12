@@ -230,6 +230,7 @@
 <dt id="torchio.transforms.Rescale">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Rescale</code><span class="sig-paren">(</span><em>out_min_max: Tuple[float, float], percentiles: Tuple[int, int] = (0, 100), masking_method: Union[str, Callable[torch.Tensor, torch.Tensor], None] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/rescale.html#Rescale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Rescale" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.intensity.normalization_transform.NormalizationTransform</span></code></p>
+<p>Rescale intensity values in an image to a certain range.</p>
 </dd></dl>
 
 </div>
@@ -239,7 +240,7 @@
 <dt id="torchio.transforms.ZNormalization">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">ZNormalization</code><span class="sig-paren">(</span><em>masking_method: Union[str, Callable[torch.Tensor, torch.Tensor], None] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/z_normalization.html#ZNormalization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.ZNormalization" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.intensity.normalization_transform.NormalizationTransform</span></code></p>
-<p>Subtract mean and divide by standard deviation</p>
+<p>Subtract mean and divide by standard deviation.</p>
 </dd></dl>
 
 </div>

@@ -151,19 +151,18 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.transforms.preprocessing.intensity.z_normalization</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypeCallable</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">NormalizationTransform</span>
 
 
 <div class="viewcode-block" id="ZNormalization"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.ZNormalization">[docs]</a><span class="k">class</span> <span class="nc">ZNormalization</span><span class="p">(</span><span class="n">NormalizationTransform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Subtract mean and divide by standard deviation</span>
+    <span class="sd">&quot;&quot;&quot;Subtract mean and divide by standard deviation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">masking_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeCallable</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">masking_method</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeCallable</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">masking_method</span><span class="o">=</span><span class="n">masking_method</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>

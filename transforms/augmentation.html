@@ -350,17 +350,20 @@ This behavior might become customizable in the future.</p>
 </div>
 <div class="section" id="randombiasfield">
 <h3><a class="reference internal" href="#torchio.transforms.RandomBiasField" title="torchio.transforms.RandomBiasField"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBiasField</span></code></a><a class="headerlink" href="#randombiasfield" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
-<dt id="torchio.transforms.RandomBiasField">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBiasField</code><span class="sig-paren">(</span><em>coefficients: Union[float</em>, <em>Tuple[float</em>, <em>float]] = 0.5</em>, <em>order: int = 3</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_bias_field.html#RandomBiasField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBiasField" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
-<p>Random MRI bias field artifact.</p>
+<p>MRI magnetic field inhomogeneity creates intensity
+variations of very low frequency across the whole image.</p>
 <p>The bias field is modelled as a linear combination of
 polynomial basis functions, as in K. Van Leemput et al., 1999,
 <em>Automated model-based tissue classification of MR images of the brain</em>.</p>
 <p>It was added to NiftyNet by Carole Sudre and used in
 C. Sudre et al., 2017, <em>Longitudinal segmentation of age-related
 white matter hyperintensities</em>.</p>
+<img alt="MRI bias field artifact" src="../_images/random_bias_field.gif" />
+<dl class="class">
+<dt id="torchio.transforms.RandomBiasField">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBiasField</code><span class="sig-paren">(</span><em>coefficients: Union[float</em>, <em>Tuple[float</em>, <em>float]] = 0.5</em>, <em>order: int = 3</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_bias_field.html#RandomBiasField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBiasField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>Random MRI bias field artifact.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
