@@ -187,6 +187,40 @@
 <dt id="torchio.transforms.preprocessing.intensity.NormalizationTransform">
 <em class="property">class </em><code class="descclassname">torchio.transforms.preprocessing.intensity.</code><code class="descname">NormalizationTransform</code><span class="sig-paren">(</span><em>masking_method: Union[str, Callable[torch.Tensor, torch.Tensor], None] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/normalization_transform.html#NormalizationTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.preprocessing.intensity.NormalizationTransform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.transform.Transform</span></code></p>
+<p>Base class for intensity preprocessing transforms.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>masking_method</strong> – <p>Defines the mask used to compute the normalization statistics. It can be one of:</p>
+<ul>
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code>: the mask image is all ones, i.e. all values in the image are used</li>
+<li>A string: the mask image is retrieved from the sample, which is expected the string as a key</li>
+<li>A function: the mask image is computed as a function of the intensity image. The function must receive and return a <a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (1.5.0a0+c235be4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a></li>
+</ul>
+</li>
+<li><strong>verbose</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.datasets</span> <span class="k">import</span> <span class="n">IXITiny</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="k">import</span> <span class="n">ZNormalization</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">IXITiny</span><span class="p">(</span><span class="s1">&#39;ixi_root&#39;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>  <span class="c1"># image is the MRI, label is a brain segmentation</span>
+<span class="go">dict_keys([&#39;image&#39;, &#39;label&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">ZNormalization</span><span class="p">()</span>  <span class="c1"># ZNormalization is a subclass of NormalizationTransform</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>  <span class="c1"># use all values to compute mean and std</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">ZNormalization</span><span class="p">(</span><span class="n">masking_method</span><span class="o">=</span><span class="s1">&#39;label&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>  <span class="c1"># use only values within the brain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">ZNormalization</span><span class="p">(</span><span class="n">masking_method</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>  <span class="c1"># use values above the image mean</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
