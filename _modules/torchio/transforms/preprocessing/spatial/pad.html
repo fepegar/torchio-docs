@@ -179,6 +179,8 @@
 
 <span class="sd">            - ``reflect`` Pads with reflection of image without repeating the last value on the edge.</span>
 
+<span class="sd">            - ``mirror`` Same as ``reflect``.</span>
+
 <span class="sd">            - ``edge`` Pads with the last value at the edge of the image.</span>
 
 <span class="sd">            - ``replicate`` Same as ``edge``.</span>
@@ -198,13 +200,12 @@
     <span class="n">PADDING_FUNCTIONS</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;constant&#39;</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ConstantPad</span><span class="p">,</span>
         <span class="s1">&#39;reflect&#39;</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">MirrorPad</span><span class="p">,</span>
-        <span class="s1">&#39;replicate&#39;</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ZeroFluxNeumannPad</span><span class="p">,</span>
+        <span class="s1">&#39;mirror&#39;</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">MirrorPad</span><span class="p">,</span>
         <span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ZeroFluxNeumannPad</span><span class="p">,</span>
+        <span class="s1">&#39;replicate&#39;</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ZeroFluxNeumannPad</span><span class="p">,</span>
         <span class="s1">&#39;circular&#39;</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">WrapPad</span><span class="p">,</span>
+        <span class="s1">&#39;wrap&#39;</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">WrapPad</span><span class="p">,</span>
     <span class="p">}</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Docs for PADDING_FUNCTIONS</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>

@@ -160,11 +160,27 @@
 
 
 <div class="viewcode-block" id="ToCanonical"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.ToCanonical">[docs]</a><span class="k">class</span> <span class="nc">ToCanonical</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reorder the data to be closest to canonical (RAS+) orientation.</span>
+
+<span class="sd">    This transform reorders the voxels and modifies the affine matrix so that</span>
+<span class="sd">    the voxel orientations are nearest to:</span>
+
+<span class="sd">        1. First voxel axis goes from left to Right</span>
+<span class="sd">        2. Second voxel axis goes from posterior to Anterior</span>
+<span class="sd">        3. Third voxel axis goes from inferior to Superior</span>
+
+<span class="sd">    See `NiBabel docs about image orientation`_ for more information.</span>
+
+<span class="sd">    .. note:: The reorientation is performed using</span>
+<span class="sd">        :py:meth:`nibabel.as_closest_canonical`.</span>
+
+<span class="sd">    .. _NiBabel docs about image orientation: https://nipy.org/nibabel/image_orientation.html</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Reorder the data to be closest to canonical (RAS+) orientation&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>

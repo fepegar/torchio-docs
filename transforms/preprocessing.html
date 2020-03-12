@@ -225,7 +225,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>target_shape</strong> – Tuple <span class="math notranslate nohighlight">\((D, H, W)\)</span>. If a single value <span class="math notranslate nohighlight">\(N\)</span> is
-provided, the target shape is <span class="math notranslate nohighlight">\(D = H = W = N\)</span>.</li>
+provided, then <span class="math notranslate nohighlight">\(D = H = W = N\)</span>.</li>
 <li><strong>padding_mode</strong> – See <a class="reference internal" href="#torchio.transforms.Pad" title="torchio.transforms.Pad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pad</span></code></a>.</li>
 <li><strong>padding_fill</strong> – Same as <code class="xref py py-attr docutils literal notranslate"><span class="pre">fill</span></code> in
 <a class="reference internal" href="#torchio.transforms.Pad" title="torchio.transforms.Pad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pad</span></code></a>.</li>
@@ -324,6 +324,7 @@ If only one value <span class="math notranslate nohighlight">\(n\)</span> is pro
 <ul>
 <li><code class="docutils literal notranslate"><span class="pre">constant</span></code> Pads with a constant value (specified in <code class="xref py py-attr docutils literal notranslate"><span class="pre">padding_fill</span></code>).</li>
 <li><code class="docutils literal notranslate"><span class="pre">reflect</span></code> Pads with reflection of image without repeating the last value on the edge.</li>
+<li><code class="docutils literal notranslate"><span class="pre">mirror</span></code> Same as <code class="docutils literal notranslate"><span class="pre">reflect</span></code>.</li>
 <li><code class="docutils literal notranslate"><span class="pre">edge</span></code> Pads with the last value at the edge of the image.</li>
 <li><code class="docutils literal notranslate"><span class="pre">replicate</span></code> Same as <code class="docutils literal notranslate"><span class="pre">edge</span></code>.</li>
 <li><code class="docutils literal notranslate"><span class="pre">circular</span></code> Pads with the wrap of the vector along the axis. The first values are used to pad the end and the end values are used to pad the beginning.</li>
@@ -345,8 +346,32 @@ used when <code class="xref py py-attr docutils literal notranslate"><span class
 <h3><a class="reference internal" href="#torchio.transforms.Resample" title="torchio.transforms.Resample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Resample</span></code></a><a class="headerlink" href="#resample" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.Resample">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Resample</code><span class="sig-paren">(</span><em>voxel_sizes: Tuple[float, float, float], antialiasing: bool = True, image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/resample.html#Resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Resample" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Resample</code><span class="sig-paren">(</span><em>target_spacing: Union[float, Tuple[float, float, float]], antialiasing: bool = True, image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/resample.html#Resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Resample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.transform.Transform</span></code></p>
+<p>Change voxel spacing keeping the field of view.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>target_spacing</strong> – Tuple <span class="math notranslate nohighlight">\((s_d, s_h, s_w)\)</span>. If only one value
+<span class="math notranslate nohighlight">\(n\)</span> is specified, then <span class="math notranslate nohighlight">\(s_d = s_h = s_w = n\)</span>.</li>
+<li><strong>antialiasing</strong> – (Not implemented yet).</li>
+<li><strong>image_interpolation</strong> – Member of <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.Interpolation</span></code>.
+It must be <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.Interpolation.NEAREST</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.Interpolation.LINEAR</span></code> or
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.Interpolation.BSPLINE</span></code>.</li>
+<li><strong>verbose</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The resampling is performed using
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">nibabel.processing.resample_to_output()</span></code>.</p>
+</div>
 </dd></dl>
 
 </div>
@@ -356,6 +381,22 @@ used when <code class="xref py py-attr docutils literal notranslate"><span class
 <dt id="torchio.transforms.ToCanonical">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">ToCanonical</code><span class="sig-paren">(</span><em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/to_canonical.html#ToCanonical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.ToCanonical" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.transform.Transform</span></code></p>
+<p>Reorder the data to be closest to canonical (RAS+) orientation.</p>
+<p>This transform reorders the voxels and modifies the affine matrix so that
+the voxel orientations are nearest to:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>First voxel axis goes from left to Right</li>
+<li>Second voxel axis goes from posterior to Anterior</li>
+<li>Third voxel axis goes from inferior to Superior</li>
+</ol>
+</div></blockquote>
+<p>See <a class="reference external" href="https://nipy.org/nibabel/image_orientation.html">NiBabel docs about image orientation</a> for more information.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The reorientation is performed using
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">nibabel.as_closest_canonical()</span></code>.</p>
+</div>
 </dd></dl>
 
 </div>
