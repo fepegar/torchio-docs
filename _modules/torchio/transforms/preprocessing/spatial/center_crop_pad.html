@@ -165,7 +165,7 @@
     <span class="sd">&quot;&quot;&quot;Crop and/or pad an image to a target shape.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        size: Tuple of integers representing target shape :math:`(D, H, W)`.</span>
+<span class="sd">        target_shape: Tuple :math:`(D, H, W)`.</span>
 <span class="sd">            If a single value :math:`N` is provided, the target shape is</span>
 <span class="sd">            :math:`(N, N, N)`.</span>
 <span class="sd">        padding_mode: See :py:class:`~torchio.transforms.Pad`.</span>
@@ -176,23 +176,25 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
+            <span class="n">target_shape</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
             <span class="n">padding_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;constant&#39;</span><span class="p">,</span>
             <span class="n">padding_fill</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">target_shape</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">padding_mode</span> <span class="o">=</span> <span class="n">Pad</span><span class="o">.</span><span class="n">parse_padding_mode</span><span class="p">(</span><span class="n">padding_mode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">padding_fill</span> <span class="o">=</span> <span class="n">padding_fill</span>
 
     <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="n">source_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_shape</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
-        <span class="n">target_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds_parameters</span><span class="p">[::</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># hack</span>
+        <span class="n">source_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sample_shape</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="c1"># The parent class turns the 3-element shape tuple (d, h, w)</span>
+        <span class="c1"># into a 6-element bounds tuple (d, d, h, h, w, w)</span>
+        <span class="n">target_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds_parameters</span><span class="p">[::</span><span class="mi">2</span><span class="p">])</span>
         <span class="n">diff_shape</span> <span class="o">=</span> <span class="n">target_shape</span> <span class="o">-</span> <span class="n">source_shape</span>
 
         <span class="n">cropping</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">diff_shape</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cropping</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="n">cropping_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_six_bounds_parameters</span><span class="p">(</span><span class="n">cropping</span><span class="p">)</span>
+            <span class="n">cropping_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_six_bounds_parameters</span><span class="p">(</span><span class="n">cropping</span><span class="p">)</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">Crop</span><span class="p">(</span><span class="n">cropping_params</span><span class="p">)(</span><span class="n">sample</span><span class="p">)</span>
 
         <span class="n">padding</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">diff_shape</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -201,13 +203,13 @@
             <span class="n">padding_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;fill&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_fill</span><span class="p">}</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">padding_kwargs</span><span class="p">[</span><span class="s1">&#39;padding_mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_mode</span>
-            <span class="n">padding_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_six_bounds_parameters</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span>
+            <span class="n">padding_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_six_bounds_parameters</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">Pad</span><span class="p">(</span><span class="n">padding_params</span><span class="p">,</span> <span class="o">**</span><span class="n">padding_kwargs</span><span class="p">)(</span><span class="n">sample</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sample</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_sample_shape</span><span class="p">(</span><span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the shape of the first image in the sample&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_get_sample_shape</span><span class="p">(</span><span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return the shape of the first image in the sample.&quot;&quot;&quot;</span>
         <span class="n">check_consistent_shape</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">is_image_dict</span><span class="p">(</span><span class="n">image_dict</span><span class="p">):</span>
@@ -216,14 +218,31 @@
             <span class="k">break</span>
         <span class="k">return</span> <span class="n">data</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_six_bounds_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">):</span>
+<div class="viewcode-block" id="CenterCropOrPad._get_six_bounds_parameters"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.CenterCropOrPad._get_six_bounds_parameters">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_six_bounds_parameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compute bounds parameters for ITK filters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parameters: Tuple :math:`(d, h, w)` with the number of voxels to be</span>
+<span class="sd">                cropped or padded.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple :math:`(d_{ini}, d_{fin}, h_{ini}, h_{fin}, w_{ini}, w_{fin})`,</span>
+<span class="sd">            where :math:`n_{ini} = \left \lceil \frac{n}{2} \right \rceil` and</span>
+<span class="sd">            :math:`n_{fin} = \left \lfloor \frac{n}{2} \right \rfloor`.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; p = np.array((4, 0, 7))</span>
+<span class="sd">            &gt;&gt;&gt; _get_six_bounds_parameters(p)</span>
+<span class="sd">            (2, 2, 0, 0, 4, 3)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span> <span class="o">/</span> <span class="mi">2</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
             <span class="n">ini</span><span class="p">,</span> <span class="n">fin</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
             <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">ini</span><span class="p">,</span> <span class="n">fin</span><span class="p">])</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

@@ -216,7 +216,7 @@
 <h3><a class="reference internal" href="#torchio.transforms.CenterCropOrPad" title="torchio.transforms.CenterCropOrPad"><code class="xref py py-class docutils literal notranslate"><span class="pre">CenterCropOrPad</span></code></a><a class="headerlink" href="#centercroporpad" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.CenterCropOrPad">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">CenterCropOrPad</code><span class="sig-paren">(</span><em>size: Union[int, Tuple[int, int, int]], padding_mode: str = 'constant', padding_fill: Optional[float] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/center_crop_pad.html#CenterCropOrPad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.CenterCropOrPad" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">CenterCropOrPad</code><span class="sig-paren">(</span><em>target_shape: Union[int, Tuple[int, int, int]], padding_mode: str = 'constant', padding_fill: Optional[float] = None, verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/center_crop_pad.html#CenterCropOrPad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.CenterCropOrPad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.spatial.bounds_transform.BoundsTransform</span></code></p>
 <p>Crop and/or pad an image to a target shape.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -224,7 +224,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>size</strong> – Tuple of integers representing target shape <span class="math notranslate nohighlight">\((D, H, W)\)</span>.
+<li><strong>target_shape</strong> – Tuple <span class="math notranslate nohighlight">\((D, H, W)\)</span>.
 If a single value <span class="math notranslate nohighlight">\(N\)</span> is provided, the target shape is
 <span class="math notranslate nohighlight">\((N, N, N)\)</span>.</li>
 <li><strong>padding_mode</strong> – See <a class="reference internal" href="#torchio.transforms.Pad" title="torchio.transforms.Pad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pad</span></code></a>.</li>
@@ -236,6 +236,31 @@ If a single value <span class="math notranslate nohighlight">\(N\)</span> is pro
 </tr>
 </tbody>
 </table>
+<dl class="staticmethod">
+<dt id="torchio.transforms.CenterCropOrPad._get_six_bounds_parameters">
+<em class="property">static </em><code class="descname">_get_six_bounds_parameters</code><span class="sig-paren">(</span><em>parameters: numpy.ndarray</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/center_crop_pad.html#CenterCropOrPad._get_six_bounds_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.CenterCropOrPad._get_six_bounds_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute bounds parameters for ITK filters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parameters</strong> – Tuple <span class="math notranslate nohighlight">\((d, h, w)\)</span> with the number of voxels to be
+cropped or padded.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Tuple <span class="math notranslate nohighlight">\((d_{ini}, d_{fin}, h_{ini}, h_{fin}, w_{ini}, w_{fin})\)</span>,
+where <span class="math notranslate nohighlight">\(n_{ini} = \left \lceil \frac{n}{2} \right \rceil\)</span> and
+<span class="math notranslate nohighlight">\(n_{fin} = \left \lfloor \frac{n}{2} \right \rfloor\)</span>.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_get_six_bounds_parameters</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="go">(2, 2, 0, 0, 4, 3)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -252,14 +277,17 @@ If a single value <span class="math notranslate nohighlight">\(N\)</span> is pro
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>cropping</strong> – Tuple
-<span class="math notranslate nohighlight">\((D_{ini}, D_{fin}, H_{ini}, H_{fin}, W_{ini}, W_{fin})\)</span>
+<span class="math notranslate nohighlight">\((d_{ini}, d_{fin}, h_{ini}, h_{fin}, w_{ini}, w_{fin})\)</span>
 defining the number of values cropped from the edges of each axis.
-If only three values <span class="math notranslate nohighlight">\((D, H, W)\)</span> are provided, then
-<span class="math notranslate nohighlight">\(D_{ini} = D_{fin} = D\)</span>,
-<span class="math notranslate nohighlight">\(H_{ini} = H_{fin} = H\)</span> and
-<span class="math notranslate nohighlight">\(W_{ini} = W_{fin} = W\)</span>.
-If only one value <span class="math notranslate nohighlight">\(N\)</span> is provided, then
-<span class="math notranslate nohighlight">\(D_{ini} = D_{fin} = H_{ini} = H_{fin} = W_{ini} = W_{fin} = N\)</span>.</li>
+If the initial shape of the image is
+<span class="math notranslate nohighlight">\(D \times H \times W\)</span>, the final shape will be
+<span class="math notranslate nohighlight">\((- d_{ini} + D - d_{fin}) \times (- h_{ini} + H - h_{fin}) \times (- w_{ini} + W - w_{fin})\)</span>.
+If only three values <span class="math notranslate nohighlight">\((d, h, w)\)</span> are provided, then
+<span class="math notranslate nohighlight">\(d_{ini} = d_{fin} = d\)</span>,
+<span class="math notranslate nohighlight">\(h_{ini} = h_{fin} = h\)</span> and
+<span class="math notranslate nohighlight">\(w_{ini} = w_{fin} = w\)</span>.
+If only one value <span class="math notranslate nohighlight">\(n\)</span> is provided, then
+<span class="math notranslate nohighlight">\(d_{ini} = d_{fin} = h_{ini} = h_{fin} = w_{ini} = w_{fin} = n\)</span>.</li>
 <li><strong>verbose</strong> – </li>
 </ul>
 </td>
@@ -282,14 +310,17 @@ If only one value <span class="math notranslate nohighlight">\(N\)</span> is pro
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>padding</strong> – Tuple
-<span class="math notranslate nohighlight">\((D_{ini}, D_{fin}, H_{ini}, H_{fin}, W_{ini}, W_{fin})\)</span>
+<span class="math notranslate nohighlight">\((d_{ini}, d_{fin}, h_{ini}, h_{fin}, w_{ini}, w_{fin})\)</span>
 defining the number of values padded to the edges of each axis.
-If only three values <span class="math notranslate nohighlight">\((D, H, W)\)</span> are provided, then
-<span class="math notranslate nohighlight">\(D_{ini} = D_{fin} = D\)</span>,
-<span class="math notranslate nohighlight">\(H_{ini} = H_{fin} = H\)</span> and
-<span class="math notranslate nohighlight">\(W_{ini} = W_{fin} = W\)</span>.
-If only one value <span class="math notranslate nohighlight">\(N\)</span> is provided, then
-<span class="math notranslate nohighlight">\(D_{ini} = D_{fin} = H_{ini} = H_{fin} = W_{ini} = W_{fin} = N\)</span>.</li>
+If the initial shape of the image is
+<span class="math notranslate nohighlight">\(D \times H \times W\)</span>, the final shape will be
+<span class="math notranslate nohighlight">\((d_{ini} + D + d_{fin}) \times (h_{ini} + H + h_{fin}) \times (w_{ini} + W + w_{fin})\)</span>.
+If only three values <span class="math notranslate nohighlight">\((d, h, w)\)</span> are provided, then
+<span class="math notranslate nohighlight">\(d_{ini} = d_{fin} = d\)</span>,
+<span class="math notranslate nohighlight">\(h_{ini} = h_{fin} = h\)</span> and
+<span class="math notranslate nohighlight">\(w_{ini} = w_{fin} = w\)</span>.
+If only one value <span class="math notranslate nohighlight">\(n\)</span> is provided, then
+<span class="math notranslate nohighlight">\(d_{ini} = d_{fin} = h_{ini} = h_{fin} = w_{ini} = w_{fin} = n\)</span>.</li>
 <li><strong>padding_mode</strong> – <p>Type of padding. Default is <code class="docutils literal notranslate"><span class="pre">constant</span></code>. Should be one of:</p>
 <ul>
 <li><code class="docutils literal notranslate"><span class="pre">constant</span></code> Pads with a constant value (specified in <code class="xref py py-attr docutils literal notranslate"><span class="pre">padding_fill</span></code>).</li>

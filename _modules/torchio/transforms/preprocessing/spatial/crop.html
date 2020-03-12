@@ -157,18 +157,21 @@
 
 
 <div class="viewcode-block" id="Crop"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.Crop">[docs]</a><span class="k">class</span> <span class="nc">Crop</span><span class="p">(</span><span class="n">BoundsTransform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Crop an image.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Crop an image.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        cropping: Tuple</span>
-<span class="sd">            :math:`(D_{ini}, D_{fin}, H_{ini}, H_{fin}, W_{ini}, W_{fin})`</span>
+<span class="sd">            :math:`(d_{ini}, d_{fin}, h_{ini}, h_{fin}, w_{ini}, w_{fin})`</span>
 <span class="sd">            defining the number of values cropped from the edges of each axis.</span>
-<span class="sd">            If only three values :math:`(D, H, W)` are provided, then</span>
-<span class="sd">            :math:`D_{ini} = D_{fin} = D`,</span>
-<span class="sd">            :math:`H_{ini} = H_{fin} = H` and</span>
-<span class="sd">            :math:`W_{ini} = W_{fin} = W`.</span>
-<span class="sd">            If only one value :math:`N` is provided, then</span>
-<span class="sd">            :math:`D_{ini} = D_{fin} = H_{ini} = H_{fin} = W_{ini} = W_{fin} = N`.</span>
+<span class="sd">            If the initial shape of the image is</span>
+<span class="sd">            :math:`D \times H \times W`, the final shape will be</span>
+<span class="sd">            :math:`(- d_{ini} + D - d_{fin}) \times (- h_{ini} + H - h_{fin}) \times (- w_{ini} + W - w_{fin})`.</span>
+<span class="sd">            If only three values :math:`(d, h, w)` are provided, then</span>
+<span class="sd">            :math:`d_{ini} = d_{fin} = d`,</span>
+<span class="sd">            :math:`h_{ini} = h_{fin} = h` and</span>
+<span class="sd">            :math:`w_{ini} = w_{fin} = w`.</span>
+<span class="sd">            If only one value :math:`n` is provided, then</span>
+<span class="sd">            :math:`d_{ini} = d_{fin} = h_{ini} = h_{fin} = w_{ini} = w_{fin} = n`.</span>
 <span class="sd">        verbose:</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
