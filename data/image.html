@@ -168,7 +168,7 @@
   <div class="section" id="images-dataset">
 <h1>Images dataset<a class="headerlink" href="#images-dataset" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code> class is one of the most important in TorchIO.
-It inherits directly from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+25e4e9e ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
+It inherits directly from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+c235be4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
 Here is a usage example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio</span> <span class="k">import</span> <span class="n">ImagesDataset</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">Subject</span>
@@ -202,8 +202,8 @@ Here is a usage example:</p>
 <p>Base TorchIO dataset.</p>
 <p><a class="reference internal" href="#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a>
 is a reader of 3D medical images that directly
-inherits from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+25e4e9e ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
-It can be used with a <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.5.0a0+25e4e9e ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.DataLoader</span></code></a>
+inherits from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+c235be4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
+It can be used with a <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.5.0a0+c235be4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.DataLoader</span></code></a>
 for efficient loading and augmentation.
 It receives a list of subjects, where each subject is an instance of
 <a class="reference internal" href="#torchio.data.images.Subject" title="torchio.data.images.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> containing instances of
@@ -218,7 +218,21 @@ subject, for example <code class="docutils literal notranslate"><span class="pre
 <p>The value corresponding to each image name is another dictionary
 <code class="docutils literal notranslate"><span class="pre">image_dict</span></code> with information about the image.
 The data is stored in <code class="docutils literal notranslate"><span class="pre">image_dict[torchio.IMAGE]</span></code>,
-and the corresponding <a class="reference external" href="https://nipy.org/nibabel/coordinate_systems.html">affine matrix</a> is in <code class="docutils literal notranslate"><span class="pre">image_dict[torchio.AFFINE]</span></code>.</p>
+and the corresponding <a class="reference external" href="https://nipy.org/nibabel/coordinate_systems.html">affine matrix</a>
+is in <code class="docutils literal notranslate"><span class="pre">image_dict[torchio.AFFINE]</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">images_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">dict_keys([&#39;image&#39;, &#39;label&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_dict</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s1">&#39;image&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_dict</span><span class="p">[</span><span class="n">torchio</span><span class="o">.</span><span class="n">DATA</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">torch.Size([1, 176, 256, 256])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_dict</span><span class="p">[</span><span class="n">torchio</span><span class="o">.</span><span class="n">AFFINE</span><span class="p">]</span>
+<span class="go">array([[   0.03,    1.13,   -0.08,  -88.54],</span>
+<span class="go">       [   0.06,    0.08,    0.95, -129.66],</span>
+<span class="go">       [   1.18,   -0.06,   -0.11,  -67.15],</span>
+<span class="go">       [   0.  ,    0.  ,    0.  ,    1.  ]])</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
