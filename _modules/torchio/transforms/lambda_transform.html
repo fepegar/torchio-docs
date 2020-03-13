@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -158,6 +159,24 @@
 
 
 <div class="viewcode-block" id="Lambda"><a class="viewcode-back" href="../../../transforms/others.html#torchio.transforms.Lambda">[docs]</a><span class="k">class</span> <span class="nc">Lambda</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Applies a user-defined function as transform.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        function: Callable that receives and returns a</span>
+<span class="sd">            :py:class:`torch.Tensor`.</span>
+<span class="sd">        types_to_apply: List of strings corresponding to the image types to</span>
+<span class="sd">            which this transform should be applied. If ``None``, the transform</span>
+<span class="sd">            will be applied to all images in the sample.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; from torchio.transforms import Lambda</span>
+<span class="sd">        &gt;&gt;&gt; invert_intensity = Lambda(lambda x: -x, types_to_apply=[torchio.INTENSITY])</span>
+<span class="sd">        &gt;&gt;&gt; invert_mask = Lambda(lambda x: 1 - x, types_to_apply=[torchio.LABEL])</span>
+<span class="sd">        &gt;&gt;&gt; def double(x):</span>
+<span class="sd">        ...     return 2 * x</span>
+<span class="sd">        &gt;&gt;&gt; double_transform = Lambda(double)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">function</span><span class="p">:</span> <span class="n">TypeCallable</span><span class="p">,</span>
