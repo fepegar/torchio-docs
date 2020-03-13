@@ -215,7 +215,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seed</strong> – Seed for <a class="reference external" href="https://pytorch.org/docs/master/torch.html#module-torch" title="(in PyTorch vmaster (1.5.0a0+4425619 ))"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch</span></code></a> random number generator.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seed</strong> – Seed for <a class="reference external" href="https://pytorch.org/docs/master/torch.html#module-torch" title="(in PyTorch vmaster (1.5.0a0+fd35596 ))"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch</span></code></a> random number generator.</td>
 </tr>
 </tbody>
 </table>
@@ -231,7 +231,7 @@
 <li><strong>nums_range</strong> – Tuple of two numbers <span class="math notranslate nohighlight">\((n_{min}, n_{max})\)</span>,
 where <span class="math notranslate nohighlight">\(n_{min} \leq n_{max}\)</span>.
 If a single positive number <span class="math notranslate nohighlight">\(n\)</span> is provided,
-a tuple <span class="math notranslate nohighlight">\((-n, n)\)</span> will be returned.</li>
+<span class="math notranslate nohighlight">\(n_{min} = -n\)</span> and <span class="math notranslate nohighlight">\(n_{max} = n\)</span>.</li>
 <li><strong>name</strong> – Name of the parameter, so that an informative error message
 can be printed.</li>
 </ul>
@@ -242,7 +242,7 @@ can be printed.</li>
 </tr>
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
 <li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> – if <code class="xref py py-attr docutils literal notranslate"><span class="pre">nums_range</span></code> is negative</li>
-<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> – if <span class="math notranslate nohighlight">\(n_{min} \gt n_{max}\)</span>.</li>
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> – if <span class="math notranslate nohighlight">\(n_{max} \lt n_{min}\)</span>.</li>
 </ul>
 </td>
 </tr>
@@ -346,6 +346,7 @@ This behavior might become customizable in the future.</p>
 <dt id="torchio.transforms.RandomElasticDeformation">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomElasticDeformation</code><span class="sig-paren">(</span><em>num_control_points: int = 4</em>, <em>deformation_std: float = 15</em>, <em>proportion_to_augment: float = 1</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_elastic_deformation.html#RandomElasticDeformation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomElasticDeformation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>B-spline dense elastic deformation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -369,28 +370,92 @@ This behavior might become customizable in the future.</p>
 <h2><a class="toc-backref" href="#id6">Intensity</a><a class="headerlink" href="#intensity" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="randommotion">
 <h3><a class="toc-backref" href="#id7"><a class="reference internal" href="#torchio.transforms.RandomMotion" title="torchio.transforms.RandomMotion"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMotion</span></code></a></a><a class="headerlink" href="#randommotion" title="Permalink to this headline">¶</a></h3>
+<img alt="MRI k-space motion artifacts" src="../_images/random_motion.gif" />
+<p>Magnetic resonance images suffer from motion artifacts when the subject moves
+during image acquisition. This transform follows
+<a class="reference external" href="http://proceedings.mlr.press/v102/shaw19a.html">Shaw et al., 2019</a> to
+simulate motion artifacts for data augmentation.</p>
 <dl class="class">
 <dt id="torchio.transforms.RandomMotion">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomMotion</code><span class="sig-paren">(</span><em>degrees: float = 10</em>, <em>translation: float = 10</em>, <em>num_transforms: int = 2</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_motion.html#RandomMotion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomMotion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>Add MRI motion artifact.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>degrees</strong> – </li>
+<li><strong>translation</strong> – </li>
+<li><strong>num_transforms</strong> – </li>
+<li><strong>image_interpolation</strong> – </li>
+<li><strong>proportion_to_augment</strong> – </li>
+<li><strong>seed</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
 <div class="section" id="randomghosting">
 <h3><a class="toc-backref" href="#id8"><a class="reference internal" href="#torchio.transforms.RandomGhosting" title="torchio.transforms.RandomGhosting"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGhosting</span></code></a></a><a class="headerlink" href="#randomghosting" title="Permalink to this headline">¶</a></h3>
+<img alt="MRI k-space ghosting artifacts" src="../_images/random_ghosting.gif" />
+<p>Discrete “ghost” artifacts may occur along the phase-encode direction whenever
+the position or signal intensity of imaged structures within the field-of-view
+vary or move in a regular (periodic) fashion.
+Pulsatile flow of blood or CSF, cardiac motion, and respiratory motion are the
+most important patient-related causes of ghost artifacts in clinical MR imaging
+(from <a class="reference external" href="http://mriquestions.com/why-discrete-ghosts.html">mriquestions.com</a>).</p>
 <dl class="class">
 <dt id="torchio.transforms.RandomGhosting">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomGhosting</code><span class="sig-paren">(</span><em>num_ghosts_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = (4</em>, <em>10)</em>, <em>axes: Tuple[int</em>, <em>...] = (0</em>, <em>1</em>, <em>2)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_ghosting.html#RandomGhosting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomGhosting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>Add MRI ghosting artifact.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>num_ghosts_range</strong> – </li>
+<li><strong>axes</strong> – </li>
+<li><strong>proportion_to_augment</strong> – </li>
+<li><strong>seed</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
 <div class="section" id="randomspike">
 <h3><a class="toc-backref" href="#id9"><a class="reference internal" href="#torchio.transforms.RandomSpike" title="torchio.transforms.RandomSpike"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSpike</span></code></a></a><a class="headerlink" href="#randomspike" title="Permalink to this headline">¶</a></h3>
+<img alt="MRI k-space spike artifacts" src="../_images/random_spike.gif" />
+<p>Also known as
+<a class="reference external" href="https://radiopaedia.org/articles/herringbone-artifact?lang=gb">Herringbone artifact</a>,
+crisscross artifact or corduroy artifact, it creates stripes in different
+directions in image space due to spikes in k-space.</p>
 <dl class="class">
 <dt id="torchio.transforms.RandomSpike">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomSpike</code><span class="sig-paren">(</span><em>num_spikes_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = 1</em>, <em>intensity_range: Union[float</em>, <em>Tuple[float</em>, <em>float]] = (0.1</em>, <em>1)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_spike.html#RandomSpike"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomSpike" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>Add MRI spike artifact.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>num_spikes_range</strong> – </li>
+<li><strong>intensity_range</strong> – </li>
+<li><strong>proportion_to_augment</strong> – </li>
+<li><strong>seed</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -436,24 +501,69 @@ will be equal to <span class="math notranslate nohighlight">\(n\)</span>.</li>
 <dt id="torchio.transforms.RandomBlur">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBlur</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>4)</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_blur.html#RandomBlur"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBlur" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>Blur an image using a Gaussian filter.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>std_range</strong> – </li>
+<li><strong>seed</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
 <div class="section" id="randomnoise">
 <h3><a class="toc-backref" href="#id12"><a class="reference internal" href="#torchio.transforms.RandomNoise" title="torchio.transforms.RandomNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomNoise</span></code></a></a><a class="headerlink" href="#randomnoise" title="Permalink to this headline">¶</a></h3>
+<img alt="Random Gaussian noise" src="../_images/random_noise.gif" />
+<p>Adds noise sampled from a normal distribution with mean 0 and standard
+deviation sampled from a uniform distribution in the range <cite>std_range</cite>.
+It is often used after <a class="reference internal" href="preprocessing.html#torchio.transforms.ZNormalization" title="torchio.transforms.ZNormalization"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZNormalization</span></code></a>,
+because its output has zero-mean.</p>
 <dl class="class">
 <dt id="torchio.transforms.RandomNoise">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomNoise</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>0.25)</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_noise.html#RandomNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomNoise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>Add Gaussian noise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>std_range</strong> – </td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
 <div class="section" id="randomswap">
 <h3><a class="toc-backref" href="#id13"><a class="reference internal" href="#torchio.transforms.RandomSwap" title="torchio.transforms.RandomSwap"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSwap</span></code></a></a><a class="headerlink" href="#randomswap" title="Permalink to this headline">¶</a></h3>
+<img alt="Random patches swapping" src="../_images/random_swap.jpg" />
+<p>Randomly swaps patches in the image.
+This is typically used in
+<a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S1361841518304699">context restoration for self-supervised learning</a>.</p>
 <dl class="class">
 <dt id="torchio.transforms.RandomSwap">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomSwap</code><span class="sig-paren">(</span><em>patch_size: Union[int</em>, <em>Tuple[int</em>, <em>int</em>, <em>int]] = 15</em>, <em>num_iterations: int = 100</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_swap.html#RandomSwap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomSwap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
+<p>Randomly swap patches within an image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>patch_size</strong> – </li>
+<li><strong>num_iterations</strong> – </li>
+<li><strong>seed</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -514,8 +624,11 @@ will be equal to <span class="math notranslate nohighlight">\(n\)</span>.</li>
       background: #d45848;
     }
     .wy-menu > .caption > span.caption-text {
-          color: #d45848;
+      color: #d45848;
     }
+    /* .property {
+      color: #d45848;
+    } */
   </style>
 
 

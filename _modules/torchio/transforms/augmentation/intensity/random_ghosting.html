@@ -162,6 +162,14 @@
 
 
 <div class="viewcode-block" id="RandomGhosting"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomGhosting">[docs]</a><span class="k">class</span> <span class="nc">RandomGhosting</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add MRI ghosting artifact.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        num_ghosts_range:</span>
+<span class="sd">        axes:</span>
+<span class="sd">        proportion_to_augment:</span>
+<span class="sd">        seed:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">num_ghosts_range</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
@@ -320,8 +328,11 @@
       background: #d45848;
     }
     .wy-menu > .caption > span.caption-text {
-          color: #d45848;
+      color: #d45848;
     }
+    /* .property {
+      color: #d45848;
+    } */
   </style>
 
 

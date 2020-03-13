@@ -192,7 +192,7 @@
 <span class="sd">            nums_range: Tuple of two numbers :math:`(n_{min}, n_{max})`,</span>
 <span class="sd">                where :math:`n_{min} \leq n_{max}`.</span>
 <span class="sd">                If a single positive number :math:`n` is provided,</span>
-<span class="sd">                a tuple :math:`(-n, n)` will be returned.</span>
+<span class="sd">                :math:`n_{min} = -n` and :math:`n_{max} = n`.</span>
 <span class="sd">            name: Name of the parameter, so that an informative error message</span>
 <span class="sd">                can be printed.</span>
 
@@ -201,7 +201,7 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError: if :attr:`nums_range` is negative</span>
-<span class="sd">            ValueError: if :math:`n_{min} \gt n_{max}`.</span>
+<span class="sd">            ValueError: if :math:`n_{max} \lt n_{min}`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nums_range</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">nums_range</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -310,8 +310,11 @@
       background: #d45848;
     }
     .wy-menu > .caption > span.caption-text {
-          color: #d45848;
+      color: #d45848;
     }
+    /* .property {
+      color: #d45848;
+    } */
   </style>
 
 

@@ -161,6 +161,12 @@
 
 
 <div class="viewcode-block" id="RandomBlur"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomBlur">[docs]</a><span class="k">class</span> <span class="nc">RandomBlur</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Blur an image using a Gaussian filter.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        std_range:</span>
+<span class="sd">        seed:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">std_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
@@ -242,8 +248,11 @@
       background: #d45848;
     }
     .wy-menu > .caption > span.caption-text {
-          color: #d45848;
+      color: #d45848;
     }
+    /* .property {
+      color: #d45848;
+    } */
   </style>
 
 
