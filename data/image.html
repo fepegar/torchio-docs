@@ -1,0 +1,381 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Images dataset &mdash; TorchIO 0.13.14 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Patch-based training" href="patch_based.html" />
+    <link rel="prev" title="Handling data" href="data.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.13.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Features</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="data.html">Handling data</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Images dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#imagesdataset"><code class="docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subject"><code class="docutils literal notranslate"><span class="pre">Subject</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#image"><code class="docutils literal notranslate"><span class="pre">Image</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="patch_based.html">Patch-based training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../transforms/transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="data.html">Handling data</a> &raquo;</li>
+        
+      <li>Images dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/data/image.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="images-dataset">
+<h1>Images dataset<a class="headerlink" href="#images-dataset" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code> class is one of the most important in TorchIO.
+It inherits directly from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+c235be4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
+Here is a usage example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio</span> <span class="k">import</span> <span class="n">ImagesDataset</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">Subject</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="k">import</span> <span class="n">Rescale</span><span class="p">,</span> <span class="n">RandomAffine</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchvision.transforms</span> <span class="k">import</span> <span class="n">Compose</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject_a</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t1&#39;</span><span class="p">,</span> <span class="s1">&#39;~/Dropbox/MRI/t1.nrrd&#39;</span><span class="p">,</span> <span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">Image</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;~/Dropbox/MRI/t1_seg.nii.gz&#39;</span><span class="p">,</span> <span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject_b</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t1&#39;</span><span class="p">,</span> <span class="s1">&#39;/tmp/colin27_t1_tal_lin.nii.gz&#39;</span><span class="p">,</span> <span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t2&#39;</span><span class="p">,</span> <span class="s1">&#39;/tmp/colin27_t2_tal_lin.nii&#39;</span><span class="p">,</span> <span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">Image</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;/tmp/colin27_seg1.nii.gz&#39;</span><span class="p">,</span> <span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">subject_a</span><span class="p">,</span> <span class="n">subject_b</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transforms</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">Rescale</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="n">RandomAffine</span><span class="p">(),</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dataset</span> <span class="o">=</span> <span class="n">ImagesDataset</span><span class="p">(</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject_sample</span> <span class="o">=</span> <span class="n">subjects_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="imagesdataset">
+<h2><a class="reference internal" href="#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a><a class="headerlink" href="#imagesdataset" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.data.images.ImagesDataset">
+<em class="property">class </em><code class="descclassname">torchio.data.images.</code><code class="descname">ImagesDataset</code><span class="sig-paren">(</span><em>subjects: Sequence[torchio.data.images.Subject], transform: Optional[Any] = None, check_nans: bool = True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/images.html#ImagesDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.ImagesDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Base TorchIO dataset.</p>
+<p><a class="reference internal" href="#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a>
+is a reader of 3D medical images that directly
+inherits from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.5.0a0+c235be4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
+It can be used with a <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.5.0a0+c235be4 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.DataLoader</span></code></a>
+for efficient loading and augmentation.
+It receives a list of subjects, where each subject is an instance of
+<a class="reference internal" href="#torchio.data.images.Subject" title="torchio.data.images.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a> containing instances of
+<a class="reference internal" href="#torchio.data.images.Image" title="torchio.data.images.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a>.
+The file format must be compatible with <a class="reference external" href="https://nipy.org/nibabel/#nibabel">NiBabel</a> or <a class="reference external" href="https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F">SimpleITK</a> readers.
+It can also be a directory containing
+<a class="reference external" href="https://www.dicomstandard.org/">DICOM</a> files.</p>
+<p>Indexing an <a class="reference internal" href="#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a> returns a
+Python dictionary with the data corresponding to the queried subject.
+The keys in the dictionary are the names of the images passed to that
+subject, for example <code class="docutils literal notranslate"><span class="pre">('t1',</span> <span class="pre">'t2',</span> <span class="pre">'segmentation')</span></code>.</p>
+<p>The value corresponding to each image name is another dictionary
+<code class="docutils literal notranslate"><span class="pre">image_dict</span></code> with information about the image.
+The data is stored in <code class="docutils literal notranslate"><span class="pre">image_dict[torchio.IMAGE]</span></code>,
+and the corresponding <a class="reference external" href="https://nipy.org/nibabel/coordinate_systems.html">affine matrix</a>
+is in <code class="docutils literal notranslate"><span class="pre">image_dict[torchio.AFFINE]</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">images_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">dict_keys([&#39;image&#39;, &#39;label&#39;])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_dict</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s1">&#39;image&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_dict</span><span class="p">[</span><span class="n">torchio</span><span class="o">.</span><span class="n">DATA</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">torch.Size([1, 176, 256, 256])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image_dict</span><span class="p">[</span><span class="n">torchio</span><span class="o">.</span><span class="n">AFFINE</span><span class="p">]</span>
+<span class="go">array([[   0.03,    1.13,   -0.08,  -88.54],</span>
+<span class="go">       [   0.06,    0.08,    0.95, -129.66],</span>
+<span class="go">       [   1.18,   -0.06,   -0.11,  -67.15],</span>
+<span class="go">       [   0.  ,    0.  ,    0.  ,    1.  ]])</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>subjects</strong> – Sequence of instances of
+<a class="reference internal" href="#torchio.data.images.Subject" title="torchio.data.images.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a>.</li>
+<li><strong>transform</strong> – An instance of
+<a class="reference internal" href="../transforms/transforms.html#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.Transform</span></code></a> that is applied to each
+image after loading it.</li>
+<li><strong>check_nans</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, issues a warning if NaNs are found
+in the image</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="torchio.data.images.ImagesDataset.set_transform">
+<code class="descname">set_transform</code><span class="sig-paren">(</span><em>transform: Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="../_modules/torchio/data/images.html#ImagesDataset.set_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.ImagesDataset.set_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the <code class="xref py py-attr docutils literal notranslate"><span class="pre">transform</span></code> attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transform</strong> – An instance of <a class="reference internal" href="../transforms/transforms.html#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.Transform</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="subject">
+<h2><a class="reference internal" href="#torchio.data.images.Subject" title="torchio.data.images.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a><a class="headerlink" href="#subject" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.data.images.Subject">
+<em class="property">class </em><code class="descclassname">torchio.data.images.</code><code class="descname">Subject</code><span class="sig-paren">(</span><em>*images</em>, <em>name: str = ''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/images.html#Subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.Subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></p>
+<p>Class to store information about the images corresponding to a subject.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>*images</strong> – Instances of <a class="reference internal" href="#torchio.data.images.Image" title="torchio.data.images.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a>.</li>
+<li><strong>name</strong> – Subject ID</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="image">
+<h2><a class="reference internal" href="#torchio.data.images.Image" title="torchio.data.images.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a><a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.data.images.Image">
+<em class="property">class </em><code class="descclassname">torchio.data.images.</code><code class="descname">Image</code><span class="sig-paren">(</span><em>name: str, path: Union[pathlib.Path, str], type_: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/images.html#Image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.images.Image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to store information about an image.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> – String corresponding to the name of the image, e.g. <code class="docutils literal notranslate"><span class="pre">t1</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">segmentation</span></code>.</li>
+<li><strong>path</strong> – Path to a file that can be read by
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">SimpleITK</span></code> or <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.html#module-nibabel" title="(in NiBabel v3.0.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nibabel</span></code></a> or to a directory containing
+DICOM files.</li>
+<li><strong>type_</strong> – Type of image, such as <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.INTENSITY</span></code> or
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.LABEL</span></code>. This will be used by the transforms to
+decide whether to apply an operation, or which interpolation to use
+when resampling.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="patch_based.html" class="btn btn-neutral float-right" title="Patch-based training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="data.html" class="btn btn-neutral float-left" title="Handling data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #d45848;
+    }
+    .wy-menu > .caption > span.caption-text {
+          color: #d45848;
+    }
+  </style>
+
+
+</body>
+</html>
