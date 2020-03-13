@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Transforms &mdash; TorchIO 0.13.13 documentation</title>
+  <title>Transforms &mdash; TorchIO 0.13.14 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.13.13
+                0.13.14
               </div>
             
           
@@ -85,13 +85,14 @@
               
             
             
-              <p class="caption"><span class="caption-text">API</span></p>
+              <p class="caption"><span class="caption-text">Features</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../data/data.html">Handling data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Transforms</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="augmentation.html">Augmentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="others.html">Others</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
@@ -179,7 +180,7 @@ tool <code class="docutils literal notranslate"><span class="pre">torchio-transf
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs &quot;num_transforms=4&quot;
 </pre></div>
 </div>
-<p>All transforms inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.Transform</span></code>.</p>
+<p>All transforms inherit from <a class="reference internal" href="#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.Transform</span></code></a>.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a><ul>
@@ -187,6 +188,7 @@ tool <code class="docutils literal notranslate"><span class="pre">torchio-transf
 <li class="toctree-l3"><a class="reference internal" href="preprocessing.html#normalizationtransform"><code class="docutils literal notranslate"><span class="pre">NormalizationTransform</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="preprocessing.html#rescale"><code class="docutils literal notranslate"><span class="pre">Rescale</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="preprocessing.html#znormalization"><code class="docutils literal notranslate"><span class="pre">ZNormalization</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#histogramstandardization"><code class="docutils literal notranslate"><span class="pre">HistogramStandardization</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="preprocessing.html#spatial">Spatial</a><ul>
@@ -224,6 +226,20 @@ tool <code class="docutils literal notranslate"><span class="pre">torchio-transf
 </ul>
 </li>
 </ul>
+</div>
+<div class="section" id="transform">
+<h2><a class="reference internal" href="#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></a><a class="headerlink" href="#transform" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="torchio.transforms.Transform">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Transform</code><a class="reference internal" href="../_modules/torchio/transforms/transform.html#Transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class for all TorchIO transforms.</p>
+<p>All classes used to transform a sample from an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code> should subclass it.
+All subclasses should overwrite
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">torchio.tranforms.Transform.apply_transform()</span></code>,
+which takes a sample, applies some transformation and returns the result.</p>
+</dd></dl>
+
 </div>
 </div>
 

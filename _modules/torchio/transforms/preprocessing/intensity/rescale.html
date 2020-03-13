@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.intensity.rescale &mdash; TorchIO 0.13.13 documentation</title>
+  <title>torchio.transforms.preprocessing.intensity.rescale &mdash; TorchIO 0.13.14 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.13
+                0.13.14
               </div>
             
           
@@ -160,16 +160,27 @@
 
 
 <div class="viewcode-block" id="Rescale"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.Rescale">[docs]</a><span class="k">class</span> <span class="nc">Rescale</span><span class="p">(</span><span class="n">NormalizationTransform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Rescale intensity values in an image to a certain range.</span>
+    <span class="sd">&quot;&quot;&quot;Rescale intensity values to a certain range.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        out_min_max: Range :math:`(n_{min}, n_{max})` of output intensities.</span>
+<span class="sd">        percentiles: Percentile values of the input image that will be mapped</span>
+<span class="sd">            to :math:`(n_{min}, n_{max})`. They can be used for contrast</span>
+<span class="sd">            stretching, as in `this scikit-image example`_. For example,</span>
+<span class="sd">            Isensee et al. use ``(0.05, 99.5)`` in their `nn-UNet paper`_.</span>
+<span class="sd">        masking_method: See</span>
+<span class="sd">            :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.</span>
+
+<span class="sd">    .. _this scikit-image example: https://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_equalize.html#sphx-glr-auto-examples-color-exposure-plot-equalize-py</span>
+<span class="sd">    .. _nn-UNet paper: https://arxiv.org/abs/1809.10486</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">out_min_max</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
             <span class="n">percentiles</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span>
             <span class="n">masking_method</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeCallable</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">masking_method</span><span class="o">=</span><span class="n">masking_method</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">masking_method</span><span class="o">=</span><span class="n">masking_method</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">out_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_max</span> <span class="o">=</span> <span class="n">out_min_max</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">percentiles</span> <span class="o">=</span> <span class="n">percentiles</span>
 

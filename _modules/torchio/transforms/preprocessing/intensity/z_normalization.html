@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.intensity.z_normalization &mdash; TorchIO 0.13.13 documentation</title>
+  <title>torchio.transforms.preprocessing.intensity.z_normalization &mdash; TorchIO 0.13.14 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.13
+                0.13.14
               </div>
             
           
@@ -159,13 +159,13 @@
 
 <div class="viewcode-block" id="ZNormalization"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.ZNormalization">[docs]</a><span class="k">class</span> <span class="nc">ZNormalization</span><span class="p">(</span><span class="n">NormalizationTransform</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Subtract mean and divide by standard deviation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        masking_method: See</span>
+<span class="sd">            :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">masking_method</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeCallable</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">masking_method</span><span class="o">=</span><span class="n">masking_method</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">masking_method</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeCallable</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">masking_method</span><span class="o">=</span><span class="n">masking_method</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">apply_normalization</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>

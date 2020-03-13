@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.intensity.normalization_transform &mdash; TorchIO 0.13.13 documentation</title>
+  <title>torchio.transforms.preprocessing.intensity.normalization_transform &mdash; TorchIO 0.13.14 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.13
+                0.13.14
               </div>
             
           
@@ -170,8 +170,6 @@
 
 <span class="sd">            - A function: the mask image is computed as a function of the intensity image. The function must receive and return a :py:class:`torch.Tensor`</span>
 
-<span class="sd">        verbose:</span>
-
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from torchio.datasets import IXITiny</span>
 <span class="sd">        &gt;&gt;&gt; from torchio.transforms import ZNormalization</span>
@@ -190,7 +188,6 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">masking_method</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeCallable</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        masking_method is used to choose the values used for normalization.</span>
@@ -199,7 +196,7 @@
 <span class="sd">         - A function: the mask will be computed using the function</span>
 <span class="sd">         - None: all values are used</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mask_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">masking_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">masking_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ones</span>

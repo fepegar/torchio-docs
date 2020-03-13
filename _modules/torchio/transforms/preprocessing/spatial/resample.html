@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.spatial.resample &mdash; TorchIO 0.13.13 documentation</title>
+  <title>torchio.transforms.preprocessing.spatial.resample &mdash; TorchIO 0.13.14 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.13
+                0.13.14
               </div>
             
           
@@ -177,7 +177,6 @@
 <span class="sd">            It must be :py:attr:`torchio.Interpolation.NEAREST`,</span>
 <span class="sd">            :py:attr:`torchio.Interpolation.LINEAR` or</span>
 <span class="sd">            :py:attr:`torchio.Interpolation.BSPLINE`.</span>
-<span class="sd">        verbose:</span>
 
 <span class="sd">    .. note:: The resampling is performed using</span>
 <span class="sd">        :py:meth:`nibabel.processing.resample_to_output`.</span>
@@ -188,9 +187,8 @@
             <span class="n">target_spacing</span><span class="p">:</span> <span class="n">TypeSpacing</span><span class="p">,</span>
             <span class="n">antialiasing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">image_interpolation</span><span class="p">:</span> <span class="n">Interpolation</span> <span class="o">=</span> <span class="n">Interpolation</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">,</span>
-            <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">target_spacing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_spacing</span><span class="p">(</span><span class="n">target_spacing</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">antialiasing</span> <span class="o">=</span> <span class="n">antialiasing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interpolation_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_interpolation</span><span class="p">(</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Augmentation &mdash; TorchIO 0.13.13 documentation</title>
+  <title>Augmentation &mdash; TorchIO 0.13.14 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.13.13
+                0.13.14
               </div>
             
           
@@ -85,7 +85,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">API</span></p>
+              <p class="caption"><span class="caption-text">Features</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../data/data.html">Handling data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="transforms.html">Transforms</a><ul class="current">
@@ -111,6 +111,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="others.html">Others</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html#transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
@@ -182,23 +183,39 @@
             
   <div class="section" id="augmentation">
 <h1>Augmentation<a class="headerlink" href="#augmentation" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#randomtransform" id="id1"><a class="reference internal" href="#torchio.transforms.augmentation.RandomTransform" title="torchio.transforms.augmentation.RandomTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomTransform</span></code></a></a></li>
+<li><a class="reference internal" href="#spatial" id="id2">Spatial</a><ul>
+<li><a class="reference internal" href="#randomflip" id="id3"><a class="reference internal" href="#torchio.transforms.RandomFlip" title="torchio.transforms.RandomFlip"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomFlip</span></code></a></a></li>
+<li><a class="reference internal" href="#randomaffine" id="id4"><a class="reference internal" href="#torchio.transforms.RandomAffine" title="torchio.transforms.RandomAffine"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomAffine</span></code></a></a></li>
+<li><a class="reference internal" href="#randomelasticdeformation" id="id5"><a class="reference internal" href="#torchio.transforms.RandomElasticDeformation" title="torchio.transforms.RandomElasticDeformation"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomElasticDeformation</span></code></a></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#intensity" id="id6">Intensity</a><ul>
+<li><a class="reference internal" href="#randommotion" id="id7"><a class="reference internal" href="#torchio.transforms.RandomMotion" title="torchio.transforms.RandomMotion"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMotion</span></code></a></a></li>
+<li><a class="reference internal" href="#randomghosting" id="id8"><a class="reference internal" href="#torchio.transforms.RandomGhosting" title="torchio.transforms.RandomGhosting"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGhosting</span></code></a></a></li>
+<li><a class="reference internal" href="#randomspike" id="id9"><a class="reference internal" href="#torchio.transforms.RandomSpike" title="torchio.transforms.RandomSpike"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSpike</span></code></a></a></li>
+<li><a class="reference internal" href="#randombiasfield" id="id10"><a class="reference internal" href="#torchio.transforms.RandomBiasField" title="torchio.transforms.RandomBiasField"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBiasField</span></code></a></a></li>
+<li><a class="reference internal" href="#randomblur" id="id11"><a class="reference internal" href="#torchio.transforms.RandomBlur" title="torchio.transforms.RandomBlur"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBlur</span></code></a></a></li>
+<li><a class="reference internal" href="#randomnoise" id="id12"><a class="reference internal" href="#torchio.transforms.RandomNoise" title="torchio.transforms.RandomNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomNoise</span></code></a></a></li>
+<li><a class="reference internal" href="#randomswap" id="id13"><a class="reference internal" href="#torchio.transforms.RandomSwap" title="torchio.transforms.RandomSwap"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSwap</span></code></a></a></li>
+</ul>
+</li>
+</ul>
+</div>
 <div class="section" id="randomtransform">
-<h2><a class="reference internal" href="#torchio.transforms.augmentation.RandomTransform" title="torchio.transforms.augmentation.RandomTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomTransform</span></code></a><a class="headerlink" href="#randomtransform" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id1"><a class="reference internal" href="#torchio.transforms.augmentation.RandomTransform" title="torchio.transforms.augmentation.RandomTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomTransform</span></code></a></a><a class="headerlink" href="#randomtransform" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="torchio.transforms.augmentation.RandomTransform">
-<em class="property">class </em><code class="descclassname">torchio.transforms.augmentation.</code><code class="descname">RandomTransform</code><span class="sig-paren">(</span><em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/random_transform.html#RandomTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.RandomTransform" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.augmentation.</code><code class="descname">RandomTransform</code><span class="sig-paren">(</span><em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/random_transform.html#RandomTransform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.RandomTransform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.transform.Transform</span></code></p>
 <p>Base class for stochastic augmentation transforms.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>seed</strong> – Seed for <a class="reference external" href="https://pytorch.org/docs/master/torch.html#module-torch" title="(in PyTorch vmaster (1.5.0a0+c235be4 ))"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch</span></code></a> random number generator.</li>
-<li><strong>verbose</strong> – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, will print the running time of the
-transform.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seed</strong> – Seed for <a class="reference external" href="https://pytorch.org/docs/master/torch.html#module-torch" title="(in PyTorch vmaster (1.5.0a0+c235be4 ))"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch</span></code></a> random number generator.</td>
 </tr>
 </tbody>
 </table>
@@ -237,21 +254,21 @@ can be printed.</li>
 
 </div>
 <div class="section" id="spatial">
-<h2>Spatial<a class="headerlink" href="#spatial" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2">Spatial</a><a class="headerlink" href="#spatial" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="randomflip">
-<h3><a class="reference internal" href="#torchio.transforms.RandomFlip" title="torchio.transforms.RandomFlip"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomFlip</span></code></a><a class="headerlink" href="#randomflip" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id3"><a class="reference internal" href="#torchio.transforms.RandomFlip" title="torchio.transforms.RandomFlip"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomFlip</span></code></a></a><a class="headerlink" href="#randomflip" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.RandomFlip">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomFlip</code><span class="sig-paren">(</span><em>axes: Union[int</em>, <em>Tuple[int]] = 0</em>, <em>flip_probability: float = 0.5</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_flip.html#RandomFlip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomFlip" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomFlip</code><span class="sig-paren">(</span><em>axes: Union[int</em>, <em>Tuple[int]] = 0</em>, <em>flip_probability: float = 0.5</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_flip.html#RandomFlip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomFlip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 </dd></dl>
 
 </div>
 <div class="section" id="randomaffine">
-<h3><a class="reference internal" href="#torchio.transforms.RandomAffine" title="torchio.transforms.RandomAffine"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomAffine</span></code></a><a class="headerlink" href="#randomaffine" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id4"><a class="reference internal" href="#torchio.transforms.RandomAffine" title="torchio.transforms.RandomAffine"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomAffine</span></code></a></a><a class="headerlink" href="#randomaffine" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.RandomAffine">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomAffine</code><span class="sig-paren">(</span><em>scales: Tuple[float</em>, <em>float] = (0.9</em>, <em>1.1)</em>, <em>degrees: Union[float</em>, <em>Tuple[float</em>, <em>float]] = 10</em>, <em>isotropic: bool = False</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_affine.html#RandomAffine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomAffine" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomAffine</code><span class="sig-paren">(</span><em>scales: Tuple[float</em>, <em>float] = (0.9</em>, <em>1.1)</em>, <em>degrees: Union[float</em>, <em>Tuple[float</em>, <em>float]] = 10</em>, <em>isotropic: bool = False</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_affine.html#RandomAffine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomAffine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 <p>Random affine transformation.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -278,7 +295,6 @@ For more information, visit
 and <a class="reference external" href="https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html">Simple ITK</a>
 docs on image interpolation.</li>
 <li><strong>seed</strong> – </li>
-<li><strong>verbose</strong> – </li>
 </ul>
 </td>
 </tr>
@@ -310,46 +326,46 @@ This behavior might become customizable in the future.</p>
 
 </div>
 <div class="section" id="randomelasticdeformation">
-<h3><a class="reference internal" href="#torchio.transforms.RandomElasticDeformation" title="torchio.transforms.RandomElasticDeformation"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomElasticDeformation</span></code></a><a class="headerlink" href="#randomelasticdeformation" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id5"><a class="reference internal" href="#torchio.transforms.RandomElasticDeformation" title="torchio.transforms.RandomElasticDeformation"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomElasticDeformation</span></code></a></a><a class="headerlink" href="#randomelasticdeformation" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.RandomElasticDeformation">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomElasticDeformation</code><span class="sig-paren">(</span><em>num_control_points: int = 4</em>, <em>deformation_std: float = 15</em>, <em>proportion_to_augment: float = 1</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_elastic_deformation.html#RandomElasticDeformation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomElasticDeformation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomElasticDeformation</code><span class="sig-paren">(</span><em>num_control_points: int = 4</em>, <em>deformation_std: float = 15</em>, <em>proportion_to_augment: float = 1</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/spatial/random_elastic_deformation.html#RandomElasticDeformation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomElasticDeformation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 </dd></dl>
 
 </div>
 </div>
 <div class="section" id="intensity">
-<h2>Intensity<a class="headerlink" href="#intensity" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Intensity</a><a class="headerlink" href="#intensity" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="randommotion">
-<h3><a class="reference internal" href="#torchio.transforms.RandomMotion" title="torchio.transforms.RandomMotion"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMotion</span></code></a><a class="headerlink" href="#randommotion" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id7"><a class="reference internal" href="#torchio.transforms.RandomMotion" title="torchio.transforms.RandomMotion"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMotion</span></code></a></a><a class="headerlink" href="#randommotion" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.RandomMotion">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomMotion</code><span class="sig-paren">(</span><em>degrees: float = 10</em>, <em>translation: float = 10</em>, <em>num_transforms: int = 2</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_motion.html#RandomMotion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomMotion" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomMotion</code><span class="sig-paren">(</span><em>degrees: float = 10</em>, <em>translation: float = 10</em>, <em>num_transforms: int = 2</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_motion.html#RandomMotion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomMotion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 </dd></dl>
 
 </div>
 <div class="section" id="randomghosting">
-<h3><a class="reference internal" href="#torchio.transforms.RandomGhosting" title="torchio.transforms.RandomGhosting"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGhosting</span></code></a><a class="headerlink" href="#randomghosting" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id8"><a class="reference internal" href="#torchio.transforms.RandomGhosting" title="torchio.transforms.RandomGhosting"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGhosting</span></code></a></a><a class="headerlink" href="#randomghosting" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.RandomGhosting">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomGhosting</code><span class="sig-paren">(</span><em>num_ghosts_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = (4</em>, <em>10)</em>, <em>axes: Tuple[int</em>, <em>...] = (0</em>, <em>1</em>, <em>2)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_ghosting.html#RandomGhosting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomGhosting" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomGhosting</code><span class="sig-paren">(</span><em>num_ghosts_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = (4</em>, <em>10)</em>, <em>axes: Tuple[int</em>, <em>...] = (0</em>, <em>1</em>, <em>2)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_ghosting.html#RandomGhosting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomGhosting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 </dd></dl>
 
 </div>
 <div class="section" id="randomspike">
-<h3><a class="reference internal" href="#torchio.transforms.RandomSpike" title="torchio.transforms.RandomSpike"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSpike</span></code></a><a class="headerlink" href="#randomspike" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id9"><a class="reference internal" href="#torchio.transforms.RandomSpike" title="torchio.transforms.RandomSpike"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSpike</span></code></a></a><a class="headerlink" href="#randomspike" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.RandomSpike">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomSpike</code><span class="sig-paren">(</span><em>num_spikes_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = 1</em>, <em>intensity_range: Union[float</em>, <em>Tuple[float</em>, <em>float]] = (0.1</em>, <em>1)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_spike.html#RandomSpike"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomSpike" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomSpike</code><span class="sig-paren">(</span><em>num_spikes_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = 1</em>, <em>intensity_range: Union[float</em>, <em>Tuple[float</em>, <em>float]] = (0.1</em>, <em>1)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_spike.html#RandomSpike"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomSpike" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 </dd></dl>
 
 </div>
 <div class="section" id="randombiasfield">
-<h3><a class="reference internal" href="#torchio.transforms.RandomBiasField" title="torchio.transforms.RandomBiasField"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBiasField</span></code></a><a class="headerlink" href="#randombiasfield" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id10"><a class="reference internal" href="#torchio.transforms.RandomBiasField" title="torchio.transforms.RandomBiasField"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBiasField</span></code></a></a><a class="headerlink" href="#randombiasfield" title="Permalink to this headline">¶</a></h3>
 <p>MRI magnetic field inhomogeneity creates intensity
 variations of very low frequency across the whole image.</p>
 <p>The bias field is modelled as a linear combination of
@@ -361,7 +377,7 @@ white matter hyperintensities</em>.</p>
 <img alt="MRI bias field artifact" src="../_images/random_bias_field.gif" />
 <dl class="class">
 <dt id="torchio.transforms.RandomBiasField">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBiasField</code><span class="sig-paren">(</span><em>coefficients: Union[float</em>, <em>Tuple[float</em>, <em>float]] = 0.5</em>, <em>order: int = 3</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_bias_field.html#RandomBiasField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBiasField" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBiasField</code><span class="sig-paren">(</span><em>coefficients: Union[float</em>, <em>Tuple[float</em>, <em>float]] = 0.5</em>, <em>order: int = 3</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_bias_field.html#RandomBiasField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBiasField" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 <p>Random MRI bias field artifact.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -376,7 +392,6 @@ will be equal to <span class="math notranslate nohighlight">\(n\)</span>.</li>
 <li><strong>order</strong> – Order of the basis polynomial functions.</li>
 <li><strong>proportion_to_augment</strong> – </li>
 <li><strong>seed</strong> – </li>
-<li><strong>verbose</strong> – </li>
 </ul>
 </td>
 </tr>
@@ -386,28 +401,28 @@ will be equal to <span class="math notranslate nohighlight">\(n\)</span>.</li>
 
 </div>
 <div class="section" id="randomblur">
-<h3><a class="reference internal" href="#torchio.transforms.RandomBlur" title="torchio.transforms.RandomBlur"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBlur</span></code></a><a class="headerlink" href="#randomblur" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id11"><a class="reference internal" href="#torchio.transforms.RandomBlur" title="torchio.transforms.RandomBlur"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBlur</span></code></a></a><a class="headerlink" href="#randomblur" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.RandomBlur">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBlur</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>4)</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_blur.html#RandomBlur"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBlur" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBlur</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>4)</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_blur.html#RandomBlur"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBlur" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 </dd></dl>
 
 </div>
 <div class="section" id="randomnoise">
-<h3><a class="reference internal" href="#torchio.transforms.RandomNoise" title="torchio.transforms.RandomNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomNoise</span></code></a><a class="headerlink" href="#randomnoise" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12"><a class="reference internal" href="#torchio.transforms.RandomNoise" title="torchio.transforms.RandomNoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomNoise</span></code></a></a><a class="headerlink" href="#randomnoise" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.RandomNoise">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomNoise</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>0.25)</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_noise.html#RandomNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomNoise" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomNoise</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>0.25)</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_noise.html#RandomNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomNoise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 </dd></dl>
 
 </div>
 <div class="section" id="randomswap">
-<h3><a class="reference internal" href="#torchio.transforms.RandomSwap" title="torchio.transforms.RandomSwap"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSwap</span></code></a><a class="headerlink" href="#randomswap" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13"><a class="reference internal" href="#torchio.transforms.RandomSwap" title="torchio.transforms.RandomSwap"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSwap</span></code></a></a><a class="headerlink" href="#randomswap" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.RandomSwap">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomSwap</code><span class="sig-paren">(</span><em>patch_size: Union[int</em>, <em>Tuple[int</em>, <em>int</em>, <em>int]] = 15</em>, <em>num_iterations: int = 100</em>, <em>seed: Optional[int] = None</em>, <em>verbose: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_swap.html#RandomSwap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomSwap" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomSwap</code><span class="sig-paren">(</span><em>patch_size: Union[int</em>, <em>Tuple[int</em>, <em>int</em>, <em>int]] = 15</em>, <em>num_iterations: int = 100</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_swap.html#RandomSwap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomSwap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
 </dd></dl>
 
