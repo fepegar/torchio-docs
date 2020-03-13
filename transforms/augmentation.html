@@ -179,6 +179,7 @@
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
            <div itemprop="articleBody">
             
   <div class="section" id="augmentation">
@@ -215,14 +216,14 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seed</strong> – Seed for <a class="reference external" href="https://pytorch.org/docs/master/torch.html#module-torch" title="(in PyTorch vmaster (1.5.0a0+fd35596 ))"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch</span></code></a> random number generator.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seed</strong> – Seed for <a class="reference external" href="https://pytorch.org/docs/master/torch.html#module-torch" title="(in PyTorch vmaster (1.5.0a0+6791ae5 ))"><code class="xref py py-mod docutils literal notranslate"><span class="pre">torch</span></code></a> random number generator.</td>
 </tr>
 </tbody>
 </table>
 <dl class="staticmethod">
 <dt id="torchio.transforms.augmentation.RandomTransform.parse_range">
 <em class="property">static </em><code class="descname">parse_range</code><span class="sig-paren">(</span><em>nums_range: Union[int, float, Tuple[Union[int, float], Union[int, float]]], name: str</em><span class="sig-paren">)</span> &#x2192; Tuple[Union[int, float], Union[int, float]]<a class="reference internal" href="../_modules/torchio/transforms/augmentation/random_transform.html#RandomTransform.parse_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.augmentation.RandomTransform.parse_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adapted from <code class="docutils literal notranslate"><span class="pre">torchvision.RandomRotation</span></code>.</p>
+<dd><p>Adapted from <code class="docutils literal notranslate"><span class="pre">torchvision.transforms.RandomRotation</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -379,7 +380,7 @@ simulate motion artifacts for data augmentation.</p>
 <dt id="torchio.transforms.RandomMotion">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomMotion</code><span class="sig-paren">(</span><em>degrees: float = 10</em>, <em>translation: float = 10</em>, <em>num_transforms: int = 2</em>, <em>image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_motion.html#RandomMotion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomMotion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
-<p>Add MRI motion artifact.</p>
+<p>Add random MRI motion artifact.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -412,7 +413,7 @@ most important patient-related causes of ghost artifacts in clinical MR imaging
 <dt id="torchio.transforms.RandomGhosting">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomGhosting</code><span class="sig-paren">(</span><em>num_ghosts_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = (4</em>, <em>10)</em>, <em>axes: Tuple[int</em>, <em>...] = (0</em>, <em>1</em>, <em>2)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_ghosting.html#RandomGhosting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomGhosting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
-<p>Add MRI ghosting artifact.</p>
+<p>Add random MRI ghosting artifact.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -441,7 +442,7 @@ directions in image space due to spikes in k-space.</p>
 <dt id="torchio.transforms.RandomSpike">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomSpike</code><span class="sig-paren">(</span><em>num_spikes_range: Union[int</em>, <em>Tuple[int</em>, <em>int]] = 1</em>, <em>intensity_range: Union[float</em>, <em>Tuple[float</em>, <em>float]] = (0.1</em>, <em>1)</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_spike.html#RandomSpike"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomSpike" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
-<p>Add MRI spike artifact.</p>
+<p>Add random MRI spike artifacts.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -466,7 +467,7 @@ variations of very low frequency across the whole image.</p>
 <p>The bias field is modelled as a linear combination of
 polynomial basis functions, as in K. Van Leemput et al., 1999,
 <em>Automated model-based tissue classification of MR images of the brain</em>.</p>
-<p>It was added to NiftyNet by Carole Sudre and used in
+<p>It was implemented for NiftyNet by Carole Sudre and used in
 C. Sudre et al., 2017, <em>Longitudinal segmentation of age-related
 white matter hyperintensities</em>.</p>
 <img alt="MRI bias field artifact" src="../_images/random_bias_field.gif" />
@@ -474,7 +475,7 @@ white matter hyperintensities</em>.</p>
 <dt id="torchio.transforms.RandomBiasField">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBiasField</code><span class="sig-paren">(</span><em>coefficients: Union[float</em>, <em>Tuple[float</em>, <em>float]] = 0.5</em>, <em>order: int = 3</em>, <em>proportion_to_augment: float = 1</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_bias_field.html#RandomBiasField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBiasField" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
-<p>Random MRI bias field artifact.</p>
+<p>Add random MRI bias field artifact.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -501,7 +502,7 @@ will be equal to <span class="math notranslate nohighlight">\(n\)</span>.</li>
 <dt id="torchio.transforms.RandomBlur">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomBlur</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>4)</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_blur.html#RandomBlur"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomBlur" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
-<p>Blur an image using a Gaussian filter.</p>
+<p>Blur an image using a random-sized Gaussian filter.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -528,7 +529,7 @@ because its output has zero-mean.</p>
 <dt id="torchio.transforms.RandomNoise">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RandomNoise</code><span class="sig-paren">(</span><em>std_range: Tuple[float</em>, <em>float] = (0</em>, <em>0.25)</em>, <em>seed: Optional[int] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/augmentation/intensity/random_noise.html#RandomNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RandomNoise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.augmentation.random_transform.RandomTransform</span></code></p>
-<p>Add Gaussian noise.</p>
+<p>Add random Gaussian noise.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -574,6 +575,10 @@ This is typically used in
            </div>
            
           </div>
+    <a href="https://github.com/fepegar/torchio">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
