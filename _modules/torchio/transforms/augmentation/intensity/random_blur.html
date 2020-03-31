@@ -153,7 +153,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.transforms.augmentation.intensity.random_blur</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
@@ -163,19 +163,29 @@
 
 
 <div class="viewcode-block" id="RandomBlur"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomBlur">[docs]</a><span class="k">class</span> <span class="nc">RandomBlur</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Blur an image using a random-sized Gaussian filter.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Blur an image using a random-sized Gaussian filter.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        std_range:</span>
-<span class="sd">        seed:</span>
+<span class="sd">        std: Tuple :math:`(a, b)` to compute the standard deviations</span>
+<span class="sd">            :math:`(\sigma_1, \sigma_2, \sigma_3)` of the Gaussian kernels used</span>
+<span class="sd">            to blur the image along each axis,</span>
+<span class="sd">            where :math:`\sigma_i \sim \mathcal{U}(a, b)`.</span>
+<span class="sd">            If a single value :math:`n` is provided, then :math:`a = b = n`.</span>
+<span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">std_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="n">std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
             <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">std_range</span> <span class="o">=</span> <span class="n">std_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">std_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_range</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">std_range</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Standard deviation std must greater or equal to zero,&#39;</span>
+                <span class="n">f</span><span class="s1">&#39; not &quot;</span><span class="si">{self.std_range}</span><span class="s1">&quot;&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">std_range</span><span class="p">)</span>

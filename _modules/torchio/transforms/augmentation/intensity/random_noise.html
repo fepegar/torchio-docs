@@ -155,25 +155,35 @@
   <h1>Source code for torchio.transforms.augmentation.intensity.random_noise</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span>
 <span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TYPE</span><span class="p">,</span> <span class="n">INTENSITY</span><span class="p">,</span> <span class="n">TypeData</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RandomTransform</span>
 
 
 <div class="viewcode-block" id="RandomNoise"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomNoise">[docs]</a><span class="k">class</span> <span class="nc">RandomNoise</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add random Gaussian noise.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Add random Gaussian noise.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        std_range:</span>
-
+<span class="sd">        std: Standard deviation :math:`\sigma` of the Gaussian distribution</span>
+<span class="sd">            from which the noise is sampled.</span>
+<span class="sd">            If two values :math:`(a, b)` are providede,</span>
+<span class="sd">            then :math:`\sigma \sim \mathcal{U}(a, b)`.</span>
+<span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">std_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span>
+            <span class="n">std</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span>
             <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">std_range</span> <span class="o">=</span> <span class="n">std_range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">std_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_range</span><span class="p">(</span><span class="n">std</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">std_range</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Standard deviation std must greater or equal to zero,&#39;</span>
+                <span class="n">f</span><span class="s1">&#39; not &quot;</span><span class="si">{self.std_range}</span><span class="s1">&quot;&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">std_range</span><span class="p">)</span>

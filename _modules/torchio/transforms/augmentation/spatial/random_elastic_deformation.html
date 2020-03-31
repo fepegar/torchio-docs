@@ -201,11 +201,13 @@
 <span class="sd">            If ``2``, displacement of control points at the border of the image</span>
 <span class="sd">            will also be set to ``0``.</span>
 <span class="sd">        image_interpolation: Value in</span>
-<span class="sd">            :py:class:`torchio.transforms.interpolation.Interpolation`.</span>
+<span class="sd">            :py:class:`torchio.transforms.interpolation.Interpolation` (see</span>
+<span class="sd">            :ref:`Interpolation`).</span>
 <span class="sd">            Note that this is the interpolation used to compute voxel</span>
-<span class="sd">            intensities when resampling using the displacement field.</span>
-<span class="sd">            The displacement at each voxel is always interpolated with cubic</span>
-<span class="sd">            B-splines from the coarse grid of control points.</span>
+<span class="sd">            intensities when resampling using the dense displacement field.</span>
+<span class="sd">            The value of the dense displacement at each voxel is always</span>
+<span class="sd">            interpolated with cubic B-splines from the values at the control</span>
+<span class="sd">            points of the coarse grid.</span>
 <span class="sd">        proportion_to_augment: Probability that this transform will be applied.</span>
 <span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
 

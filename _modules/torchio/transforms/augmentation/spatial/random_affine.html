@@ -170,6 +170,9 @@
 <span class="sd">        scales: Tuple :math:`(a, b)` defining the scaling</span>
 <span class="sd">            magnitude. The scaling values along each dimension are</span>
 <span class="sd">            :math:`(s_1, s_2, s_3)`, where :math:`s_i \sim \mathcal{U}(a, b)`.</span>
+<span class="sd">            For example, using ``scales=(0.5, 0.5)`` will zoom out the image,</span>
+<span class="sd">            making the objects inside look twice as small while preserving</span>
+<span class="sd">            the physical size and position of the image.</span>
 <span class="sd">        degrees: Tuple :math:`(a, b)` defining the rotation range in degrees.</span>
 <span class="sd">            The rotation angles around each axis are</span>
 <span class="sd">            :math:`(\theta_1, \theta_2, \theta_3)`,</span>
@@ -178,13 +181,7 @@
 <span class="sd">            :math:`\theta_i \sim \mathcal{U}(-d, d)`.</span>
 <span class="sd">        isotropic: If ``True``, the scaling factor along all dimensions is the</span>
 <span class="sd">            same, i.e. :math:`s_1 = s_2 = s_3`.</span>
-<span class="sd">        image_interpolation: Interpolation type to use for resampling.</span>
-<span class="sd">            The available interpolation strategies are enumerated in</span>
-<span class="sd">            :class:`torchio.transforms.interpolation.Interpolation`.</span>
-<span class="sd">            For more information, visit</span>
-<span class="sd">            `ITK &lt;https://itk.org/Doxygen/html/group__ImageInterpolators.html&gt;`_</span>
-<span class="sd">            and `Simple ITK &lt;https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html&gt;`_</span>
-<span class="sd">            docs on image interpolation.</span>
+<span class="sd">        image_interpolation: See :ref:`Interpolation`.</span>
 <span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
 
 <span class="sd">    .. note:: Rotations are performed around the center of the image.</span>

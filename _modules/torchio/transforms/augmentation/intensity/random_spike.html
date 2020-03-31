@@ -164,18 +164,26 @@
 
 
 <div class="viewcode-block" id="RandomSpike"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomSpike">[docs]</a><span class="k">class</span> <span class="nc">RandomSpike</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add random MRI spike artifacts.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Add random MRI spike artifacts.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        num_spikes_range:</span>
-<span class="sd">        intensity_range:</span>
+<span class="sd">        num_spikes: Number of spikes :math:`n` presnet in k-space.</span>
+<span class="sd">            If a tuple :math:`(a, b)` is provided, then</span>
+<span class="sd">            :math:`n \sim \mathcal{U}(a, b) \cap \mathbb{N}`.</span>
+<span class="sd">            Larger values generate more distorted images.</span>
+<span class="sd">        intensity: Ratio :math:`r` between the spike intensity and the maximum</span>
+<span class="sd">            of the spectrum.</span>
+<span class="sd">            Larger values generate more distorted images.</span>
 <span class="sd">        proportion_to_augment: Probability that this transform will be applied.</span>
-<span class="sd">        seed:</span>
+<span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
+
+<span class="sd">    .. note:: The execution time of this transform does not depend on the</span>
+<span class="sd">        number of spikes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">num_spikes_range</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="n">intensity_range</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">num_spikes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">intensity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
             <span class="n">proportion_to_augment</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
             <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
@@ -185,11 +193,11 @@
             <span class="s1">&#39;proportion_to_augment&#39;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">intensity_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_range</span><span class="p">(</span>
-            <span class="n">intensity_range</span><span class="p">,</span> <span class="s1">&#39;intensity_range&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_spikes_range</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">num_spikes_range</span> <span class="o">=</span> <span class="n">num_spikes_range</span><span class="p">,</span> <span class="n">num_spikes_range</span>
+            <span class="n">intensity</span><span class="p">,</span> <span class="s1">&#39;intensity_range&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_spikes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_spikes_range</span> <span class="o">=</span> <span class="n">num_spikes</span><span class="p">,</span> <span class="n">num_spikes</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">num_spikes_range</span> <span class="o">=</span> <span class="n">num_spikes_range</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_spikes_range</span> <span class="o">=</span> <span class="n">num_spikes</span>
 
     <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -243,21 +251,21 @@
         <span class="n">ns_min</span><span class="p">,</span> <span class="n">ns_max</span> <span class="o">=</span> <span class="n">num_spikes_range</span>
         <span class="n">num_spikes_param</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">ns_min</span><span class="p">,</span> <span class="n">ns_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
         <span class="n">i_min</span><span class="p">,</span> <span class="n">i_max</span> <span class="o">=</span> <span class="n">intensity_range</span>
-        <span class="n">intensity_param</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">i_max</span> <span class="o">-</span> <span class="n">i_min</span><span class="p">)</span> <span class="o">+</span> <span class="n">i_min</span>
+        <span class="n">intensity_param</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">*</span><span class="n">intensity_range</span><span class="p">)</span>
         <span class="n">do_it</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">probability</span>
-        <span class="k">return</span> <span class="n">num_spikes_param</span><span class="p">,</span> <span class="n">intensity_param</span><span class="p">,</span> <span class="n">do_it</span>
+        <span class="k">return</span> <span class="n">num_spikes_param</span><span class="p">,</span> <span class="n">intensity_param</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span> <span class="n">do_it</span>
 
     <span class="k">def</span> <span class="nf">add_artifact</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">image</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span>
             <span class="n">num_spikes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">intensity_factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="n">array</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayViewFromImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
         <span class="n">spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fourier_transform</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_spikes</span><span class="p">):</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">spectrum</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
-            <span class="n">spectrum</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="n">factor</span>
+            <span class="n">spectrum</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="n">intensity_factor</span>
         <span class="n">spectrum</span> <span class="o">=</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_fourier_transform</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>

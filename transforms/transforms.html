@@ -203,20 +203,30 @@ tool <code class="docutils literal notranslate"><span class="pre">torchio-transf
 <p>For more information, run <code class="docutils literal notranslate"><span class="pre">torchio-transform</span> <span class="pre">--help</span></code>.</p>
 </div>
 <div class="section" id="interpolation">
-<h2>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this headline">¶</a></h2>
-<p>Spatial transforms such as
+<span id="id1"></span><h2>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this headline">¶</a></h2>
+<p>Some transforms such as
 <a class="reference internal" href="augmentation.html#torchio.transforms.RandomAffine" title="torchio.transforms.RandomAffine"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomAffine</span></code></a> or
-<a class="reference internal" href="augmentation.html#torchio.transforms.RandomElasticDeformation" title="torchio.transforms.RandomElasticDeformation"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomElasticDeformation</span></code></a>
-need to interpolate values during resampling.</p>
+<a class="reference internal" href="augmentation.html#torchio.transforms.RandomMotion" title="torchio.transforms.RandomMotion"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMotion</span></code></a>
+need to interpolate intensity values during resampling.</p>
+<p>The available interpolation strategies are enumerated in
+<code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.interpolation.Interpolation</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Interpolation.NEAREST</span></code> can be used for quick experimentation as it is very
+fast, but produces relatively poor results.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Interpolation.LINEAR</span></code>, defaut in TorchIO, is usually a good compromise
+between image quality and speed to be used for data augmentation during training.</p>
+<p>Methods such as <code class="docutils literal notranslate"><span class="pre">Interpolation.BSPLINE</span></code> or <code class="docutils literal notranslate"><span class="pre">Interpolation.LANCZOS</span></code> generate
+high-quality results, but are generally slower. They can be used to obtain
+optimal resampling results during offline data preprocessing.</p>
+<p>Visit the
+<a class="reference external" href="https://itk.org/Doxygen/html/group__ImageInterpolators.html">ITK docs</a>
+for more information and see
+<a class="reference external" href="https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html">this SimpleITK example</a>
+for some interpolation results on test images.</p>
 <dl class="class">
 <dt id="torchio.transforms.Interpolation">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Interpolation</code><a class="reference internal" href="../_modules/torchio/transforms/interpolation.html#Interpolation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Interpolation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
 <p>Interpolation techniques available in ITK.</p>
-<p>Documentation is imported from
-<a class="reference external" href="https://itk.org/Doxygen/html/group__ImageInterpolators.html">ITK docs</a>.</p>
-<p>See <a class="reference external" href="https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html">this SimpleITK example</a>
-for some interpolation results.</p>
 <p class="rubric">Example</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="k">import</span> <span class="n">RandomAffine</span><span class="p">,</span> <span class="n">Interpolation</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">RandomAffine</span><span class="p">(</span><span class="n">image_interpolation</span><span class="o">=</span><span class="n">Interpolation</span><span class="o">.</span><span class="n">NEAREST</span><span class="p">)</span>

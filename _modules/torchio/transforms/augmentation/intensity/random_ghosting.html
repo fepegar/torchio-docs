@@ -164,7 +164,7 @@
 
 
 <div class="viewcode-block" id="RandomGhosting"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomGhosting">[docs]</a><span class="k">class</span> <span class="nc">RandomGhosting</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Add random MRI ghosting artifact.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Add random MRI ghosting artifact.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        num_ghosts: Number of &#39;ghosts&#39; :math:`n` in the image.</span>
@@ -174,7 +174,7 @@
 <span class="sd">            :py:attr:`axes` is a tuple, the axis will be randomly chosen</span>
 <span class="sd">            from the passed values.</span>
 <span class="sd">        proportion_to_augment: Probability that this transform will be applied.</span>
-<span class="sd">        seed: Seed for the random number generator.</span>
+<span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
 
 <span class="sd">    .. note:: The execution time of this transform does not depend on the</span>
 <span class="sd">        number of ghosts.</span>
@@ -261,9 +261,11 @@
             <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="n">array</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-        <span class="n">percentage_to_avoid</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># Leave first 5% of frequencies untouched</span>
-        <span class="c1"># If the image is in RAS orientation, this helps applying the ghosting</span>
-        <span class="c1"># in the desired axis intuitively</span>
+        <span class="c1"># Leave first 5% of frequencies untouched. If the image is in RAS</span>
+        <span class="c1"># orientation, this helps applying the ghosting in the desired axis</span>
+        <span class="c1"># intuitively</span>
+        <span class="c1"># [Why? I forgot]</span>
+        <span class="n">percentage_to_avoid</span> <span class="o">=</span> <span class="mf">0.05</span>
         <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">size</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
