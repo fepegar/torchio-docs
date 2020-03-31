@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.augmentation.spatial.random_affine &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.transforms.augmentation.spatial.random_affine &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -158,7 +159,7 @@
 <span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
 <span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span><span class="p">,</span> <span class="n">check_consistent_shape</span>
 <span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">LABEL</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">AFFINE</span><span class="p">,</span> <span class="n">TYPE</span><span class="p">,</span> <span class="n">TypeRangeFloat</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">Interpolation</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">Interpolation</span><span class="p">,</span> <span class="n">get_sitk_interpolator</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RandomTransform</span>
 
 
@@ -184,7 +185,7 @@
 <span class="sd">            `ITK &lt;https://itk.org/Doxygen/html/group__ImageInterpolators.html&gt;`_</span>
 <span class="sd">            and `Simple ITK &lt;https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html&gt;`_</span>
 <span class="sd">            docs on image interpolation.</span>
-<span class="sd">        seed:</span>
+<span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
 
 <span class="sd">    .. note:: Rotations are performed around the center of the image.</span>
 
@@ -295,7 +296,7 @@
         <span class="n">transform</span><span class="o">.</span><span class="n">AddTransform</span><span class="p">(</span><span class="n">rotation_transform</span><span class="p">)</span>
 
         <span class="n">resampler</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ResampleImageFilter</span><span class="p">()</span>
-        <span class="n">resampler</span><span class="o">.</span><span class="n">SetInterpolator</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">resampler</span><span class="o">.</span><span class="n">SetInterpolator</span><span class="p">(</span><span class="n">get_sitk_interpolator</span><span class="p">(</span><span class="n">interpolation</span><span class="p">))</span>
         <span class="n">resampler</span><span class="o">.</span><span class="n">SetReferenceImage</span><span class="p">(</span><span class="n">reference</span><span class="p">)</span>
         <span class="n">resampler</span><span class="o">.</span><span class="n">SetDefaultPixelValue</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
         <span class="n">resampler</span><span class="o">.</span><span class="n">SetOutputPixelType</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">sitkFloat32</span><span class="p">)</span>

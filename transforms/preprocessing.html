@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Preprocessing &mdash; TorchIO 0.13.14 documentation</title>
+  <title>Preprocessing &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -85,34 +85,26 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul class="current">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/data.html">Handling data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="transforms.html">Transforms</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Preprocessing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#intensity">Intensity</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#normalizationtransform"><code class="docutils literal notranslate"><span class="pre">NormalizationTransform</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#rescale"><code class="docutils literal notranslate"><span class="pre">Rescale</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#znormalization"><code class="docutils literal notranslate"><span class="pre">ZNormalization</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#histogramstandardization"><code class="docutils literal notranslate"><span class="pre">HistogramStandardization</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transforms.html#interpolation">Interpolation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="transforms.html#transforms-api">Transforms API</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Preprocessing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#intensity">Intensity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spatial">Spatial</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#spatial">Spatial</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#centercroporpad"><code class="docutils literal notranslate"><span class="pre">CenterCropOrPad</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#crop"><code class="docutils literal notranslate"><span class="pre">Crop</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#pad"><code class="docutils literal notranslate"><span class="pre">Pad</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#resample"><code class="docutils literal notranslate"><span class="pre">Resample</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#tocanonical"><code class="docutils literal notranslate"><span class="pre">ToCanonical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html">Augmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="others.html">Others</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="augmentation.html">Augmentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="others.html">Others</a></li>
-<li class="toctree-l2"><a class="reference internal" href="transforms.html#transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -186,7 +178,7 @@
 <ul class="simple">
 <li><a class="reference internal" href="#intensity" id="id1">Intensity</a><ul>
 <li><a class="reference internal" href="#normalizationtransform" id="id2"><a class="reference internal" href="#torchio.transforms.preprocessing.intensity.NormalizationTransform" title="torchio.transforms.preprocessing.intensity.NormalizationTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">NormalizationTransform</span></code></a></a></li>
-<li><a class="reference internal" href="#rescale" id="id3"><a class="reference internal" href="#torchio.transforms.Rescale" title="torchio.transforms.Rescale"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rescale</span></code></a></a></li>
+<li><a class="reference internal" href="#rescaleintensity" id="id3"><a class="reference internal" href="#torchio.transforms.RescaleIntensity" title="torchio.transforms.RescaleIntensity"><code class="xref py py-class docutils literal notranslate"><span class="pre">RescaleIntensity</span></code></a></a></li>
 <li><a class="reference internal" href="#znormalization" id="id4"><a class="reference internal" href="#torchio.transforms.ZNormalization" title="torchio.transforms.ZNormalization"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZNormalization</span></code></a></a></li>
 <li><a class="reference internal" href="#histogramstandardization" id="id5"><a class="reference internal" href="#torchio.transforms.HistogramStandardization" title="torchio.transforms.HistogramStandardization"><code class="xref py py-class docutils literal notranslate"><span class="pre">HistogramStandardization</span></code></a></a></li>
 </ul>
@@ -218,7 +210,7 @@
 <ul class="simple">
 <li><code class="docutils literal notranslate"><span class="pre">None</span></code>: the mask image is all ones, i.e. all values in the image are used</li>
 <li>A string: the mask image is retrieved from the sample, which is expected the string as a key</li>
-<li>A function: the mask image is computed as a function of the intensity image. The function must receive and return a <a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (1.5.0a0+6791ae5 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a></li>
+<li>A function: the mask image is computed as a function of the intensity image. The function must receive and return a <a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (1.6.0a0+56fabfa ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a></li>
 </ul>
 </td>
 </tr>
@@ -242,11 +234,11 @@
 </dd></dl>
 
 </div>
-<div class="section" id="rescale">
-<h3><a class="toc-backref" href="#id3"><a class="reference internal" href="#torchio.transforms.Rescale" title="torchio.transforms.Rescale"><code class="xref py py-class docutils literal notranslate"><span class="pre">Rescale</span></code></a></a><a class="headerlink" href="#rescale" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="rescaleintensity">
+<h3><a class="toc-backref" href="#id3"><a class="reference internal" href="#torchio.transforms.RescaleIntensity" title="torchio.transforms.RescaleIntensity"><code class="xref py py-class docutils literal notranslate"><span class="pre">RescaleIntensity</span></code></a></a><a class="headerlink" href="#rescaleintensity" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="torchio.transforms.Rescale">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Rescale</code><span class="sig-paren">(</span><em>out_min_max: Tuple[float, float], percentiles: Tuple[int, int] = (0, 100), masking_method: Union[str, Callable[torch.Tensor, torch.Tensor], None] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/rescale.html#Rescale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Rescale" title="Permalink to this definition">¶</a></dt>
+<dt id="torchio.transforms.RescaleIntensity">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">RescaleIntensity</code><span class="sig-paren">(</span><em>out_min_max: Tuple[float, float], percentiles: Tuple[int, int] = (0, 100), masking_method: Union[str, Callable[torch.Tensor, torch.Tensor], None] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/rescale.html#RescaleIntensity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.RescaleIntensity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.intensity.normalization_transform.NormalizationTransform</span></code></p>
 <p>Rescale intensity values to a certain range.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -290,11 +282,88 @@ Isensee et al. use <code class="docutils literal notranslate"><span class="pre">
 </div>
 <div class="section" id="histogramstandardization">
 <h3><a class="toc-backref" href="#id5"><a class="reference internal" href="#torchio.transforms.HistogramStandardization" title="torchio.transforms.HistogramStandardization"><code class="xref py py-class docutils literal notranslate"><span class="pre">HistogramStandardization</span></code></a></a><a class="headerlink" href="#histogramstandardization" title="Permalink to this headline">¶</a></h3>
+<p>Implementation of
+<a class="reference external" href="https://ieeexplore.ieee.org/document/836373">New variants of a method of MRI scale standardization</a>,
+adapted from NiftyNet.</p>
+<img alt="Histogram standardization" src="../_images/histogram_standardization.png" />
 <dl class="class">
 <dt id="torchio.transforms.HistogramStandardization">
 <em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">HistogramStandardization</code><span class="sig-paren">(</span><em>landmarks_dict: Dict[str, numpy.ndarray], masking_method: Union[str, Callable[torch.Tensor, torch.Tensor], None] = None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/histogram_standardization.html#HistogramStandardization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.HistogramStandardization" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.preprocessing.intensity.normalization_transform.NormalizationTransform</span></code></p>
 <p>Perform histogram standardization of intensity values.</p>
+<p>See example in <a class="reference internal" href="#torchio.transforms.HistogramStandardization.train" title="torchio.transforms.HistogramStandardization.train"><code class="xref py py-func docutils literal notranslate"><span class="pre">torchio.transforms.HistogramStandardization.train()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>landmarks_dict</strong> – Dictionary in which keys are image names in the sample
+and values are NumPy arrays defining the landmarks after training
+with <a class="reference internal" href="#torchio.transforms.HistogramStandardization.train" title="torchio.transforms.HistogramStandardization.train"><code class="xref py py-meth docutils literal notranslate"><span class="pre">torchio.transforms.HistogramStandardization.train()</span></code></a>.</li>
+<li><strong>masking_method</strong> – See
+<code class="xref py py-class docutils literal notranslate"><span class="pre">NormalizationTransform</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="classmethod">
+<dt id="torchio.transforms.HistogramStandardization.train">
+<em class="property">classmethod </em><code class="descname">train</code><span class="sig-paren">(</span><em>images_paths: Sequence[Union[pathlib.Path, str]], cutoff: Optional[Tuple[float, float]] = None, mask_path: Union[pathlib.Path, str, None] = None, masking_function: Optional[Callable] = None, output_path: Union[pathlib.Path, str, None] = None</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../_modules/torchio/transforms/preprocessing/intensity/histogram_standardization.html#HistogramStandardization.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.HistogramStandardization.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract average histogram landmarks from images used for training.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>images_paths</strong> – List of image paths used to train.</li>
+<li><strong>cutoff</strong> – Optional minimum and maximum quantile values,
+respectively, that are used to select a range of intensity of
+interest. Equivalent to <span class="math notranslate nohighlight">\(pc_1\)</span> and <span class="math notranslate nohighlight">\(pc_2\)</span> in
+<a class="reference external" href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.102&amp;rep=rep1&amp;type=pdf">Nyúl and Udupa’s paper</a>.</li>
+<li><strong>mask_path</strong> – Optional path to a mask image to extract voxels used for
+training.</li>
+<li><strong>masking_function</strong> – Optional function used to extract voxels used for
+training.</li>
+<li><strong>output_path</strong> – Optional file path with extension <code class="docutils literal notranslate"><span class="pre">.txt</span></code> or
+<code class="docutils literal notranslate"><span class="pre">.npy</span></code>, where the landmarks will be saved.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="k">import</span> <span class="n">HistogramStandardization</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t1_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;subject_a_t1.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;subject_b_t1.nii.gz&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t2_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;subject_a_t2.nii&#39;</span><span class="p">,</span> <span class="s1">&#39;subject_b_t2.nii.gz&#39;</span><span class="p">]</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t1_landmarks_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;t1_landmarks.npy&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t2_landmarks_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;t2_landmarks.npy&#39;</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t1_landmarks</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">t1_landmarks_path</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">t1_landmarks_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">else</span> <span class="n">HistogramStandardization</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">t1_paths</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t2_landmarks</span> <span class="o">=</span> <span class="p">(</span>
+<span class="gp">... </span>    <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">t2_landmarks_path</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">t2_landmarks_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">else</span> <span class="n">HistogramStandardization</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">t2_paths</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">landmarks_dict</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;t1&#39;</span><span class="p">:</span> <span class="n">t1_landmarks</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;t2&#39;</span><span class="p">:</span> <span class="n">t2_landmarks</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">HistogramStandardization</span><span class="p">(</span><span class="n">landmarks_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -429,7 +498,7 @@ used when <code class="xref py py-attr docutils literal notranslate"><span class
 <h3><a class="toc-backref" href="#id10"><a class="reference internal" href="#torchio.transforms.Resample" title="torchio.transforms.Resample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Resample</span></code></a></a><a class="headerlink" href="#resample" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.transforms.Resample">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Resample</code><span class="sig-paren">(</span><em>target_spacing: Union[float, Tuple[float, float, float]], antialiasing: bool = True, image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 2&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/resample.html#Resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Resample" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Resample</code><span class="sig-paren">(</span><em>target_spacing: Union[float, Tuple[float, float, float]], antialiasing: bool = True, image_interpolation: torchio.transforms.interpolation.Interpolation = &lt;Interpolation.LINEAR: 'sitkLinear'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/preprocessing/spatial/resample.html#Resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Resample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.transform.Transform</span></code></p>
 <p>Change voxel spacing keeping the field of view.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -441,8 +510,9 @@ used when <code class="xref py py-attr docutils literal notranslate"><span class
 <span class="math notranslate nohighlight">\(n\)</span> is specified, then <span class="math notranslate nohighlight">\(s_d = s_h = s_w = n\)</span>.</li>
 <li><strong>antialiasing</strong> – (Not implemented yet).</li>
 <li><strong>image_interpolation</strong> – Member of <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.Interpolation</span></code>.
-It must be <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.Interpolation.NEAREST</span></code>,
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.Interpolation.LINEAR</span></code> or
+Supported interpolation techniques for resampling are
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.Interpolation.NEAREST</span></code>,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.Interpolation.LINEAR</span></code> and
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.Interpolation.BSPLINE</span></code>.</li>
 </ul>
 </td>

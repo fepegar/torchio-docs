@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Transforms &mdash; TorchIO 0.13.14 documentation</title>
+  <title>Transforms &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -85,17 +85,22 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul class="current">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../data/data.html">Handling data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Transforms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="augmentation.html">Augmentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="others.html">Others</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interpolation">Interpolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transforms-api">Transforms API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html">Augmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="others.html">Others</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -176,18 +181,111 @@ by an <code class="xref py py-class docutils literal notranslate"><span class="p
 <span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_sample</span> <span class="o">=</span> <span class="n">affine_transform</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>All transforms inherit from <a class="reference internal" href="#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.Transform</span></code></a>:</p>
+<dl class="class">
+<dt id="torchio.transforms.Transform">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Transform</code><a class="reference internal" href="../_modules/torchio/transforms/transform.html#Transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class for all TorchIO transforms.</p>
+<p>All classes used to transform a sample from an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code> should subclass it.
+All subclasses should overwrite
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">torchio.tranforms.Transform.apply_transform()</span></code>,
+which takes a sample, applies some transformation and returns the result.</p>
+</dd></dl>
+
+<div class="section" id="command-line-interface">
+<h2>Command-line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <p>A transform can be quickly applied to an image file using the command-line
 tool <code class="docutils literal notranslate"><span class="pre">torchio-transform</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs &quot;num_transforms=4&quot;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs &quot;num_transforms=4 --seed 42&quot;
 </pre></div>
 </div>
-<p>All transforms inherit from <a class="reference internal" href="#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.Transform</span></code></a>.</p>
+<p>For more information, run <code class="docutils literal notranslate"><span class="pre">torchio-transform</span> <span class="pre">--help</span></code>.</p>
+</div>
+<div class="section" id="interpolation">
+<h2>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this headline">¶</a></h2>
+<p>Spatial transforms such as
+<a class="reference internal" href="augmentation.html#torchio.transforms.RandomAffine" title="torchio.transforms.RandomAffine"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomAffine</span></code></a> or
+<a class="reference internal" href="augmentation.html#torchio.transforms.RandomElasticDeformation" title="torchio.transforms.RandomElasticDeformation"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomElasticDeformation</span></code></a>
+need to interpolate values during resampling.</p>
+<dl class="class">
+<dt id="torchio.transforms.Interpolation">
+<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Interpolation</code><a class="reference internal" href="../_modules/torchio/transforms/interpolation.html#Interpolation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Interpolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
+<p>Interpolation techniques available in ITK.</p>
+<p>Documentation is imported from
+<a class="reference external" href="https://itk.org/Doxygen/html/group__ImageInterpolators.html">ITK docs</a>.</p>
+<p>See <a class="reference external" href="https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html">this SimpleITK example</a>
+for some interpolation results.</p>
+<p class="rubric">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="k">import</span> <span class="n">RandomAffine</span><span class="p">,</span> <span class="n">Interpolation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">RandomAffine</span><span class="p">(</span><span class="n">image_interpolation</span><span class="o">=</span><span class="n">Interpolation</span><span class="o">.</span><span class="n">NEAREST</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.BLACKMAN">
+<code class="descname">BLACKMAN</code><em class="property"> = 'sitkBlackmanWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.BLACKMAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.BSPLINE">
+<code class="descname">BSPLINE</code><em class="property"> = 'sitkBSpline'</em><a class="headerlink" href="#torchio.transforms.Interpolation.BSPLINE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the B-spline interpolation weights over the support region of the B-spline.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.COSINE">
+<code class="descname">COSINE</code><em class="property"> = 'sitkCosineWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.COSINE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.GAUSSIAN">
+<code class="descname">GAUSSIAN</code><em class="property"> = 'sitkGaussian'</em><a class="headerlink" href="#torchio.transforms.Interpolation.GAUSSIAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.HAMMING">
+<code class="descname">HAMMING</code><em class="property"> = 'sitkHammingWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.HAMMING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.LABEL_GAUSSIAN">
+<code class="descname">LABEL_GAUSSIAN</code><em class="property"> = 'sitkLabelGaussian'</em><a class="headerlink" href="#torchio.transforms.Interpolation.LABEL_GAUSSIAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.LANCZOS">
+<code class="descname">LANCZOS</code><em class="property"> = 'sitkLanczosWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.LANCZOS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.LINEAR">
+<code class="descname">LINEAR</code><em class="property"> = 'sitkLinear'</em><a class="headerlink" href="#torchio.transforms.Interpolation.LINEAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linearly interpolates image intensity at a non-integer pixel position.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.NEAREST">
+<code class="descname">NEAREST</code><em class="property"> = 'sitkNearestNeighbor'</em><a class="headerlink" href="#torchio.transforms.Interpolation.NEAREST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates image intensity at a non-integer pixel position by copying the intensity for the nearest neighbor.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="torchio.transforms.Interpolation.WELCH">
+<code class="descname">WELCH</code><em class="property"> = 'sitkWelchWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.WELCH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="transforms-api">
+<h2>Transforms API<a class="headerlink" href="#transforms-api" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="preprocessing.html#intensity">Intensity</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="preprocessing.html#normalizationtransform"><code class="docutils literal notranslate"><span class="pre">NormalizationTransform</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#rescale"><code class="docutils literal notranslate"><span class="pre">Rescale</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#rescaleintensity"><code class="docutils literal notranslate"><span class="pre">RescaleIntensity</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="preprocessing.html#znormalization"><code class="docutils literal notranslate"><span class="pre">ZNormalization</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="preprocessing.html#histogramstandardization"><code class="docutils literal notranslate"><span class="pre">HistogramStandardization</span></code></a></li>
 </ul>
@@ -228,19 +326,6 @@ tool <code class="docutils literal notranslate"><span class="pre">torchio-transf
 </li>
 </ul>
 </div>
-<div class="section" id="transform">
-<h2><a class="reference internal" href="#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></a><a class="headerlink" href="#transform" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="torchio.transforms.Transform">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Transform</code><a class="reference internal" href="../_modules/torchio/transforms/transform.html#Transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abstract class for all TorchIO transforms.</p>
-<p>All classes used to transform a sample from an
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code> should subclass it.
-All subclasses should overwrite
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">torchio.tranforms.Transform.apply_transform()</span></code>,
-which takes a sample, applies some transformation and returns the result.</p>
-</dd></dl>
-
 </div>
 </div>
 

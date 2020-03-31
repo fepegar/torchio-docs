@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.data.queue &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.data.queue &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -175,10 +176,10 @@
 <span class="sd">        samples_per_volume: Number of patches to extract from each volume.</span>
 <span class="sd">            A small number of patches ensures a large variability in the queue,</span>
 <span class="sd">            but training will be slower.</span>
-<span class="sd">        patch_size: Tuple of integers :math:`(D, H, W)` to generate patches</span>
-<span class="sd">            of size :math:`D \times H \times W`.</span>
+<span class="sd">        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches</span>
+<span class="sd">            of size :math:`d \times h \times w`.</span>
 <span class="sd">            If a single number :math:`n` is provided,</span>
-<span class="sd">            the patch size will be :math:`n \times n \times n`.</span>
+<span class="sd">            :math:`d = h = w = n`.</span>
 <span class="sd">        sampler_class: An instance of :class:`~torchio.data.ImageSampler` used</span>
 <span class="sd">            to define the patches sampling strategy.</span>
 <span class="sd">        num_workers: Number of subprocesses to use for data loading</span>
@@ -194,6 +195,28 @@
 <span class="sd">    .. note:: :attr:`num_workers` refers to the number of workers used to</span>
 <span class="sd">        load and transform the volumes. Multiprocessing is not needed to pop</span>
 <span class="sd">        patches from the queue.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; form torch.utils.data import DataLoader</span>
+<span class="sd">    &gt;&gt;&gt; import torchio</span>
+<span class="sd">    &gt;&gt;&gt; patches_queue = torchio.Queue(</span>
+<span class="sd">    ...     subjects_dataset=subjects_dataset,  # instance of torchio.ImagesDataset</span>
+<span class="sd">    ...     max_length=300,</span>
+<span class="sd">    ...     samples_per_volume=10,</span>
+<span class="sd">    ...     patch_size=96,</span>
+<span class="sd">    ...     sampler_class=torchio.sampler.ImageSampler,</span>
+<span class="sd">    ...     num_workers=4,</span>
+<span class="sd">    ...     shuffle_subjects=True,</span>
+<span class="sd">    ...     shuffle_patches=True,</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; patches_loader = DataLoader(patches_queue, batch_size=4)</span>
+<span class="sd">    &gt;&gt;&gt; num_epochs = 20</span>
+<span class="sd">    &gt;&gt;&gt; for epoch_index in range(num_epochs):</span>
+<span class="sd">    ...     for patches_batch in patches_loader:</span>
+<span class="sd">    ...         inputs = patches_batch[&#39;image_name&#39;][torchio.DATA]</span>
+<span class="sd">    ...         targets = patches_batch[&#39;targets_name&#39;][torchio.DATA]</span>
+<span class="sd">    ...         logits = model(inputs)  # model is some torch.nn.Module</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>

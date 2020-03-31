@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.intensity.histogram_standardization &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.transforms.preprocessing.intensity.histogram_standardization &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -164,6 +165,7 @@
 <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 <span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypePath</span><span class="p">,</span> <span class="n">TypeCallable</span>
+<span class="kn">from</span> <span class="nn">....data.io</span> <span class="k">import</span> <span class="n">read_image</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">NormalizationTransform</span>
 
 <span class="n">DEFAULT_CUTOFF</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span>
@@ -171,7 +173,18 @@
 
 
 <div class="viewcode-block" id="HistogramStandardization"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.HistogramStandardization">[docs]</a><span class="k">class</span> <span class="nc">HistogramStandardization</span><span class="p">(</span><span class="n">NormalizationTransform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Perform histogram standardization of intensity values.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Perform histogram standardization of intensity values.</span>
+
+<span class="sd">    See example in :py:func:`torchio.transforms.HistogramStandardization.train`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        landmarks_dict: Dictionary in which keys are image names in the sample</span>
+<span class="sd">            and values are NumPy arrays defining the landmarks after training</span>
+<span class="sd">            with :py:meth:`torchio.transforms.HistogramStandardization.train`.</span>
+<span class="sd">        masking_method: See</span>
+<span class="sd">            :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">landmarks_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
@@ -199,35 +212,96 @@
             <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">],</span>
             <span class="n">landmarks</span><span class="p">,</span>
             <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="HistogramStandardization.train"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.HistogramStandardization.train">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span>
+            <span class="n">images_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">TypePath</span><span class="p">],</span>
+            <span class="n">cutoff</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">mask_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypePath</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">masking_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">output_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypePath</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Extract average histogram landmarks from images used for training.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            images_paths: List of image paths used to train.</span>
+<span class="sd">            cutoff: Optional minimum and maximum quantile values,</span>
+<span class="sd">                respectively, that are used to select a range of intensity of</span>
+<span class="sd">                interest. Equivalent to :math:`pc_1` and :math:`pc_2` in</span>
+<span class="sd">                `Nyúl and Udupa&#39;s paper &lt;http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.204.102&amp;rep=rep1&amp;type=pdf&gt;`_.</span>
+<span class="sd">            mask_path: Optional path to a mask image to extract voxels used for</span>
+<span class="sd">                training.</span>
+<span class="sd">            masking_function: Optional function used to extract voxels used for</span>
+<span class="sd">                training.</span>
+<span class="sd">            output_path: Optional file path with extension ``.txt`` or</span>
+<span class="sd">                ``.npy``, where the landmarks will be saved.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            &gt;&gt;&gt; from pathlib import Path</span>
+<span class="sd">            &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">            &gt;&gt;&gt; from torchio.transforms import HistogramStandardization</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; t1_paths = [&#39;subject_a_t1.nii&#39;, &#39;subject_b_t1.nii.gz&#39;]</span>
+<span class="sd">            &gt;&gt;&gt; t2_paths = [&#39;subject_a_t2.nii&#39;, &#39;subject_b_t2.nii.gz&#39;]</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; t1_landmarks_path = Path(&#39;t1_landmarks.npy&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; t2_landmarks_path = Path(&#39;t2_landmarks.npy&#39;)</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; t1_landmarks = (</span>
+<span class="sd">            ...     np.load(t1_landmarks_path)</span>
+<span class="sd">            ...     if t1_landmarks_path.is_file()</span>
+<span class="sd">            ...     else HistogramStandardization.train(t1_paths)</span>
+<span class="sd">            ... )</span>
+<span class="sd">            &gt;&gt;&gt; t2_landmarks = (</span>
+<span class="sd">            ...     np.load(t2_landmarks_path)</span>
+<span class="sd">            ...     if t2_landmarks_path.is_file()</span>
+<span class="sd">            ...     else HistogramStandardization.train(t2_paths)</span>
+<span class="sd">            ... )</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; landmarks_dict = {</span>
+<span class="sd">            ...     &#39;t1&#39;: t1_landmarks,</span>
+<span class="sd">            ...     &#39;t2&#39;: t2_landmarks,</span>
+<span class="sd">            ... }</span>
+<span class="sd">            &gt;&gt;&gt;</span>
+<span class="sd">            &gt;&gt;&gt; transform = HistogramStandardization(landmarks_dict)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">quantiles_cutoff</span> <span class="o">=</span> <span class="n">DEFAULT_CUTOFF</span> <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cutoff</span>
+        <span class="n">percentiles_cutoff</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">quantiles_cutoff</span><span class="p">)</span>
+        <span class="n">percentiles_database</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">percentiles</span> <span class="o">=</span> <span class="n">_get_percentiles</span><span class="p">(</span><span class="n">percentiles_cutoff</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">image_file_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">images_paths</span><span class="p">)):</span>
+            <span class="n">tensor</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">read_image</span><span class="p">(</span><span class="n">image_file_path</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">masking_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">masking_function</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">mask_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mask_path</span><span class="p">))</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">()</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+            <span class="n">percentile_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">percentiles</span><span class="p">)</span>
+            <span class="n">percentiles_database</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">percentile_values</span><span class="p">)</span>
+        <span class="n">percentiles_database</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">percentiles_database</span><span class="p">)</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="n">_get_average_mapping</span><span class="p">(</span><span class="n">percentiles_database</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="n">output_path</span><span class="o">.</span><span class="n">suffix</span>
+            <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.txt&#39;</span><span class="p">:</span>
+                <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;image&#39;</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{modality}</span><span class="s1"> {&quot; &quot;.join(map(str, mapping))}&#39;</span>
+                <span class="n">output_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.npy&#39;</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mapping</span></div></div>
 
 
-<span class="k">def</span> <span class="nf">__compute_percentiles</span><span class="p">(</span>
-        <span class="n">img</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">cutoff</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates the list of percentile values to be used as landmarks for the</span>
-<span class="sd">    linear fitting.</span>
 
-<span class="sd">    :param img: Image on which to determine the percentiles</span>
-<span class="sd">    :param mask: Mask to use over the image to constraint to the relevant</span>
-<span class="sd">    information</span>
-<span class="sd">    :param cutoff: Values of the minimum and maximum percentiles to use for</span>
-<span class="sd">    the linear fitting</span>
-<span class="sd">    :return perc_results: list of percentiles value for the given image over</span>
-<span class="sd">    the mask</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">perc</span> <span class="o">=</span> <span class="p">[</span><span class="n">cutoff</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span>
-            <span class="n">cutoff</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-    <span class="n">masked_img</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
-    <span class="n">perc_results</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">masked_img</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">perc</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">perc_results</span>
-
-
-<span class="k">def</span> <span class="nf">__standardize_cutoff</span><span class="p">(</span><span class="n">cutoff</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_standardize_cutoff</span><span class="p">(</span><span class="n">cutoff</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Standardize the cutoff values given in the configuration.</span>
 
 <span class="sd">    Computes percentile landmark normalization by default.</span>
@@ -241,25 +315,31 @@
     <span class="k">return</span> <span class="n">cutoff</span>
 
 
-<span class="k">def</span> <span class="nf">__averaged_mapping</span><span class="p">(</span>
-        <span class="n">perc_database</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-        <span class="n">s1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="n">s2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Map the landmarks of the database to the chosen range</span>
-<span class="sd">    :param perc_database: perc_database over which to perform the averaging</span>
-<span class="sd">    :param s1, s2: limits of the mapping range</span>
-<span class="sd">    :return final_map: the average mapping</span>
+<span class="k">def</span> <span class="nf">_get_average_mapping</span><span class="p">(</span><span class="n">percentiles_database</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Map the landmarks of the database to the chosen range.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        percentiles_database: Percentiles database over which to perform the</span>
+<span class="sd">            averaging.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># assuming shape: n_data_points = perc_database.shape[0]</span>
-    <span class="c1">#                 n_percentiles = perc_database.shape[1]</span>
-    <span class="n">slope</span> <span class="o">=</span> <span class="p">(</span><span class="n">s2</span> <span class="o">-</span> <span class="n">s1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">perc_database</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">perc_database</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
-    <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">slope</span><span class="p">)</span>
-    <span class="n">final_map</span> <span class="o">=</span> <span class="n">slope</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">perc_database</span><span class="p">)</span> <span class="o">/</span> <span class="n">perc_database</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">intercept</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">s1</span> <span class="o">-</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">perc_database</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
-    <span class="n">final_map</span> <span class="o">=</span> <span class="n">final_map</span> <span class="o">+</span> <span class="n">intercept</span>
+    <span class="c1"># Assuming percentiles_database.shape == (num_data_points, num_percentiles)</span>
+    <span class="n">pc1</span> <span class="o">=</span> <span class="n">percentiles_database</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">pc2</span> <span class="o">=</span> <span class="n">percentiles_database</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">STANDARD_RANGE</span>
+    <span class="n">slopes</span> <span class="o">=</span> <span class="p">(</span><span class="n">s2</span> <span class="o">-</span> <span class="n">s1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">pc2</span> <span class="o">-</span> <span class="n">pc1</span><span class="p">)</span>
+    <span class="n">slopes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">slopes</span><span class="p">)</span>
+    <span class="n">intercepts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">s1</span> <span class="o">-</span> <span class="n">slopes</span> <span class="o">*</span> <span class="n">pc1</span><span class="p">)</span>
+    <span class="n">num_images</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">percentiles_database</span><span class="p">)</span>
+    <span class="n">final_map</span> <span class="o">=</span> <span class="n">slopes</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">percentiles_database</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_images</span> <span class="o">+</span> <span class="n">intercepts</span>
     <span class="k">return</span> <span class="n">final_map</span>
+
+
+<span class="k">def</span> <span class="nf">_get_percentiles</span><span class="p">(</span><span class="n">percentiles_cutoff</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">quartiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">deciles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">all_percentiles</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">percentiles_cutoff</span><span class="p">)</span> <span class="o">+</span> <span class="n">quartiles</span> <span class="o">+</span> <span class="n">deciles</span>
+    <span class="n">percentiles</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">all_percentiles</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">percentiles</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span>
@@ -269,91 +349,55 @@
         <span class="n">cutoff</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-    <span class="n">cutoff</span> <span class="o">=</span> <span class="n">DEFAULT_CUTOFF</span> <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cutoff</span>
+    <span class="n">cutoff_</span> <span class="o">=</span> <span class="n">DEFAULT_CUTOFF</span> <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cutoff</span>
     <span class="n">array</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="n">landmarks</span>
 
-    <span class="n">img</span> <span class="o">=</span> <span class="n">array</span>
-    <span class="n">image_shape</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">array</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="n">range_to_use</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
 
-    <span class="n">cutoff</span> <span class="o">=</span> <span class="n">__standardize_cutoff</span><span class="p">(</span><span class="n">cutoff</span><span class="p">)</span>
-    <span class="n">perc</span> <span class="o">=</span> <span class="n">__compute_percentiles</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">)</span>
+    <span class="n">quantiles_cutoff</span> <span class="o">=</span> <span class="n">_standardize_cutoff</span><span class="p">(</span><span class="n">cutoff_</span><span class="p">)</span>
+    <span class="n">percentiles_cutoff</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">quantiles_cutoff</span><span class="p">)</span>
+    <span class="n">percentiles</span> <span class="o">=</span> <span class="n">_get_percentiles</span><span class="p">(</span><span class="n">percentiles_cutoff</span><span class="p">)</span>
+    <span class="n">percentile_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="n">percentiles</span><span class="p">)</span>
 
     <span class="c1"># Apply linear histogram standardization</span>
     <span class="n">range_mapping</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">range_to_use</span><span class="p">]</span>
-    <span class="n">range_perc</span> <span class="o">=</span> <span class="n">perc</span><span class="p">[</span><span class="n">range_to_use</span><span class="p">]</span>
-    <span class="n">diff_mapping</span> <span class="o">=</span> <span class="n">range_mapping</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">range_mapping</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">diff_perc</span> <span class="o">=</span> <span class="n">range_perc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">range_perc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">range_perc</span> <span class="o">=</span> <span class="n">percentile_values</span><span class="p">[</span><span class="n">range_to_use</span><span class="p">]</span>
+    <span class="n">diff_mapping</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">range_mapping</span><span class="p">)</span>
+    <span class="n">diff_perc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">range_perc</span><span class="p">)</span>
 
-    <span class="c1"># handling the case where two landmarks are the same</span>
+    <span class="c1"># Handling the case where two landmarks are the same</span>
     <span class="c1"># for a given input image. This usually happens when</span>
     <span class="c1"># image background is not removed from the image.</span>
     <span class="n">diff_perc</span><span class="p">[</span><span class="n">diff_perc</span> <span class="o">&lt;</span> <span class="n">epsilon</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
 
     <span class="n">affine_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">range_to_use</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
-    <span class="c1"># compute slopes of the linear models</span>
+
+    <span class="c1"># Compute slopes of the linear models</span>
     <span class="n">affine_map</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">diff_mapping</span> <span class="o">/</span> <span class="n">diff_perc</span>
-    <span class="c1"># compute intercepts of the linear models</span>
+
+    <span class="c1"># Compute intercepts of the linear models</span>
     <span class="n">affine_map</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">range_mapping</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">affine_map</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">range_perc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="n">bin_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">range_perc</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">bin_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">range_perc</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">lin_img</span> <span class="o">=</span> <span class="n">affine_map</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">bin_id</span><span class="p">]</span>
     <span class="n">aff_img</span> <span class="o">=</span> <span class="n">affine_map</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">bin_id</span><span class="p">]</span>
-    <span class="n">new_img</span> <span class="o">=</span> <span class="n">lin_img</span> <span class="o">*</span> <span class="n">img</span> <span class="o">+</span> <span class="n">aff_img</span>
-    <span class="n">new_img</span> <span class="o">=</span> <span class="n">new_img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image_shape</span><span class="p">)</span>
+    <span class="n">new_img</span> <span class="o">=</span> <span class="n">lin_img</span> <span class="o">*</span> <span class="n">data</span> <span class="o">+</span> <span class="n">aff_img</span>
+    <span class="n">new_img</span> <span class="o">=</span> <span class="n">new_img</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
     <span class="n">new_img</span> <span class="o">=</span> <span class="n">new_img</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
     <span class="n">new_img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">new_img</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new_img</span>
 
 
-<span class="k">def</span> <span class="nf">train</span><span class="p">(</span>
-        <span class="n">images_paths</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span>
-        <span class="n">cutoff</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">mask_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypePath</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">masking_function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">output_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypePath</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Output path extension should be .txt or .npy</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cutoff</span> <span class="o">=</span> <span class="n">DEFAULT_CUTOFF</span> <span class="k">if</span> <span class="n">cutoff</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">cutoff</span>
-    <span class="n">percentiles_database</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">image_file_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">images_paths</span><span class="p">)):</span>
-        <span class="c1"># NiftyNet implementation says image should be float</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">image_file_path</span><span class="p">))</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">masking_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">mask</span> <span class="o">=</span> <span class="n">masking_function</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">mask_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">mask</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mask_path</span><span class="p">))</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">()</span>
-                <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">&gt;</span> <span class="mi">0</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
-        <span class="n">percentiles</span> <span class="o">=</span> <span class="n">__compute_percentiles</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">)</span>
-        <span class="n">percentiles_database</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">percentiles</span><span class="p">)</span>
-    <span class="n">percentiles_database</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">percentiles_database</span><span class="p">)</span>
-    <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">STANDARD_RANGE</span>
-    <span class="n">mapping</span> <span class="o">=</span> <span class="n">__averaged_mapping</span><span class="p">(</span><span class="n">percentiles_database</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">output_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-        <span class="n">extension</span> <span class="o">=</span> <span class="n">output_path</span><span class="o">.</span><span class="n">suffix</span>
-        <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.txt&#39;</span><span class="p">:</span>
-            <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;image&#39;</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{modality}</span><span class="s1"> {&quot; &quot;.join(map(str, mapping))}&#39;</span>
-            <span class="n">output_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.npy&#39;</span><span class="p">:</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">mapping</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">train_histogram</span> <span class="o">=</span> <span class="n">HistogramStandardization</span><span class="o">.</span><span class="n">train</span>
 </pre></div>
 
            </div>

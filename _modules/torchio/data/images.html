@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.data.images &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.data.images &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -156,7 +157,16 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="k">import</span> <span class="n">Dataset</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -165,7 +175,7 @@
 <span class="kn">from</span> <span class="nn">.io</span> <span class="k">import</span> <span class="n">read_image</span><span class="p">,</span> <span class="n">write_image</span>
 
 
-<div class="viewcode-block" id="Image"><a class="viewcode-back" href="../../../data/image.html#torchio.data.images.Image">[docs]</a><span class="k">class</span> <span class="nc">Image</span><span class="p">:</span>
+<div class="viewcode-block" id="Image"><a class="viewcode-back" href="../../../data/images.html#torchio.data.images.Image">[docs]</a><span class="k">class</span> <span class="nc">Image</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Class to store information about an image.</span>
 
 <span class="sd">    Args:</span>
@@ -220,11 +230,11 @@
         <span class="k">return</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">affine</span></div>
 
 
-<div class="viewcode-block" id="Subject"><a class="viewcode-back" href="../../../data/image.html#torchio.data.images.Subject">[docs]</a><span class="k">class</span> <span class="nc">Subject</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="Subject"><a class="viewcode-back" href="../../../data/images.html#torchio.data.images.Subject">[docs]</a><span class="k">class</span> <span class="nc">Subject</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to store information about the images corresponding to a subject.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        *images: Instances of :class:`~torchio.data.images.Image`.</span>
+<span class="sd">        *images: Instances of :py:class:`~torchio.data.images.Image`.</span>
 <span class="sd">        name: Subject ID</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">:</span> <span class="n">Image</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
@@ -236,18 +246,10 @@
         <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{__class__.__name__}</span><span class="s1">(&quot;</span><span class="si">{self.name}</span><span class="s1">&quot;, {len(self)} images)&#39;</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_parse_images</span><span class="p">(</span><span class="n">images</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Image</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># Check that each element is a list</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Sequence</span><span class="p">):</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s1">&#39;Subject &quot;images&quot; parameter must be a sequence&#39;</span>
-                <span class="n">f</span><span class="s1">&#39;, not {type(images)}&#39;</span>
-            <span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-
+    <span class="k">def</span> <span class="nf">_parse_images</span><span class="p">(</span><span class="n">images</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Image</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Check that it&#39;s not empty</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">images</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Images list is empty&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;A subject without images cannot be created&#39;</span><span class="p">)</span>
 
         <span class="c1"># Check that there are only instances of Image</span>
         <span class="c1"># and all images have different names</span>
@@ -256,7 +258,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">Image</span><span class="p">):</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="s1">&#39;Subject list elements must be instances of&#39;</span>
-                    <span class="n">f</span><span class="s1">&#39; torchio.Image, not {type(image)}&#39;</span>
+                    <span class="n">f</span><span class="s1">&#39; torchio.Image, not &quot;{type(image)}&quot;&#39;</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
@@ -268,7 +270,7 @@
             <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ImagesDataset"><a class="viewcode-back" href="../../../data/image.html#torchio.data.images.ImagesDataset">[docs]</a><span class="k">class</span> <span class="nc">ImagesDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<div class="viewcode-block" id="ImagesDataset"><a class="viewcode-back" href="../../../data/images.html#torchio.data.images.ImagesDataset">[docs]</a><span class="k">class</span> <span class="nc">ImagesDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base TorchIO dataset.</span>
 
 <span class="sd">    :class:`~torchio.data.images.ImagesDataset`</span>
@@ -313,7 +315,11 @@
 <span class="sd">            :class:`torchio.transforms.Transform` that is applied to each</span>
 <span class="sd">            image after loading it.</span>
 <span class="sd">        check_nans: If ``True``, issues a warning if NaNs are found</span>
-<span class="sd">            in the image</span>
+<span class="sd">            in the image.</span>
+<span class="sd">        load_image_data: If ``False``, image data and affine will not be loaded.</span>
+<span class="sd">            These fields will be set to ``None`` in the sample. This can be</span>
+<span class="sd">            used to quickly iterate over the samples to retrieve e.g. the</span>
+<span class="sd">            images paths. If ``True``, transform must be ``None``.</span>
 
 <span class="sd">    .. _NiBabel: https://nipy.org/nibabel/#nibabel</span>
 <span class="sd">    .. _SimpleITK: https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F</span>
@@ -324,13 +330,17 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">subjects</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Subject</span><span class="p">],</span>
-            <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">check_nans</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">load_image_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parse_subjects_list</span><span class="p">(</span><span class="n">subjects</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span> <span class="o">=</span> <span class="n">subjects</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span> <span class="o">=</span> <span class="n">transform</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_transform</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_nans</span> <span class="o">=</span> <span class="n">check_nans</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_image_data</span><span class="p">:</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_load_image_data</span><span class="p">(</span><span class="n">load_image_data</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">)</span>
@@ -339,29 +349,62 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Index &quot;</span><span class="si">{index}</span><span class="s1">&quot; must be int, not {type(index)}&#39;</span><span class="p">)</span>
         <span class="n">subject</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">subject</span><span class="p">:</span>
-            <span class="n">tensor</span><span class="p">,</span> <span class="n">affine</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">check_nans</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check_nans</span><span class="p">)</span>
-            <span class="n">image_dict</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">DATA</span><span class="p">:</span> <span class="n">tensor</span><span class="p">,</span>
-                <span class="n">AFFINE</span><span class="p">:</span> <span class="n">affine</span><span class="p">,</span>
-                <span class="n">TYPE</span><span class="p">:</span> <span class="n">image</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                <span class="n">PATH</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
-                <span class="n">STEM</span><span class="p">:</span> <span class="n">get_stem</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
-            <span class="p">}</span>
-            <span class="n">sample</span><span class="p">[</span><span class="n">image</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_dict</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sample_dict_from_subject</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
 
         <span class="c1"># Apply transform (this is usually the bottleneck)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sample</span>
 
-<div class="viewcode-block" id="ImagesDataset.set_transform"><a class="viewcode-back" href="../../../data/image.html#torchio.data.images.ImagesDataset.set_transform">[docs]</a>    <span class="k">def</span> <span class="nf">set_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ImagesDataset.get_sample_dict_from_subject"><a class="viewcode-back" href="../../../data/images.html#torchio.data.images.ImagesDataset.get_sample_dict_from_subject">[docs]</a>    <span class="k">def</span> <span class="nf">get_sample_dict_from_subject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="n">Subject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a dictionary of dictionaries with subject information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            subject: Instance of :py:class:`~torchio.data.images.Subject`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">image</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_image_dict_from_image</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">subject</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">sample</span></div>
+
+<div class="viewcode-block" id="ImagesDataset.get_image_dict_from_image"><a class="viewcode-back" href="../../../data/images.html#torchio.data.images.ImagesDataset.get_image_dict_from_image">[docs]</a>    <span class="k">def</span> <span class="nf">get_image_dict_from_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">Image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a dictionary with image information.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            image: Instance of :py:class:`~torchio.data.images.Image`.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            Dictionary with keys</span>
+<span class="sd">            :py:attr:`torchio.DATA`,</span>
+<span class="sd">            :py:attr:`torchio.AFFINE`,</span>
+<span class="sd">            :py:attr:`torchio.TYPE`,</span>
+<span class="sd">            :py:attr:`torchio.PATH` and</span>
+<span class="sd">            :py:attr:`torchio.STEM`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_image_data</span><span class="p">:</span>
+            <span class="n">tensor</span><span class="p">,</span> <span class="n">affine</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">check_nans</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">check_nans</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tensor</span> <span class="o">=</span> <span class="n">affine</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">image_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">DATA</span><span class="p">:</span> <span class="n">tensor</span><span class="p">,</span>
+            <span class="n">AFFINE</span><span class="p">:</span> <span class="n">affine</span><span class="p">,</span>
+            <span class="n">TYPE</span><span class="p">:</span> <span class="n">image</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+            <span class="n">PATH</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+            <span class="n">STEM</span><span class="p">:</span> <span class="n">get_stem</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">image_dict</span></div>
+
+<div class="viewcode-block" id="ImagesDataset.set_transform"><a class="viewcode-back" href="../../../data/images.html#torchio.data.images.ImagesDataset.set_transform">[docs]</a>    <span class="k">def</span> <span class="nf">set_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Set the :attr:`transform` attribute.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            transform: An instance of :class:`torchio.transforms.Transform`</span>
+<span class="sd">            transform: An instance of :py:class:`torchio.transforms.Transform`</span>
+<span class="sd">                or :py:class:`torchvision.transforms.Compose`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">callable</span><span class="p">(</span><span class="n">transform</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">&#39;The transform must be a callable object, not </span><span class="si">{transform}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span> <span class="o">=</span> <span class="n">transform</span></div>
 
     <span class="nd">@staticmethod</span>
@@ -388,7 +431,15 @@
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">output_path</span> <span class="ow">in</span> <span class="n">output_paths_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">tensor</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">DATA</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># remove channels dim</span>
             <span class="n">affine</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">AFFINE</span><span class="p">]</span>
-            <span class="n">write_image</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span></div>
+            <span class="n">write_image</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">affine</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_load_image_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">load_image_data</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">load_image_data</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Load data cannot be set to False if transform is not None.&#39;</span>
+                <span class="n">f</span><span class="s1">&#39;Current transform is </span><span class="si">{self._transform}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_image_data</span> <span class="o">=</span> <span class="n">load_image_data</span></div>
 </pre></div>
 
            </div>

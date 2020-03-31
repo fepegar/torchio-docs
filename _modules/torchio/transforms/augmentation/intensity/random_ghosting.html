@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.augmentation.intensity.random_ghosting &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.transforms.augmentation.intensity.random_ghosting &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -166,15 +167,22 @@
     <span class="sd">&quot;&quot;&quot;Add random MRI ghosting artifact.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        num_ghosts_range:</span>
-<span class="sd">        axes:</span>
-<span class="sd">        proportion_to_augment:</span>
-<span class="sd">        seed:</span>
+<span class="sd">        num_ghosts: Number of &#39;ghosts&#39; :math:`n` in the image.</span>
+<span class="sd">            If :py:attr:`num_ghosts` is a tuple :math:`(a, b)`, then</span>
+<span class="sd">            :math:`n \sim \mathcal{U}(a, b) \cap \mathbb{N}`.</span>
+<span class="sd">        axes: Axis along which the ghosts will be created. If</span>
+<span class="sd">            :py:attr:`axes` is a tuple, the axis will be randomly chosen</span>
+<span class="sd">            from the passed values.</span>
+<span class="sd">        proportion_to_augment: Probability that this transform will be applied.</span>
+<span class="sd">        seed: Seed for the random number generator.</span>
+
+<span class="sd">    .. note:: The execution time of this transform does not depend on the</span>
+<span class="sd">        number of ghosts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">num_ghosts_range</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-            <span class="n">axes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="n">num_ghosts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">axes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
             <span class="n">proportion_to_augment</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
             <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
@@ -183,11 +191,13 @@
             <span class="n">proportion_to_augment</span><span class="p">,</span>
             <span class="s1">&#39;proportion_to_augment&#39;</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes</span><span class="p">,)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_ghosts_range</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">num_ghosts_range</span> <span class="o">=</span> <span class="n">num_ghosts_range</span><span class="p">,</span> <span class="n">num_ghosts_range</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">num_ghosts_range</span> <span class="o">=</span> <span class="n">num_ghosts_range</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_ghosts</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_ghosts_range</span> <span class="o">=</span> <span class="n">num_ghosts</span><span class="p">,</span> <span class="n">num_ghosts</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_ghosts</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_ghosts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_ghosts_range</span> <span class="o">=</span> <span class="n">num_ghosts</span>
 
     <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

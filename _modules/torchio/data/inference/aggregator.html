@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.data.inference.aggregator &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.data.inference.aggregator &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -160,18 +161,34 @@
 
 
 <div class="viewcode-block" id="GridAggregator"><a class="viewcode-back" href="../../../../data/sampling.html#torchio.data.GridAggregator">[docs]</a><span class="k">class</span> <span class="nc">GridAggregator</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Adapted from NiftyNet.</span>
-<span class="sd">    See https://niftynet.readthedocs.io/en/dev/window_sizes.html</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Aggregate patches for dense inference.</span>
+
+<span class="sd">    This class is typically used to build a volume made of batches after</span>
+<span class="sd">    inference of patches coming from a</span>
+<span class="sd">    :py:class:`~torchio.data.inference.grid_sampler.GridSampler`.</span>
+
+<span class="sd">    Adapted from NiftyNet. See</span>
+<span class="sd">    `this NiftyNet tutorial &lt;https://niftynet.readthedocs.io/en/dev/window_sizes.html&gt;`_</span>
+<span class="sd">    for more information.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: Tensor from which patches were extracted.</span>
+<span class="sd">        patch_overlap: Tuple of integers :math:`(d_o, h_o, w_o)` specifying the</span>
+<span class="sd">            overlap between patches. If a single number</span>
+<span class="sd">            :math:`n` is provided, :math:`d_o = h_o = w_o = n`.</span>
+
+<span class="sd">    .. note:: In the future, the :py:attr:`data` argument will be replaced by</span>
+<span class="sd">        :py:attr:`shape`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">data</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">,</span>
-            <span class="n">patch_overlap</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+            <span class="n">patch_overlap</span><span class="p">:</span> <span class="n">TypeTuple</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_crop_batch</span><span class="p">(</span>

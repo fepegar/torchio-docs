@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.data.inference.grid_sampler &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.data.inference.grid_sampler &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -152,28 +153,41 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.data.inference.grid_sampler</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="k">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">torchio</span> <span class="k">import</span> <span class="n">IMAGE</span><span class="p">,</span> <span class="n">LOCATION</span>
+<span class="kn">from</span> <span class="nn">torchio</span> <span class="k">import</span> <span class="n">IMAGE</span><span class="p">,</span> <span class="n">LOCATION</span><span class="p">,</span> <span class="n">TypeTuple</span><span class="p">,</span> <span class="n">TypeData</span>
 <span class="kn">from</span> <span class="nn">torchio.utils</span> <span class="k">import</span> <span class="n">to_tuple</span>
 
 
 <div class="viewcode-block" id="GridSampler"><a class="viewcode-back" href="../../../../data/sampling.html#torchio.data.GridSampler">[docs]</a><span class="k">class</span> <span class="nc">GridSampler</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Adapted from NiftyNet.</span>
-<span class="sd">    See https://niftynet.readthedocs.io/en/dev/window_sizes.html</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract patches across a whole volume.</span>
+
+<span class="sd">    Adapted from NiftyNet. See</span>
+<span class="sd">    `this NiftyNet tutorial &lt;https://niftynet.readthedocs.io/en/dev/window_sizes.html&gt;`_</span>
+<span class="sd">    for more information.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: Tensor from which patches will be extracted.</span>
+<span class="sd">        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches</span>
+<span class="sd">            of size :math:`d \times h \times w`.</span>
+<span class="sd">            If a single number :math:`n` is provided,</span>
+<span class="sd">            :math:`d = h = w = n`.</span>
+<span class="sd">        patch_overlap: Tuple of integers :math:`(d_o, h_o, w_o)` specifying the</span>
+<span class="sd">            overlap between patches for dense inference. If a single number</span>
+<span class="sd">            :math:`n` is provided, :math:`d_o = h_o = w_o = n`.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
-            <span class="n">patch_size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
-            <span class="n">patch_overlap</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+            <span class="n">data</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">,</span>
+            <span class="n">patch_size</span><span class="p">:</span> <span class="n">TypeTuple</span><span class="p">,</span>
+            <span class="n">patch_overlap</span><span class="p">:</span> <span class="n">TypeTuple</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="n">patch_size</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span>
-        <span class="n">patch_overlap</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">)</span>
+        <span class="n">patch_size</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_size</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">patch_overlap</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid_spatial_coordinates</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
             <span class="n">patch_size</span><span class="p">,</span>

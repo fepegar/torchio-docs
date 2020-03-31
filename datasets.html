@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Medical image datasets &mdash; TorchIO 0.13.14 documentation</title>
+  <title>Medical image datasets &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -36,6 +36,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command-line tools" href="cli.html" />
     <link rel="prev" title="Others" href="transforms/others.html" /> 
 </head>
 
@@ -60,7 +61,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -84,8 +85,8 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul class="current">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Medical image datasets</a><ul>
@@ -96,6 +97,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -181,7 +183,7 @@ If you use it please acknowledge the source of the IXI data, e.g.
 <dl class="class">
 <dt id="torchio.datasets.ixi.IXI">
 <em class="property">class </em><code class="descclassname">torchio.datasets.ixi.</code><code class="descname">IXI</code><span class="sig-paren">(</span><em>root: Union[pathlib.Path, str], transform: Optional[torchio.transforms.transform.Transform] = None, download: bool = False, modalities: Sequence[str] = ['T1', 'T2']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/datasets/ixi.html#IXI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.ixi.IXI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="data/image.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.images.ImagesDataset</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="data/images.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.images.ImagesDataset</span></code></a></p>
 <p>Full IXI dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -233,7 +235,7 @@ to be downloaded if it is not already present.</p>
 <dl class="class">
 <dt id="torchio.datasets.ixi.IXITiny">
 <em class="property">class </em><code class="descclassname">torchio.datasets.ixi.</code><code class="descname">IXITiny</code><span class="sig-paren">(</span><em>root: Union[pathlib.Path, str], transform: Optional[torchio.transforms.transform.Transform] = None, download: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/datasets/ixi.html#IXITiny"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.ixi.IXITiny" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="data/image.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.images.ImagesDataset</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="data/images.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.images.ImagesDataset</span></code></a></p>
 <p>This is the dataset used in the <a class="reference external" href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i">notebook</a>.
 It is a tiny version of IXI, containing 566 <span class="math notranslate nohighlight">\(T_1\)</span>-weighted brain MR
 images and their corresponding brain segmentations,
@@ -270,6 +272,8 @@ all with size <span class="math notranslate nohighlight">\(83 \times 44 \times 5
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cli.html" class="btn btn-neutral float-right" title="Command-line tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="transforms/others.html" class="btn btn-neutral float-left" title="Others" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

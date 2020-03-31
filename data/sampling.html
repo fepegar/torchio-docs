@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Sampling &mdash; TorchIO 0.13.14 documentation</title>
+  <title>Sampling &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -85,10 +85,10 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul class="current">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting started</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="data.html">Handling data</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="image.html">Images dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html">Images dataset</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="patch_based.html">Patch-based training</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Sampling</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#samplers">Samplers</a></li>
@@ -102,6 +102,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -173,6 +174,42 @@
             
   <div class="section" id="sampling">
 <h1>Sampling<a class="headerlink" href="#sampling" title="Permalink to this headline">¶</a></h1>
+<p>TorchIO includes grid, uniform and label patch samplers. There is also an
+aggregator used for dense predictions.
+For more information about patch-based training, see
+<a class="reference external" href="https://niftynet.readthedocs.io/en/dev/window_sizes.html">this NiftyNet tutorial</a>.</p>
+<p>Here’s an example that uses a grid sampler and aggregator to perform dense
+inference across a 3D volume using image patches:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CHANNELS_DIMENSION</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">patch_overlap</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">patch_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grid_sampler</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">inference</span><span class="o">.</span><span class="n">GridSampler</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">input_data</span><span class="p">,</span>  <span class="c1"># some PyTorch tensor or NumPy array</span>
+<span class="gp">... </span>    <span class="n">patch_size</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">patch_overlap</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">patch_loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">grid_sampler</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aggregator</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">inference</span><span class="o">.</span><span class="n">GridAggregator</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">input_data</span><span class="p">,</span>  <span class="c1"># some PyTorch tensor or NumPy array</span>
+<span class="gp">... </span>    <span class="n">patch_overlap</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">patches_batch</span> <span class="ow">in</span> <span class="n">patch_loader</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">patches_batch</span><span class="p">[</span><span class="n">torchio</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">locations</span> <span class="o">=</span> <span class="n">patches_batch</span><span class="p">[</span><span class="n">torchio</span><span class="o">.</span><span class="n">LOCATION</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_tensor</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">labels</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="n">CHANNELS_DIMENSION</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">outputs</span> <span class="o">=</span> <span class="n">labels</span>
+<span class="gp">... </span>        <span class="n">aggregator</span><span class="o">.</span><span class="n">add_batch</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">locations</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output_tensor</span> <span class="o">=</span> <span class="n">aggregator</span><span class="o">.</span><span class="n">get_output_tensor</span><span class="p">()</span>
+</pre></div>
+</div>
 <div class="section" id="samplers">
 <h2>Samplers<a class="headerlink" href="#samplers" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="imagesampler">
@@ -181,6 +218,24 @@
 <dt id="torchio.data.ImageSampler">
 <em class="property">class </em><code class="descclassname">torchio.data.</code><code class="descname">ImageSampler</code><span class="sig-paren">(</span><em>sample: dict, patch_size: Union[int, Sequence[int]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/sampler/sampler.html#ImageSampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.ImageSampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.IterableDataset</span></code></p>
+<p>Extract random patches from a volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sample</strong> – Sample generated by a
+<a class="reference internal" href="images.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a>, from which image
+patches will be extracted.</li>
+<li><strong>patch_size</strong> – Tuple of integers <span class="math notranslate nohighlight">\((d, h, w)\)</span> to generate patches
+of size <span class="math notranslate nohighlight">\(d \times h \times w\)</span>.
+If a single number <span class="math notranslate nohighlight">\(n\)</span> is provided,
+<span class="math notranslate nohighlight">\(d = h = w = n\)</span>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -190,12 +245,34 @@
 <dt id="torchio.data.LabelSampler">
 <em class="property">class </em><code class="descclassname">torchio.data.</code><code class="descname">LabelSampler</code><span class="sig-paren">(</span><em>sample: dict, patch_size: Union[int, Sequence[int]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/sampler/label.html#LabelSampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.LabelSampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.sampler.sampler.ImageSampler</span></code></p>
+<p>Extract random patches containing labeled voxels.</p>
 <p>This iterable dataset yields patches that contain at least one voxel
 without background.</p>
-<p>For now, this implementation is not efficient because it uses brute force
-to look for foreground voxels.</p>
 <p>It extracts the label data from the first image in the sample with type
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.LABEL</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sample</strong> – Sample generated by a
+<a class="reference internal" href="images.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a>, from which image
+patches will be extracted.</li>
+<li><strong>patch_size</strong> – Tuple of integers <span class="math notranslate nohighlight">\((d, h, w)\)</span> to generate patches
+of size <span class="math notranslate nohighlight">\(d \times h \times w\)</span>.
+If a single number <span class="math notranslate nohighlight">\(n\)</span> is provided,
+<span class="math notranslate nohighlight">\(d = h = w = n\)</span>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">For now, this implementation is not efficient because it uses
+brute force to look for foreground voxels. It the number of
+non-background voxels is very small, this sampler will be slow.</p>
+</div>
 </dd></dl>
 
 </div>
@@ -203,10 +280,30 @@ to look for foreground voxels.</p>
 <h3><a class="reference internal" href="#torchio.data.GridSampler" title="torchio.data.GridSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridSampler</span></code></a><a class="headerlink" href="#gridsampler" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.data.GridSampler">
-<em class="property">class </em><code class="descclassname">torchio.data.</code><code class="descname">GridSampler</code><span class="sig-paren">(</span><em>data: Union[numpy.ndarray, torch.Tensor], patch_size: Union[int, Sequence[int]], patch_overlap: Union[int, Sequence[int]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/inference/grid_sampler.html#GridSampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.GridSampler" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">torchio.data.</code><code class="descname">GridSampler</code><span class="sig-paren">(</span><em>data: Union[torch.Tensor, numpy.ndarray], patch_size: Union[int, Tuple[int, int, int]], patch_overlap: Union[int, Tuple[int, int, int]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/inference/grid_sampler.html#GridSampler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.GridSampler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
-<p>Adapted from NiftyNet.
-See <a class="reference external" href="https://niftynet.readthedocs.io/en/dev/window_sizes.html">https://niftynet.readthedocs.io/en/dev/window_sizes.html</a></p>
+<p>Extract patches across a whole volume.</p>
+<p>Adapted from NiftyNet. See
+<a class="reference external" href="https://niftynet.readthedocs.io/en/dev/window_sizes.html">this NiftyNet tutorial</a>
+for more information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> – Tensor from which patches will be extracted.</li>
+<li><strong>patch_size</strong> – Tuple of integers <span class="math notranslate nohighlight">\((d, h, w)\)</span> to generate patches
+of size <span class="math notranslate nohighlight">\(d \times h \times w\)</span>.
+If a single number <span class="math notranslate nohighlight">\(n\)</span> is provided,
+<span class="math notranslate nohighlight">\(d = h = w = n\)</span>.</li>
+<li><strong>patch_overlap</strong> – Tuple of integers <span class="math notranslate nohighlight">\((d_o, h_o, w_o)\)</span> specifying the
+overlap between patches for dense inference. If a single number
+<span class="math notranslate nohighlight">\(n\)</span> is provided, <span class="math notranslate nohighlight">\(d_o = h_o = w_o = n\)</span>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -217,9 +314,33 @@ See <a class="reference external" href="https://niftynet.readthedocs.io/en/dev/w
 <h3><a class="reference internal" href="#torchio.data.GridAggregator" title="torchio.data.GridAggregator"><code class="xref py py-class docutils literal notranslate"><span class="pre">GridAggregator</span></code></a><a class="headerlink" href="#gridaggregator" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="torchio.data.GridAggregator">
-<em class="property">class </em><code class="descclassname">torchio.data.</code><code class="descname">GridAggregator</code><span class="sig-paren">(</span><em>data: Union[torch.Tensor, numpy.ndarray], patch_overlap: Tuple[int, int, int]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/inference/aggregator.html#GridAggregator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.GridAggregator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adapted from NiftyNet.
-See <a class="reference external" href="https://niftynet.readthedocs.io/en/dev/window_sizes.html">https://niftynet.readthedocs.io/en/dev/window_sizes.html</a></p>
+<em class="property">class </em><code class="descclassname">torchio.data.</code><code class="descname">GridAggregator</code><span class="sig-paren">(</span><em>data: Union[torch.Tensor, numpy.ndarray], patch_overlap: Union[int, Tuple[int, int, int]]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/inference/aggregator.html#GridAggregator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.GridAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate patches for dense inference.</p>
+<p>This class is typically used to build a volume made of batches after
+inference of patches coming from a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">GridSampler</span></code>.</p>
+<p>Adapted from NiftyNet. See
+<a class="reference external" href="https://niftynet.readthedocs.io/en/dev/window_sizes.html">this NiftyNet tutorial</a>
+for more information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>data</strong> – Tensor from which patches were extracted.</li>
+<li><strong>patch_overlap</strong> – Tuple of integers <span class="math notranslate nohighlight">\((d_o, h_o, w_o)\)</span> specifying the
+overlap between patches. If a single number
+<span class="math notranslate nohighlight">\(n\)</span> is provided, <span class="math notranslate nohighlight">\(d_o = h_o = w_o = n\)</span>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the future, the <code class="xref py py-attr docutils literal notranslate"><span class="pre">data</span></code> argument will be replaced by
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">shape</span></code>.</p>
+</div>
 </dd></dl>
 
 </div>

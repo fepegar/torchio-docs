@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.augmentation.spatial.random_elastic_deformation &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.transforms.augmentation.spatial.random_elastic_deformation &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -152,43 +153,202 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.transforms.augmentation.spatial.random_elastic_deformation</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">numbers</span> <span class="k">import</span> <span class="n">Number</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
-<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span><span class="p">,</span> <span class="n">check_consistent_shape</span>
+<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span><span class="p">,</span> <span class="n">check_consistent_shape</span><span class="p">,</span> <span class="n">to_tuple</span>
 <span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">LABEL</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">AFFINE</span><span class="p">,</span> <span class="n">TYPE</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">Interpolation</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">Interpolation</span><span class="p">,</span> <span class="n">get_sitk_interpolator</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RandomTransform</span>
 
 
+<span class="n">SPLINE_ORDER</span> <span class="o">=</span> <span class="mi">3</span>
+
+
 <div class="viewcode-block" id="RandomElasticDeformation"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomElasticDeformation">[docs]</a><span class="k">class</span> <span class="nc">RandomElasticDeformation</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;B-spline dense elastic deformation.</span>
+    <span class="sd">&quot;&quot;&quot;Apply dense random elastic deformation.</span>
+
+<span class="sd">    A random displacement is assigned to a coarse grid of control points around</span>
+<span class="sd">    and inside the image. The displacement at each voxel is interpolated from</span>
+<span class="sd">    the coarse grid using cubic B-splines.</span>
+
+<span class="sd">    The `&#39;Deformable Registration&#39; &lt;https://www.sciencedirect.com/topics/computer-science/deformable-registration&gt;`_</span>
+<span class="sd">    topic on ScienceDirect contains useful articles explaining interpolation of</span>
+<span class="sd">    displacement fields using cubic B-splines.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        num_control_points:</span>
-<span class="sd">        deformation_std:</span>
-<span class="sd">        proportion_to_augment:</span>
-<span class="sd">        image_interpolation:</span>
-<span class="sd">        seed:</span>
+<span class="sd">        num_control_points: Number of control points along each dimension of</span>
+<span class="sd">            the coarse grid :math:`(n_x, n_y, n_z)`.</span>
+<span class="sd">            If a single value :math:`n` is passed,</span>
+<span class="sd">            then :math:`n_x = n_y = n_z = n`.</span>
+<span class="sd">            Smaller numbers generate smoother deformations.</span>
+<span class="sd">            The minimum number of control points is ``4`` as this transform</span>
+<span class="sd">            uses cubic B-splines to interpolate displacement.</span>
+<span class="sd">        max_displacement: Maximum displacement along each dimension at each</span>
+<span class="sd">            control point :math:`(D_x, D_y, D_z)`.</span>
+<span class="sd">            The displacement along dimension :math:`i` at each control point is</span>
+<span class="sd">            :math:`d_i \sim \mathcal{U}(0, D_i)`.</span>
+<span class="sd">            If a single value :math:`D` is passed,</span>
+<span class="sd">            then :math:`D_x = D_y = D_z = D`.</span>
+<span class="sd">            Note that the total maximum displacement would actually be</span>
+<span class="sd">            :math:`D_{max} = \sqrt{D_x^2 + D_y^2 + D_z^2}`.</span>
+<span class="sd">        locked_borders: If ``0``, all displacement vectors are kept.</span>
+<span class="sd">            If ``1``, displacement of control points at the</span>
+<span class="sd">            border of the coarse grid will also be set to ``0``.</span>
+<span class="sd">            If ``2``, displacement of control points at the border of the image</span>
+<span class="sd">            will also be set to ``0``.</span>
+<span class="sd">        image_interpolation: Value in</span>
+<span class="sd">            :py:class:`torchio.transforms.interpolation.Interpolation`.</span>
+<span class="sd">            Note that this is the interpolation used to compute voxel</span>
+<span class="sd">            intensities when resampling using the displacement field.</span>
+<span class="sd">            The displacement at each voxel is always interpolated with cubic</span>
+<span class="sd">            B-splines from the coarse grid of control points.</span>
+<span class="sd">        proportion_to_augment: Probability that this transform will be applied.</span>
+<span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
+
+<span class="sd">    `This gist &lt;https://gist.github.com/fepegar/b723d15de620cd2a3a4dbd71e491b59d&gt;`_</span>
+<span class="sd">    can also be used to better understand the meaning of the parameters.</span>
+
+<span class="sd">    This is an example from the</span>
+<span class="sd">    `3D Slicer registration FAQ &lt;https://www.slicer.org/wiki/Documentation/4.10/FAQ/Registration#What.27s_the_BSpline_Grid_Size.3F&gt;`_.</span>
+
+<span class="sd">    .. image:: https://www.slicer.org/w/img_auth.php/6/6f/RegLib_BSplineGridModel.png</span>
+<span class="sd">        :alt: B-spline example from 3D Slicer documentation</span>
+
+<span class="sd">    To obtain a generate a similar grid of control points with TorchIO,</span>
+<span class="sd">    the transform can be instantiated as follows::</span>
+
+<span class="sd">        &gt;&gt;&gt; from torchio import RandomElasticDeformation</span>
+<span class="sd">        &gt;&gt;&gt; transform = RandomElasticDeformation(</span>
+<span class="sd">        ...     num_control_points=(7, 7, 7),  # or just 7</span>
+<span class="sd">        ...     locked_borders=2,</span>
+<span class="sd">        ... )</span>
+
+<span class="sd">    Note that control points outside the image bounds are not showed in the</span>
+<span class="sd">    example image (they would also be red as we set :py:attr:`locked_borders`</span>
+<span class="sd">    to 2).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">num_control_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
-            <span class="n">deformation_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
-            <span class="n">proportion_to_augment</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">num_control_points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="n">max_displacement</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">7.5</span><span class="p">,</span>
+            <span class="n">locked_borders</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
             <span class="n">image_interpolation</span><span class="p">:</span> <span class="n">Interpolation</span> <span class="o">=</span> <span class="n">Interpolation</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">,</span>
+            <span class="n">proportion_to_augment</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
             <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">deformation_std</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bspline_transformation</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">num_control_points</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">num_control_points</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">deformation_std</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">deformation_std</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_control_points</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">num_control_points</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse_control_points</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_control_points</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_displacement</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">max_displacement</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse_max_displacement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_displacement</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_locked_borders</span> <span class="o">=</span> <span class="n">locked_borders</span>
+        <span class="k">if</span> <span class="n">locked_borders</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;locked_borders must be 0, 1, or 2&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">locked_borders</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="mi">4</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_control_points</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Setting locked_borders to 2 and using less than 5 control&#39;</span>
+                <span class="s1">&#39;points results in an identity transform. Lock fewer borders&#39;</span>
+                <span class="s1">&#39; or use more control points.&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proportion_to_augment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_probability</span><span class="p">(</span>
             <span class="n">proportion_to_augment</span><span class="p">,</span>
             <span class="s1">&#39;proportion_to_augment&#39;</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interpolation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_interpolation</span><span class="p">(</span><span class="n">image_interpolation</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">deformation_std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;The argument &quot;deformation_std&quot; is deprecated.&#39;</span>
+                <span class="s1">&#39; Use &quot;max_displacement&quot; instead&#39;</span>
+            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_displacement</span> <span class="o">=</span> <span class="n">deformation_std</span>
+
+    <span class="k">def</span> <span class="nf">parse_control_points</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">num_control_points</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">num_control_points</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">f</span><span class="s1">&#39;The number of control points for axis </span><span class="si">{axis}</span><span class="s1"> must be&#39;</span>
+                    <span class="n">f</span><span class="s1">&#39; an integer larger than 3, not </span><span class="si">{n}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">parse_max_displacement</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">max_displacement</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">max_displacement</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">Number</span><span class="p">)</span> <span class="ow">or</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;The maximum displacement at each control point&#39;</span>
+                    <span class="n">f</span><span class="s1">&#39; for axis </span><span class="si">{axis}</span><span class="s1"> must be&#39;</span>
+                    <span class="n">f</span><span class="s1">&#39; a number greater or equal to 0, not </span><span class="si">{n}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span>
+            <span class="n">num_control_points</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+            <span class="n">max_displacement</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+            <span class="n">num_locked_borders</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
+        <span class="n">grid_shape</span> <span class="o">=</span> <span class="n">num_control_points</span>
+        <span class="n">num_dimensions</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">coarse_field</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="o">*</span><span class="n">grid_shape</span><span class="p">,</span> <span class="n">num_dimensions</span><span class="p">)</span>  <span class="c1"># [0, 1)</span>
+        <span class="n">coarse_field</span> <span class="o">-=</span> <span class="mf">0.5</span>  <span class="c1"># [-0.5, 0.5)</span>
+        <span class="n">coarse_field</span> <span class="o">*=</span> <span class="mi">2</span>  <span class="c1"># [-1, 1]</span>
+        <span class="k">for</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="c1"># [-max_displacement, max_displacement)</span>
+            <span class="n">coarse_field</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">dimension</span><span class="p">]</span> <span class="o">*=</span> <span class="n">max_displacement</span><span class="p">[</span><span class="n">dimension</span><span class="p">]</span>
+
+        <span class="c1"># Set displacement to 0 at the borders</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_locked_borders</span><span class="p">):</span>
+            <span class="n">coarse_field</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">coarse_field</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">coarse_field</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">coarse_field</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">do_augmentation</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">probability</span>
+        <span class="k">return</span> <span class="n">do_augmentation</span><span class="p">,</span> <span class="n">coarse_field</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_bspline_transform</span><span class="p">(</span>
+            <span class="n">image</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span>
+            <span class="n">num_control_points</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+            <span class="n">coarse_field</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sitk</span><span class="o">.</span><span class="n">BSplineTransformInitializer</span><span class="p">:</span>
+        <span class="n">mesh_shape</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="o">-</span> <span class="n">SPLINE_ORDER</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">num_control_points</span><span class="p">]</span>
+        <span class="n">bspline_transform</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">BSplineTransformInitializer</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mesh_shape</span><span class="p">)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">coarse_field</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">bspline_transform</span><span class="o">.</span><span class="n">SetParameters</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bspline_transform</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_free_form_transform</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">max_displacement</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Issue a warning is possible folding is detected.&quot;&quot;&quot;</span>
+        <span class="n">coefficient_images</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">GetCoefficientImages</span><span class="p">()</span>
+        <span class="n">grid_spacing</span> <span class="o">=</span> <span class="n">coefficient_images</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">GetSpacing</span><span class="p">()</span>
+        <span class="n">conflicts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">max_displacement</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grid_spacing</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">conflicts</span><span class="p">):</span>
+            <span class="n">where</span><span class="p">,</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">conflicts</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;The maximum displacement is larger than the coarse grid&#39;</span>
+                <span class="n">f</span><span class="s1">&#39; spacing for dimensions: {where.tolist()}, so folding may&#39;</span>
+                <span class="s1">&#39; occur. Choose fewer control points or a smaller&#39;</span>
+                <span class="s1">&#39; maximum displacement&#39;</span>
+            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">check_consistent_shape</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
@@ -209,9 +369,9 @@
                     <span class="n">image_dict</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="n">do_augmentation</span><span class="p">,</span> <span class="n">bspline_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span>
-                    <span class="n">image</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">num_control_points</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">deformation_std</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">max_displacement</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">num_locked_borders</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">proportion_to_augment</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">params_dict</span><span class="p">[</span><span class="s1">&#39;bspline_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bspline_params</span>
@@ -225,33 +385,6 @@
                 <span class="n">interpolation</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">sample</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span>
-            <span class="n">image</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span>
-            <span class="n">num_control_points</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">deformation_std</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
-        <span class="n">mesh_shape</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_control_points</span><span class="p">,)</span>
-        <span class="n">bspline_transform</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">BSplineTransformInitializer</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mesh_shape</span><span class="p">)</span>
-        <span class="n">default_params</span> <span class="o">=</span> <span class="n">bspline_transform</span><span class="o">.</span><span class="n">GetParameters</span><span class="p">()</span>
-        <span class="n">bspline_params</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">default_params</span><span class="p">))</span>  <span class="c1"># [0, 1)</span>
-        <span class="n">bspline_params</span> <span class="o">-=</span> <span class="mf">0.5</span>  <span class="c1"># [-0.5, 0.5)</span>
-        <span class="n">bspline_params</span> <span class="o">*=</span> <span class="n">deformation_std</span>  <span class="c1"># [-std/2, std/2)</span>
-        <span class="n">do_augmentation</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">probability</span>
-        <span class="k">return</span> <span class="n">do_augmentation</span><span class="p">,</span> <span class="n">bspline_params</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_bspline_transform</span><span class="p">(</span>
-            <span class="n">image</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span>
-            <span class="n">num_control_points</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">bspline_params</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sitk</span><span class="o">.</span><span class="n">BSplineTransformInitializer</span><span class="p">:</span>
-        <span class="n">mesh_shape</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_control_points</span><span class="p">,)</span>
-        <span class="n">bspline_transform</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">BSplineTransformInitializer</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mesh_shape</span><span class="p">)</span>
-        <span class="n">bspline_transform</span><span class="o">.</span><span class="n">SetParameters</span><span class="p">(</span><span class="n">bspline_params</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">bspline_transform</span>
 
     <span class="k">def</span> <span class="nf">apply_bspline_transform</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -269,10 +402,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">num_control_points</span><span class="p">,</span>
             <span class="n">bspline_params</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse_free_form_transform</span><span class="p">(</span>
+            <span class="n">bspline_transform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_displacement</span><span class="p">)</span>
         <span class="n">resampler</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ResampleImageFilter</span><span class="p">()</span>
         <span class="n">resampler</span><span class="o">.</span><span class="n">SetReferenceImage</span><span class="p">(</span><span class="n">reference</span><span class="p">)</span>
         <span class="n">resampler</span><span class="o">.</span><span class="n">SetTransform</span><span class="p">(</span><span class="n">bspline_transform</span><span class="p">)</span>
-        <span class="n">resampler</span><span class="o">.</span><span class="n">SetInterpolator</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">resampler</span><span class="o">.</span><span class="n">SetInterpolator</span><span class="p">(</span><span class="n">get_sitk_interpolator</span><span class="p">(</span><span class="n">interpolation</span><span class="p">))</span>
         <span class="n">resampler</span><span class="o">.</span><span class="n">SetDefaultPixelValue</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
         <span class="n">resampler</span><span class="o">.</span><span class="n">SetOutputPixelType</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">sitkFloat32</span><span class="p">)</span>
         <span class="n">resampled</span> <span class="o">=</span> <span class="n">resampler</span><span class="o">.</span><span class="n">Execute</span><span class="p">(</span><span class="n">floating</span><span class="p">)</span>

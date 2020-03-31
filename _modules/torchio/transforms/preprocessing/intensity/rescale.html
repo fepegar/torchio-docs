@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.intensity.rescale &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.transforms.preprocessing.intensity.rescale &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -154,13 +155,17 @@
   <h1>Source code for torchio.transforms.preprocessing.intensity.rescale</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
+
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">deprecated</span> <span class="k">import</span> <span class="n">deprecated</span>
+
 <span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypeCallable</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">NormalizationTransform</span>
 
 
-<div class="viewcode-block" id="Rescale"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.Rescale">[docs]</a><span class="k">class</span> <span class="nc">Rescale</span><span class="p">(</span><span class="n">NormalizationTransform</span><span class="p">):</span>
+
+<div class="viewcode-block" id="RescaleIntensity"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.RescaleIntensity">[docs]</a><span class="k">class</span> <span class="nc">RescaleIntensity</span><span class="p">(</span><span class="n">NormalizationTransform</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Rescale intensity values to a certain range.</span>
 
 <span class="sd">    Args:</span>
@@ -219,6 +224,11 @@
         <span class="n">array</span> <span class="o">*=</span> <span class="n">out_range</span>  <span class="c1"># [0, out_range]</span>
         <span class="n">array</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_min</span>  <span class="c1"># [out_min, out_max]</span>
         <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">array</span><span class="p">)</span></div>
+
+
+<span class="nd">@deprecated</span><span class="p">(</span><span class="s1">&#39;Rescale is deprecated. Use RescaleIntensity instead.&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Rescale</span><span class="p">(</span><span class="n">RescaleIntensity</span><span class="p">):</span>
+    <span class="k">pass</span>
 </pre></div>
 
            </div>

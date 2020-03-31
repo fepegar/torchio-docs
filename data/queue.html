@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Queue &mdash; TorchIO 0.13.14 documentation</title>
+  <title>Queue &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -85,10 +85,10 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul class="current">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting started</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="data.html">Handling data</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="image.html">Images dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="images.html">Images dataset</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="patch_based.html">Patch-based training</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="sampling.html">Sampling</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Queue</a><ul>
@@ -101,6 +101,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -189,21 +190,21 @@ and <code class="xref py py-attr docutils literal notranslate"><span class="pre"
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>subjects_dataset</strong> – Instance of
-<a class="reference internal" href="image.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a>.</li>
+<a class="reference internal" href="images.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a>.</li>
 <li><strong>max_length</strong> – Maximum number of patches that can be stored in the queue.
 Using a large number means that the queue needs to be filled less
 often, but more RAM is needed to store the patches.</li>
 <li><strong>samples_per_volume</strong> – Number of patches to extract from each volume.
 A small number of patches ensures a large variability in the queue,
 but training will be slower.</li>
-<li><strong>patch_size</strong> – Tuple of integers <span class="math notranslate nohighlight">\((D, H, W)\)</span> to generate patches
-of size <span class="math notranslate nohighlight">\(D \times H \times W\)</span>.
+<li><strong>patch_size</strong> – Tuple of integers <span class="math notranslate nohighlight">\((d, h, w)\)</span> to generate patches
+of size <span class="math notranslate nohighlight">\(d \times h \times w\)</span>.
 If a single number <span class="math notranslate nohighlight">\(n\)</span> is provided,
-the patch size will be <span class="math notranslate nohighlight">\(n \times n \times n\)</span>.</li>
+<span class="math notranslate nohighlight">\(d = h = w = n\)</span>.</li>
 <li><strong>sampler_class</strong> – An instance of <a class="reference internal" href="sampling.html#torchio.data.ImageSampler" title="torchio.data.ImageSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageSampler</span></code></a> used
 to define the patches sampling strategy.</li>
 <li><strong>num_workers</strong> – Number of subprocesses to use for data loading
-(as in <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.5.0a0+6791ae5 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.DataLoader</span></code></a>).
+(as in <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.6.0a0+56fabfa ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.DataLoader</span></code></a>).
 <code class="docutils literal notranslate"><span class="pre">0</span></code> means that the data will be loaded in the main process.</li>
 <li><strong>shuffle_subjects</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the subjects dataset is shuffled at the
 beginning of each epoch, i.e. when all patches from all subjects
@@ -221,6 +222,28 @@ queue.</li>
 <p class="last"><code class="xref py py-attr docutils literal notranslate"><span class="pre">num_workers</span></code> refers to the number of workers used to
 load and transform the volumes. Multiprocessing is not needed to pop
 patches from the queue.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">form</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span> <span class="kn">import</span> <span class="nn">DataLoader</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">patches_queue</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">subjects_dataset</span><span class="o">=</span><span class="n">subjects_dataset</span><span class="p">,</span>  <span class="c1"># instance of torchio.ImagesDataset</span>
+<span class="gp">... </span>    <span class="n">max_length</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">samples_per_volume</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">patch_size</span><span class="o">=</span><span class="mi">96</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">sampler_class</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">ImageSampler</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">shuffle_subjects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">shuffle_patches</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">patches_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">patches_queue</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">epoch_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">patches_batch</span> <span class="ow">in</span> <span class="n">patches_loader</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">inputs</span> <span class="o">=</span> <span class="n">patches_batch</span><span class="p">[</span><span class="s1">&#39;image_name&#39;</span><span class="p">][</span><span class="n">torchio</span><span class="o">.</span><span class="n">DATA</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="n">targets</span> <span class="o">=</span> <span class="n">patches_batch</span><span class="p">[</span><span class="s1">&#39;targets_name&#39;</span><span class="p">][</span><span class="n">torchio</span><span class="o">.</span><span class="n">DATA</span><span class="p">]</span>
+<span class="gp">... </span>        <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>  <span class="c1"># model is some torch.nn.Module</span>
+</pre></div>
 </div>
 </dd></dl>
 

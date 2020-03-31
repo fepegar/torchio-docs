@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.augmentation.intensity.random_motion &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.transforms.augmentation.intensity.random_motion &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -170,19 +171,23 @@
 <span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="k">import</span> <span class="n">logm</span><span class="p">,</span> <span class="n">expm</span>
 <span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span>
 <span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">INTENSITY</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">AFFINE</span><span class="p">,</span> <span class="n">TYPE</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">Interpolation</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">Interpolation</span><span class="p">,</span> <span class="n">get_sitk_interpolator</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RandomTransform</span>
 
 
 <div class="viewcode-block" id="RandomMotion"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomMotion">[docs]</a><span class="k">class</span> <span class="nc">RandomMotion</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Add random MRI motion artifact.</span>
 
+<span class="sd">    Custom implementation of `Shaw et al. 2019, MRI k-Space Motion Artefact</span>
+<span class="sd">    Augmentation: Model Robustness and Task-Specific</span>
+<span class="sd">    Uncertainty &lt;http://proceedings.mlr.press/v102/shaw19a.html&gt;`_.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        degrees:</span>
 <span class="sd">        translation:</span>
 <span class="sd">        num_transforms:</span>
 <span class="sd">        image_interpolation:</span>
-<span class="sd">        proportion_to_augment:</span>
+<span class="sd">        proportion_to_augment: Probability that this transform will be applied.</span>
 <span class="sd">        seed:</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -333,7 +338,7 @@
         <span class="n">images</span> <span class="o">=</span> <span class="p">[</span><span class="n">image</span><span class="p">]</span>  <span class="c1"># first is identity</span>
         <span class="k">for</span> <span class="n">transform</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">:</span>
             <span class="n">resampler</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ResampleImageFilter</span><span class="p">()</span>
-            <span class="n">resampler</span><span class="o">.</span><span class="n">SetInterpolator</span><span class="p">(</span><span class="n">interpolation</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">resampler</span><span class="o">.</span><span class="n">SetInterpolator</span><span class="p">(</span><span class="n">get_sitk_interpolator</span><span class="p">(</span><span class="n">interpolation</span><span class="p">))</span>
             <span class="n">resampler</span><span class="o">.</span><span class="n">SetReferenceImage</span><span class="p">(</span><span class="n">reference</span><span class="p">)</span>
             <span class="n">resampler</span><span class="o">.</span><span class="n">SetOutputPixelType</span><span class="p">(</span><span class="n">sitk</span><span class="o">.</span><span class="n">sitkFloat32</span><span class="p">)</span>
             <span class="n">resampler</span><span class="o">.</span><span class="n">SetDefaultPixelValue</span><span class="p">(</span><span class="n">default_value</span><span class="p">)</span>

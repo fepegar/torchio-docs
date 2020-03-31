@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.spatial.pad &mdash; TorchIO 0.13.14 documentation</title>
+  <title>torchio.transforms.preprocessing.spatial.pad &mdash; TorchIO 0.14.0 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.13.14
+                0.14.0
               </div>
             
           
@@ -83,11 +83,12 @@
               
             
             
-              <p class="caption"><span class="caption-text">Features</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
 </ul>
 
             
@@ -218,6 +219,12 @@
 <span class="sd">        information about this transform.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fill</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">padding_mode</span> <span class="o">!=</span> <span class="s1">&#39;constant&#39;</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;If the value of &quot;fill&quot; is not None,&#39;</span>
+                <span class="s1">&#39;the value of &quot;padding_mode&quot; must be &quot;constant&quot;&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">padding_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_padding_mode</span><span class="p">(</span><span class="n">padding_mode</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fill</span> <span class="o">=</span> <span class="n">fill</span>
 
@@ -234,7 +241,17 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">bounds_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">PADDING_FUNCTIONS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">padding_mode</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">function</span> <span class="o">=</span> <span class="n">_pad_with_fill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PADDING_FUNCTIONS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">padding_mode</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">function</span></div>
+
+
+<span class="k">def</span> <span class="nf">_pad_with_fill</span><span class="p">(</span><span class="n">fill</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wrapped</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bounds1</span><span class="p">,</span> <span class="n">bounds2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">sitk</span><span class="o">.</span><span class="n">ConstantPad</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bounds1</span><span class="p">,</span> <span class="n">bounds2</span><span class="p">,</span> <span class="n">fill</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapped</span>
 </pre></div>
 
            </div>
