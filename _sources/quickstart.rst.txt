@@ -1,6 +1,8 @@
-***************
+.. _Getting started:
+
+###############
 Getting started
-***************
+###############
 
 Installation
 ============
@@ -19,41 +21,54 @@ To upgrade to the latest published version, use::
 
 
 
-Hello World
-===========
+Hello, World!
+=============
 
-This example shows the basic usage of TorchIO, where an
-:py:class:`~torchio.data.images.ImagesDataset` is passed to
+This example shows the basic usage of TorchIO, where an instance of
+:py:class:`~torchio.data.dataset.ImagesDataset` is passed to
 a PyTorch :py:class:`~torch.utils.data.DataLoader` to generate training batches
 of 3D images that are loaded, preprocessed and augmented in on the fly,
 in parallel::
 
     import torchio
-    from torchio.transforms import RescaleIntensity, RandomAffine
-    from torchvision.transforms import Compose
+    from torchio.transforms import (
+        RescaleIntensity,
+        RandomAffine,
+        RandomElasticDeformation,
+        Compose,
+    )
     from torch.utils.data import DataLoader
 
-    # Each instance of torchio.Subject is passed an arbitrary number of
-    # instances of torchio.Image, whose name is also arbitrary
-    subject_a = torchio.Subject([
-        torchio.Image('t1', 'subject_a.nii.gz', torchio.INTENSITY),
-        torchio.Image('label', 'subject_a.nii', torchio.LABEL),
-    ])
+    # Each instance of torchio.Subject is passed arbitrary keyword arguments.
+    # Typically, these arguments will be instances of torchio.Image
+    subject_a = torchio.Subject(
+        t1=torchio.Image('subject_a.nii.gz', type=torchio.INTENSITY),
+        label=torchio.Image('subject_a.nii', type=torchio.LABEL),
+        diagnosis='positive',
+    )
 
     # Images can be in any format supported by SimpleITK or NiBabel, including DICOM
     subject_b = torchio.Subject(
-        torchio.Image('t1', 'subject_b_dicom_folder', torchio.INTENSITY),
-        torchio.Image('label', 'subject_b_seg.nrrd', torchio.LABEL),
+        t1=torchio.Image('subject_b_dicom_folder', type=torchio.INTENSITY),
+        label=torchio.Image('subject_b_seg.nrrd', type=torchio.LABEL),
+        diagnosis='negative',
     )
     subjects_list = [subject_a, subject_b]
 
     # Let's use one preprocessing transform and one augmentation transform
-    transforms = [
-        RescaleIntensity((0, 1)),  # applied only to torchio.INTENSITY images
-        RandomAffine(),  # applied to all images in the sample
-    ]
+    # This transform will be applied only to torchio.INTENSITY images:
+    rescale = RescaleIntensity((0, 1))
+
+    # As RandomAffine is faster then RandomElasticDeformation, we choose to
+    # apply RandomAffine 80% of the times and RandomElasticDeformation the rest
+    # Also, there is a 25% chance that none of them will be applied
+    spatial = OneOf(
+        {RandomAffine(): 0.8, RandomElasticDeformation(): 0.2},
+        p=0.75,
+    )
 
     # Transforms can be composed as in torchvision.transforms
+    transforms = [rescale, spatial]
     transform = Compose(transforms)
 
     # ImagesDataset is a subclass of torch.data.utils.Dataset

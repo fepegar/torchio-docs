@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>TorchIO &mdash; TorchIO 0.14.0 documentation</title>
+  <title>TorchIO &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Getting started" href="quickstart.html" /> 
@@ -50,7 +52,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> TorchIO
+            <a href="#" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -60,7 +62,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -77,6 +79,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -84,17 +87,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -133,7 +140,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
       <li>TorchIO</li>
     
@@ -157,28 +164,26 @@
             
   <div class="section" id="torchio">
 <h1>TorchIO<a class="headerlink" href="#torchio" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://pypi.org/project/torchio/"><img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&amp;logo=python&amp;logoColor=white" /></a> <a class="reference external" href="https://pypi.org/project/torchio/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/torchio?label=PyPI%20version&amp;logo=python&amp;logoColor=white" /></a> <a class="reference external" href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i"><img alt="Google Colab notebook" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="https://fepegar.github.io/torchio-docs/?badge=latest"><img alt="Documentation status" src="https://img.shields.io/readthedocs/torchio?label=Docs&amp;logo=Read%20the%20Docs" /></a> <a class="reference external" href="https://travis-ci.org/fepegar/torchio"><img alt="Build status" src="https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&amp;logo=travis" /></a>
-<a class="reference external" href="https://codecov.io/github/fepegar/torchio"><img alt="Coverage status" src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" /></a> <a class="reference external" href="https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master"><img alt="Code quality" src="https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&amp;logo=scrutinizer" /></a> <a class="reference external" href="https://codeclimate.com/github/fepegar/torchio/maintainability"><img alt="Maintainability" src="https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability" /></a> <a class="reference external" href="https://join.slack.com/t/torchioworkspace/shared_invite/enQtOTY1NTgwNDI4NzA1LTEzMjIwZTczMGRmM2ZlMzBkZDg3YmQwY2E4OTIyYjFhZDVkZmIwOWZkNTQzYTFmYzdiNGEwZWQ4YjgwMTczZmE"><img alt="Slack" src="https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&amp;logo=slack" /></a></p>
+<p><a class="reference external" href="https://pypi.org/project/torchio/"><img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/torchio.svg?label=PyPI%20downloads&amp;logo=python&amp;logoColor=white" /></a> <a class="reference external" href="https://pypi.org/project/torchio/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/torchio?label=PyPI%20version&amp;logo=python&amp;logoColor=white" /></a> <a class="reference external" href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i"><img alt="Google Colab notebook" src="https://colab.research.google.com/assets/colab-badge.svg" /></a> <a class="reference external" href="http://torchio.rtfd.io/?badge=latest"><img alt="Documentation status" src="https://img.shields.io/readthedocs/torchio?label=Docs&amp;logo=Read%20the%20Docs" /></a>
+<a class="reference external" href="https://travis-ci.org/fepegar/torchio"><img alt="Build status" src="https://img.shields.io/travis/fepegar/torchio/master.svg?label=Travis%20CI%20build&amp;logo=travis" /></a> <a class="reference external" href="https://codecov.io/github/fepegar/torchio"><img alt="Coverage status" src="https://codecov.io/gh/fepegar/torchio/branch/master/graphs/badge.svg" /></a> <a class="reference external" href="https://coveralls.io/github/fepegar/torchio?branch=master"><img alt="Coverage status" src="https://coveralls.io/repos/github/fepegar/torchio/badge.svg?branch=master" /></a> <a class="reference external" href="https://scrutinizer-ci.com/g/fepegar/torchio/?branch=master"><img alt="Code quality" src="https://img.shields.io/scrutinizer/g/fepegar/torchio.svg?label=Code%20quality&amp;logo=scrutinizer" /></a>
+<a class="reference external" href="https://codeclimate.com/github/fepegar/torchio/maintainability"><img alt="Maintainability" src="https://api.codeclimate.com/v1/badges/518673e49a472dd5714d/maintainability" /></a> <a class="reference external" href="https://join.slack.com/t/torchioworkspace/shared_invite/zt-exgpd5rm-BTpxg2MazwiiMDw7X9xMFg"><img alt="Slack" src="https://img.shields.io/badge/TorchIO-Join%20on%20Slack-blueviolet?style=flat&amp;logo=slack" /></a></p>
 <p>TorchIO is a Python library for efficient loading, preprocessing, augmentation
 and patch-based sampling of 3D medical images in deep learning,
 following the design of PyTorch.</p>
-<p>It includes multiple intensity and spatial transforms for data augmentation and preprocessing.
+<p>It includes multiple intensity and spatial transforms for data augmentation and
+preprocessing.
 These transforms include typical computer vision operations
 such as random affine transformations and also domain-specific ones such as
 simulation of intensity artifacts due to
 <a class="reference external" href="http://mriquestions.com/why-homogeneity.html">MRI magnetic field inhomogeneity</a>
 or <a class="reference external" href="http://proceedings.mlr.press/v102/shaw19a.html">k-space motion artifacts</a>.</p>
 <p>The code is available on <a class="reference external" href="https://github.com/fepegar/torchio">GitHub</a>.</p>
-<hr class="docutils" />
-<div class="section" id="news-the-paper-is-out">
-<h2>🎉 News: the paper is out! 🎉<a class="headerlink" href="#news-the-paper-is-out" title="Permalink to this headline">¶</a></h2>
-<p>See the Credits section below for more information.</p>
-</div>
-<hr class="docutils" />
+<p>See <a class="reference internal" href="quickstart.html"><span class="doc">Getting started</span></a> for installation instructions and a
+usage overview.</p>
 <div class="section" id="credits">
 <h2>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h2>
-<p>If you use this library for your research, please cite the paper: <a class="reference external" href="https://arxiv.org/abs/2003.04696">Pérez-García et al., 2020, <em>TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning</em></a>.</p>
-<p>This package has been greatly inspired by <a class="reference external" href="https://niftynet.io/">NiftyNet</a>.</p>
+<p>If you use this library for your research,
+please cite our preprint: <a class="reference external" href="https://arxiv.org/abs/2003.04696">Pérez-García et al., 2020, <em>TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning</em></a>.</p>
 <p>BibTeX:</p>
 <div class="highlight-latex notranslate"><div class="highlight"><pre><span></span>@misc<span class="nb">{</span>fern2020torchio,
    title=<span class="nb">{</span>TorchIO: a Python library for efficient loading, preprocessing, augmentation and patch-based sampling of medical images in deep learning<span class="nb">}</span>,
@@ -190,31 +195,47 @@ or <a class="reference external" href="http://proceedings.mlr.press/v102/shaw19a
 <span class="nb">}</span>
 </pre></div>
 </div>
+<p>This package has been greatly inspired by <a class="reference external" href="https://niftynet.io/">NiftyNet</a>.</p>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#hello-world">Hello World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#hello-world">Hello, World!</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#google-colab-jupyter-notebok">Google Colab Jupyter Notebok</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="data/data.html">Handling data</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="data/images.html">Images dataset</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data/patch_based.html">Patch-based training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/dataset.html">Dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data/dataset.html#imagesdataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="data/dataset.html#subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="data/dataset.html#scalarimage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarImage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="data/dataset.html#labelmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelMap</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="data/dataset.html#image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data/patch_based.html">Patch-based pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data/patch_training.html">Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data/patch_inference.html">Inference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="transforms/transforms.html#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transforms/transforms.html#interpolation">Interpolation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="transforms/transforms.html#transforms-api">Transforms API</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Medical image datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html#module-torchio.datasets.ixi">IXI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#module-torchio.datasets.mni">MNI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#module-torchio.datasets.itk_snap">ITK-SNAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#module-torchio.datasets.slicer">3D Slicer</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command-line tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cli.html#torchio-transform"><code class="docutils literal notranslate"><span class="pre">torchio-transform</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="slicer.html">3D Slicer GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="slicer.html#modules">Modules</a></li>
 </ul>
 </li>
 </ul>
@@ -223,8 +244,8 @@ or <a class="reference external" href="http://proceedings.mlr.press/v102/shaw19a
 <div class="section" id="see-also">
 <h2>See also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference external" href="https://www.github.com/fepegar/highresnet">PyTorch implementation of 2D and 3D HighResNet</a></li>
-<li><a class="reference external" href="https://www.github.com/fepegar/unet">PyTorch implementation of 2D and 3D U-Net</a></li>
+<li><p><a class="reference external" href="https://www.github.com/fepegar/highresnet">PyTorch implementation of 2D and 3D HighResNet</a></p></li>
+<li><p><a class="reference external" href="https://www.github.com/fepegar/unet">PyTorch implementation of 2D and 3D U-Net</a></p></li>
 </ul>
 </div>
 </div>
@@ -251,11 +272,19 @@ or <a class="reference external" href="http://proceedings.mlr.press/v102/shaw19a
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -266,7 +295,6 @@ or <a class="reference external" href="http://proceedings.mlr.press/v102/shaw19a
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,40 +1,41 @@
 
 
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; TorchIO 0.14.0 documentation</title>
+  <title>Index &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
@@ -50,7 +51,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> TorchIO
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -60,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -84,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -133,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Index</li>
     
@@ -158,18 +164,22 @@
 
 <div class="genindex-jumpbox">
  <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#Z"><strong>Z</strong></a>
  
@@ -177,7 +187,25 @@
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="transforms/preprocessing.html#torchio.transforms.CenterCropOrPad._get_six_bounds_parameters">_get_six_bounds_parameters() (torchio.transforms.CenterCropOrPad static method)</a>
+      <li><a href="transforms/transforms.html#torchio.transforms.Transform.__call__">__call__() (torchio.transforms.Transform method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="transforms/preprocessing.html#torchio.transforms.CropOrPad._get_six_bounds_parameters">_get_six_bounds_parameters() (torchio.transforms.CropOrPad static method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data/patch_inference.html#torchio.data.GridAggregator.add_batch">add_batch() (torchio.data.GridAggregator method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchio.datasets.itk_snap.AorticValve">AorticValve (class in torchio.datasets.itk_snap)</a>
+</li>
+      <li><a href="data/dataset.html#torchio.data.Image.as_sitk">as_sitk() (torchio.data.Image method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -189,6 +217,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchio.datasets.itk_snap.BrainTumor">BrainTumor (class in torchio.datasets.itk_snap)</a>
+</li>
       <li><a href="transforms/transforms.html#torchio.transforms.Interpolation.BSPLINE">BSPLINE (torchio.transforms.Interpolation attribute)</a>
 </li>
   </ul></td>
@@ -197,13 +227,17 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="transforms/preprocessing.html#torchio.transforms.CenterCropOrPad">CenterCropOrPad (class in torchio.transforms)</a>
+      <li><a href="datasets.html#torchio.datasets.mni.Colin27">Colin27 (class in torchio.datasets.mni)</a>
+</li>
+      <li><a href="transforms/augmentation.html#torchio.transforms.Compose">Compose (class in torchio.transforms)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transforms/transforms.html#torchio.transforms.Interpolation.COSINE">COSINE (torchio.transforms.Interpolation attribute)</a>
 </li>
       <li><a href="transforms/preprocessing.html#torchio.transforms.Crop">Crop (class in torchio.transforms)</a>
+</li>
+      <li><a href="transforms/preprocessing.html#torchio.transforms.CropOrPad">CropOrPad (class in torchio.transforms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -213,15 +247,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transforms/transforms.html#torchio.transforms.Interpolation.GAUSSIAN">GAUSSIAN (torchio.transforms.Interpolation attribute)</a>
 </li>
-      <li><a href="data/images.html#torchio.data.images.ImagesDataset.get_image_dict_from_image">get_image_dict_from_image() (torchio.data.images.ImagesDataset method)</a>
+      <li><a href="data/dataset.html#torchio.data.Image.get_center">get_center() (torchio.data.Image method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="data/images.html#torchio.data.images.ImagesDataset.get_sample_dict_from_subject">get_sample_dict_from_subject() (torchio.data.images.ImagesDataset method)</a>
+      <li><a href="data/patch_inference.html#torchio.data.GridAggregator.get_output_tensor">get_output_tensor() (torchio.data.GridAggregator method)</a>
 </li>
-      <li><a href="data/sampling.html#torchio.data.GridAggregator">GridAggregator (class in torchio.data)</a>
+      <li><a href="data/patch_inference.html#torchio.data.GridAggregator">GridAggregator (class in torchio.data)</a>
 </li>
-      <li><a href="data/sampling.html#torchio.data.GridSampler">GridSampler (class in torchio.data)</a>
+      <li><a href="data/patch_inference.html#torchio.data.GridSampler">GridSampler (class in torchio.data)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -241,11 +275,11 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="data/images.html#torchio.data.images.Image">Image (class in torchio.data.images)</a>
+      <li><a href="data/dataset.html#torchio.data.Image">Image (class in torchio.data)</a>
 </li>
-      <li><a href="data/sampling.html#torchio.data.ImageSampler">ImageSampler (class in torchio.data)</a>
+      <li><a href="transforms/transforms.html#torchio.transforms.Transform.image_name">image_name (torchio.transforms.Transform attribute)</a>
 </li>
-      <li><a href="data/images.html#torchio.data.images.ImagesDataset">ImagesDataset (class in torchio.data.images)</a>
+      <li><a href="data/dataset.html#torchio.data.ImagesDataset">ImagesDataset (class in torchio.data)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -263,7 +297,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transforms/transforms.html#torchio.transforms.Interpolation.LABEL_GAUSSIAN">LABEL_GAUSSIAN (torchio.transforms.Interpolation attribute)</a>
 </li>
-      <li><a href="data/sampling.html#torchio.data.LabelSampler">LabelSampler (class in torchio.data)</a>
+      <li><a href="data/dataset.html#torchio.data.LabelMap">LabelMap (class in torchio.data)</a>
+</li>
+      <li><a href="data/patch_training.html#torchio.data.LabelSampler">LabelSampler (class in torchio.data)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -273,6 +309,27 @@
 </li>
       <li><a href="transforms/transforms.html#torchio.transforms.Interpolation.LINEAR">LINEAR (torchio.transforms.Interpolation attribute)</a>
 </li>
+      <li><a href="data/dataset.html#torchio.data.Image.load">load() (torchio.data.Image method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    module
+
+      <ul>
+        <li><a href="datasets.html#module-torchio.datasets.itk_snap">torchio.datasets.itk_snap</a>
+</li>
+        <li><a href="datasets.html#module-torchio.datasets.ixi">torchio.datasets.ixi</a>
+</li>
+        <li><a href="datasets.html#module-torchio.datasets.mni">torchio.datasets.mni</a>
+</li>
+        <li><a href="datasets.html#module-torchio.datasets.slicer">torchio.datasets.slicer</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -285,6 +342,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transforms/preprocessing.html#torchio.transforms.preprocessing.intensity.NormalizationTransform">NormalizationTransform (class in torchio.transforms.preprocessing.intensity)</a>
 </li>
+      <li><a href="data/dataset.html#torchio.data.Image.numpy">numpy() (torchio.data.Image method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="transforms/augmentation.html#torchio.transforms.OneOf">OneOf (class in torchio.transforms)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -293,9 +360,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transforms/preprocessing.html#torchio.transforms.Pad">Pad (class in torchio.transforms)</a>
 </li>
+      <li><a href="transforms/transforms.html#torchio.transforms.Transform.parse_range">parse_range() (torchio.transforms.Transform static method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="transforms/augmentation.html#torchio.transforms.augmentation.RandomTransform.parse_range">parse_range() (torchio.transforms.augmentation.RandomTransform static method)</a>
+      <li><a href="data/patch_training.html#torchio.data.PatchSampler">PatchSampler (class in torchio.data)</a>
+</li>
+      <li><a href="datasets.html#torchio.datasets.mni.Pediatric">Pediatric (class in torchio.datasets.mni)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -303,7 +374,7 @@
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="data/queue.html#torchio.data.Queue">Queue (class in torchio.data)</a>
+      <li><a href="data/patch_training.html#torchio.data.Queue">Queue (class in torchio.data)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -317,6 +388,8 @@
 </li>
       <li><a href="transforms/augmentation.html#torchio.transforms.RandomBlur">RandomBlur (class in torchio.transforms)</a>
 </li>
+      <li><a href="transforms/augmentation.html#torchio.transforms.RandomDownsample">RandomDownsample (class in torchio.transforms)</a>
+</li>
       <li><a href="transforms/augmentation.html#torchio.transforms.RandomElasticDeformation">RandomElasticDeformation (class in torchio.transforms)</a>
 </li>
       <li><a href="transforms/augmentation.html#torchio.transforms.RandomFlip">RandomFlip (class in torchio.transforms)</a>
@@ -325,6 +398,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="transforms/augmentation.html#torchio.transforms.RandomLabelsToImage">RandomLabelsToImage (class in torchio.transforms)</a>
+</li>
       <li><a href="transforms/augmentation.html#torchio.transforms.RandomMotion">RandomMotion (class in torchio.transforms)</a>
 </li>
       <li><a href="transforms/augmentation.html#torchio.transforms.RandomNoise">RandomNoise (class in torchio.transforms)</a>
@@ -345,11 +420,25 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="data/images.html#torchio.data.images.ImagesDataset.set_transform">set_transform() (torchio.data.images.ImagesDataset method)</a>
+      <li><a href="data/dataset.html#torchio.data.Image.save">save() (torchio.data.Image method)</a>
+</li>
+      <li><a href="data/dataset.html#torchio.data.ScalarImage">ScalarImage (class in torchio.data)</a>
+</li>
+      <li><a href="data/dataset.html#torchio.data.ImagesDataset.set_transform">set_transform() (torchio.data.ImagesDataset method)</a>
+</li>
+      <li><a href="data/dataset.html#torchio.data.Subject.shape">shape() (torchio.data.Subject property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="data/images.html#torchio.data.images.Subject">Subject (class in torchio.data.images)</a>
+      <li><a href="datasets.html#torchio.datasets.mni.Sheep">Sheep (class in torchio.datasets.mni)</a>
+</li>
+      <li><a href="datasets.html#torchio.datasets.slicer.Slicer">Slicer (class in torchio.datasets.slicer)</a>
+</li>
+      <li><a href="data/dataset.html#torchio.data.Subject.spacing">spacing() (torchio.data.Subject property)</a>
+</li>
+      <li><a href="data/dataset.html#torchio.data.Subject.spatial_shape">spatial_shape() (torchio.data.Subject property)</a>
+</li>
+      <li><a href="data/dataset.html#torchio.data.Subject">Subject (class in torchio.data)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -357,12 +446,40 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="datasets.html#torchio.datasets.itk_snap.T1T2">T1T2 (class in torchio.datasets.itk_snap)</a>
+</li>
       <li><a href="transforms/preprocessing.html#torchio.transforms.ToCanonical">ToCanonical (class in torchio.transforms)</a>
 </li>
-      <li><a href="datasets.html#module-torchio.datasets.ixi">torchio.datasets.ixi (module)</a>
+      <li>
+    torchio.datasets.itk_snap
+
+      <ul>
+        <li><a href="datasets.html#module-torchio.datasets.itk_snap">module</a>
 </li>
+      </ul></li>
+      <li>
+    torchio.datasets.ixi
+
+      <ul>
+        <li><a href="datasets.html#module-torchio.datasets.ixi">module</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    torchio.datasets.mni
+
+      <ul>
+        <li><a href="datasets.html#module-torchio.datasets.mni">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchio.datasets.slicer
+
+      <ul>
+        <li><a href="datasets.html#module-torchio.datasets.slicer">module</a>
+</li>
+      </ul></li>
       <li><a href="transforms/preprocessing.html#torchio.transforms.HistogramStandardization.train">train() (torchio.transforms.HistogramStandardization class method)</a>
 </li>
       <li><a href="transforms/transforms.html#torchio.transforms.Transform">Transform (class in torchio.transforms)</a>
@@ -370,8 +487,20 @@
   </ul></td>
 </tr></table>
 
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data/patch_training.html#torchio.data.UniformSampler">UniformSampler (class in torchio.data)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="data/patch_training.html#torchio.data.WeightedSampler">WeightedSampler (class in torchio.data)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="transforms/transforms.html#torchio.transforms.Interpolation.WELCH">WELCH (torchio.transforms.Interpolation attribute)</a>
 </li>
@@ -402,11 +531,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -417,7 +554,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

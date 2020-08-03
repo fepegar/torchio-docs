@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.intensity.histogram_standardization &mdash; TorchIO 0.14.0 documentation</title>
+  <title>torchio.transforms.preprocessing.intensity.histogram_standardization &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
 </head>
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> TorchIO
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -76,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -83,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../../../index.html">Module code</a> &raquo;</li>
         
@@ -153,23 +160,20 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.transforms.preprocessing.intensity.histogram_standardization</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Adapted from NiftyNet</span>
-<span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.ma</span> <span class="k">as</span> <span class="nn">ma</span>
 <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
-<span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypePath</span><span class="p">,</span> <span class="n">TypeCallable</span>
-<span class="kn">from</span> <span class="nn">....data.io</span> <span class="k">import</span> <span class="n">read_image</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">NormalizationTransform</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span> <span class="nn">....torchio</span> <span class="kn">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypePath</span>
+<span class="kn">from</span> <span class="nn">....data.io</span> <span class="kn">import</span> <span class="n">read_image</span>
+<span class="kn">from</span> <span class="nn">....data.subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">.normalization_transform</span> <span class="kn">import</span> <span class="n">NormalizationTransform</span><span class="p">,</span> <span class="n">TypeMaskingMethod</span>
 
 <span class="n">DEFAULT_CUTOFF</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.99</span>
 <span class="n">STANDARD_RANGE</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span>
+<span class="n">TypeLandmarks</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypePath</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypePath</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]]</span>
 
 
 <div class="viewcode-block" id="HistogramStandardization"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.HistogramStandardization">[docs]</a><span class="k">class</span> <span class="nc">HistogramStandardization</span><span class="p">(</span><span class="n">NormalizationTransform</span><span class="p">):</span>
@@ -178,32 +182,67 @@
 <span class="sd">    See example in :py:func:`torchio.transforms.HistogramStandardization.train`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        landmarks_dict: Dictionary in which keys are image names in the sample</span>
-<span class="sd">            and values are NumPy arrays defining the landmarks after training</span>
-<span class="sd">            with :py:meth:`torchio.transforms.HistogramStandardization.train`.</span>
+<span class="sd">        landmarks: Dictionary (or path to a PyTorch file with ``.pt`` or ``.pth``</span>
+<span class="sd">            extension in which a dictionary has been saved) whose keys are</span>
+<span class="sd">            image names in the sample and values are NumPy arrays or paths to</span>
+<span class="sd">            NumPy arrays defining the landmarks after training with</span>
+<span class="sd">            :py:meth:`torchio.transforms.HistogramStandardization.train`.</span>
 <span class="sd">        masking_method: See</span>
 <span class="sd">            :py:class:`~torchio.transforms.preprocessing.normalization_transform.NormalizationTransform`.</span>
+<span class="sd">        p: Probability that this transform will be applied.</span>
 
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; from pathlib import Path</span>
+<span class="sd">        &gt;&gt;&gt; from torchio.transforms import HistogramStandardization</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; landmarks = {</span>
+<span class="sd">        ...     &#39;t1&#39;: &#39;t1_landmarks.npy&#39;,</span>
+<span class="sd">        ...     &#39;t2&#39;: &#39;t2_landmarks.npy&#39;,</span>
+<span class="sd">        ... }</span>
+<span class="sd">        &gt;&gt;&gt; transform = HistogramStandardization(landmarks)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; torch.save(landmarks, &#39;path_to_landmarks.pth&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; transform = HistogramStandardization(&#39;path_to_landmarks.pth&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">landmarks_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-            <span class="n">masking_method</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeCallable</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">landmarks</span><span class="p">:</span> <span class="n">TypeLandmarks</span><span class="p">,</span>
+            <span class="n">masking_method</span><span class="p">:</span> <span class="n">TypeMaskingMethod</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">masking_method</span><span class="o">=</span><span class="n">masking_method</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_dict</span> <span class="o">=</span> <span class="n">landmarks_dict</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">masking_method</span><span class="o">=</span><span class="n">masking_method</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_landmarks</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_landmarks</span><span class="p">(</span><span class="n">landmarks</span><span class="p">:</span> <span class="n">TypeLandmarks</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">landmarks</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">landmarks</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.pt&#39;</span><span class="p">,</span> <span class="s1">&#39;.pth&#39;</span><span class="p">):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;The landmarks file must have extension .pt or .pth,&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39; not &quot;</span><span class="si">{</span><span class="n">path</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">landmarks_dict</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">landmarks_dict</span> <span class="o">=</span> <span class="n">landmarks</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">landmarks_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+                <span class="n">landmarks_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">landmarks_dict</span>
 
     <span class="k">def</span> <span class="nf">apply_normalization</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">,</span>
             <span class="n">image_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">mask</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">image_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">landmarks_dict</span><span class="p">:</span>
             <span class="n">keys</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">landmarks_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">f</span><span class="s1">&#39;Image name &quot;</span><span class="si">{image_name}</span><span class="s1">&quot; should be a key in the&#39;</span>
-                <span class="n">f</span><span class="s1">&#39; landmarks dictionary, whose keys are </span><span class="si">{keys}</span><span class="s1">&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Image name &quot;</span><span class="si">{</span><span class="n">image_name</span><span class="si">}</span><span class="s1">&quot; should be a key in the&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; landmarks dictionary, whose keys are </span><span class="si">{</span><span class="n">keys</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="n">image_dict</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="n">image_name</span><span class="p">]</span>
@@ -240,8 +279,9 @@
 
 <span class="sd">        Example:</span>
 
-<span class="sd">            &gt;&gt;&gt; from pathlib import Path</span>
+<span class="sd">            &gt;&gt;&gt; import torch</span>
 <span class="sd">            &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">            &gt;&gt;&gt; from pathlib import Path</span>
 <span class="sd">            &gt;&gt;&gt; from torchio.transforms import HistogramStandardization</span>
 <span class="sd">            &gt;&gt;&gt;</span>
 <span class="sd">            &gt;&gt;&gt; t1_paths = [&#39;subject_a_t1.nii&#39;, &#39;subject_b_t1.nii.gz&#39;]</span>
@@ -251,15 +291,18 @@
 <span class="sd">            &gt;&gt;&gt; t2_landmarks_path = Path(&#39;t2_landmarks.npy&#39;)</span>
 <span class="sd">            &gt;&gt;&gt;</span>
 <span class="sd">            &gt;&gt;&gt; t1_landmarks = (</span>
-<span class="sd">            ...     np.load(t1_landmarks_path)</span>
+<span class="sd">            ...     t1_landmarks_path</span>
 <span class="sd">            ...     if t1_landmarks_path.is_file()</span>
 <span class="sd">            ...     else HistogramStandardization.train(t1_paths)</span>
 <span class="sd">            ... )</span>
+<span class="sd">            &gt;&gt;&gt; torch.save(t1_landmarks, t1_landmarks_path)</span>
+<span class="sd">            &gt;&gt;&gt;</span>
 <span class="sd">            &gt;&gt;&gt; t2_landmarks = (</span>
-<span class="sd">            ...     np.load(t2_landmarks_path)</span>
+<span class="sd">            ...     t2_landmarks_path</span>
 <span class="sd">            ...     if t2_landmarks_path.is_file()</span>
 <span class="sd">            ...     else HistogramStandardization.train(t2_paths)</span>
 <span class="sd">            ... )</span>
+<span class="sd">            &gt;&gt;&gt; torch.save(t2_landmarks, t2_landmarks_path)</span>
 <span class="sd">            &gt;&gt;&gt;</span>
 <span class="sd">            &gt;&gt;&gt; landmarks_dict = {</span>
 <span class="sd">            ...     &#39;t1&#39;: t1_landmarks,</span>
@@ -272,7 +315,7 @@
         <span class="n">percentiles_cutoff</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">quantiles_cutoff</span><span class="p">)</span>
         <span class="n">percentiles_database</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">percentiles</span> <span class="o">=</span> <span class="n">_get_percentiles</span><span class="p">(</span><span class="n">percentiles_cutoff</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">image_file_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tqdm</span><span class="p">(</span><span class="n">images_paths</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">image_file_path</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">images_paths</span><span class="p">):</span>
             <span class="n">tensor</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">read_image</span><span class="p">(</span><span class="n">image_file_path</span><span class="p">)</span>
             <span class="n">data</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">masking_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -293,12 +336,11 @@
             <span class="n">extension</span> <span class="o">=</span> <span class="n">output_path</span><span class="o">.</span><span class="n">suffix</span>
             <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.txt&#39;</span><span class="p">:</span>
                 <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;image&#39;</span>
-                <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{modality}</span><span class="s1"> {&quot; &quot;.join(map(str, mapping))}&#39;</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">mapping</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="n">output_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.npy&#39;</span><span class="p">:</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mapping</span></div></div>
-
 
 
 <span class="k">def</span> <span class="nf">_standardize_cutoff</span><span class="p">(</span><span class="n">cutoff</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -414,11 +456,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -429,7 +479,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

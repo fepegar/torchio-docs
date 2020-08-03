@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.data.inference.grid_sampler &mdash; TorchIO 0.14.0 documentation</title>
+  <title>torchio.data.inference.grid_sampler &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script src="../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
 </head>
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../../index.html" class="icon icon-home"> TorchIO
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -76,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -83,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
@@ -153,123 +160,138 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.data.inference.grid_sampler</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="k">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">torchio</span> <span class="k">import</span> <span class="n">IMAGE</span><span class="p">,</span> <span class="n">LOCATION</span><span class="p">,</span> <span class="n">TypeTuple</span><span class="p">,</span> <span class="n">TypeData</span>
-<span class="kn">from</span> <span class="nn">torchio.utils</span> <span class="k">import</span> <span class="n">to_tuple</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span>
+
+<span class="kn">from</span> <span class="nn">...utils</span> <span class="kn">import</span> <span class="n">to_tuple</span>
+<span class="kn">from</span> <span class="nn">...torchio</span> <span class="kn">import</span> <span class="n">LOCATION</span><span class="p">,</span> <span class="n">TypeTuple</span><span class="p">,</span> <span class="n">TypeTripletInt</span>
+<span class="kn">from</span> <span class="nn">..subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">..sampler.sampler</span> <span class="kn">import</span> <span class="n">PatchSampler</span>
 
 
-<div class="viewcode-block" id="GridSampler"><a class="viewcode-back" href="../../../../data/sampling.html#torchio.data.GridSampler">[docs]</a><span class="k">class</span> <span class="nc">GridSampler</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<div class="viewcode-block" id="GridSampler"><a class="viewcode-back" href="../../../../data/patch_inference.html#torchio.data.GridSampler">[docs]</a><span class="k">class</span> <span class="nc">GridSampler</span><span class="p">(</span><span class="n">PatchSampler</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract patches across a whole volume.</span>
 
-<span class="sd">    Adapted from NiftyNet. See</span>
-<span class="sd">    `this NiftyNet tutorial &lt;https://niftynet.readthedocs.io/en/dev/window_sizes.html&gt;`_</span>
-<span class="sd">    for more information.</span>
+<span class="sd">    Grid samplers are useful to perform inference using all patches from a</span>
+<span class="sd">    volume. It is often used with a :py:class:`~torchio.data.GridAggregator`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        data: Tensor from which patches will be extracted.</span>
+<span class="sd">        sample: Instance of :py:class:`~torchio.data.subject.Subject`</span>
+<span class="sd">            from which patches will be extracted.</span>
 <span class="sd">        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches</span>
 <span class="sd">            of size :math:`d \times h \times w`.</span>
 <span class="sd">            If a single number :math:`n` is provided,</span>
 <span class="sd">            :math:`d = h = w = n`.</span>
-<span class="sd">        patch_overlap: Tuple of integers :math:`(d_o, h_o, w_o)` specifying the</span>
-<span class="sd">            overlap between patches for dense inference. If a single number</span>
+<span class="sd">        patch_overlap: Tuple of even integers :math:`(d_o, h_o, w_o)` specifying</span>
+<span class="sd">            the overlap between patches for dense inference. If a single number</span>
 <span class="sd">            :math:`n` is provided, :math:`d_o = h_o = w_o = n`.</span>
+<span class="sd">        padding_mode: Same as :attr:`padding_mode` in</span>
+<span class="sd">            :py:class:`~torchio.transforms.Pad`. If ``None``, the volume will</span>
+<span class="sd">            not be padded before sampling and patches at the border will not be</span>
+<span class="sd">            cropped by the aggregator. Otherwise, the volume will be padded with</span>
+<span class="sd">            :math:`\left(\frac{d_o}{2}, \frac{h_o}{2}, \frac{w_o}{2}\right)`</span>
+<span class="sd">            on each side before sampling. If the sampler is passed to a</span>
+<span class="sd">            :py:class:`~torchio.data.GridAggregator`, it will crop the output</span>
+<span class="sd">            to its original size.</span>
 
+<span class="sd">    .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial</span>
+<span class="sd">        &lt;https://niftynet.readthedocs.io/en/dev/window_sizes.html&gt;`_ for more</span>
+<span class="sd">        information about patch based sampling. Note that</span>
+<span class="sd">        :py:attr:`patch_overlap` is twice :py:attr:`border` in NiftyNet</span>
+<span class="sd">        tutorial.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">data</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">,</span>
+            <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">,</span>
             <span class="n">patch_size</span><span class="p">:</span> <span class="n">TypeTuple</span><span class="p">,</span>
-            <span class="n">patch_overlap</span><span class="p">:</span> <span class="n">TypeTuple</span><span class="p">,</span>
+            <span class="n">patch_overlap</span><span class="p">:</span> <span class="n">TypeTuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="n">padding_mode</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="n">patch_size</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_size</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="n">patch_overlap</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid_spatial_coordinates</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
-            <span class="n">patch_size</span><span class="p">,</span>
-            <span class="n">patch_overlap</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">sample</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">3</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding_mode</span> <span class="o">=</span> <span class="n">padding_mode</span>
+        <span class="k">if</span> <span class="n">padding_mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">...transforms</span> <span class="kn">import</span> <span class="n">Pad</span>
+            <span class="n">border</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">padding</span> <span class="o">=</span> <span class="n">border</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">pad</span> <span class="o">=</span> <span class="n">Pad</span><span class="p">(</span><span class="n">padding</span><span class="p">,</span> <span class="n">padding_mode</span><span class="o">=</span><span class="n">padding_mode</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">pad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">PatchSampler</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">)</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">spatial_shape</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parse_sizes</span><span class="p">(</span><span class="o">*</span><span class="n">sizes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_patches_locations</span><span class="p">(</span><span class="o">*</span><span class="n">sizes</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">locations</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="c1"># Assume 3D</span>
         <span class="n">location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locations</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="n">i_ini</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">,</span> <span class="n">k_ini</span><span class="p">,</span> <span class="n">i_fin</span><span class="p">,</span> <span class="n">j_fin</span><span class="p">,</span> <span class="n">k_fin</span> <span class="o">=</span> <span class="n">location</span>
-        <span class="n">window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">[</span><span class="n">i_ini</span><span class="p">:</span><span class="n">i_fin</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">:</span><span class="n">j_fin</span><span class="p">,</span> <span class="n">k_ini</span><span class="p">:</span><span class="n">k_fin</span><span class="p">]</span>
-        <span class="n">window</span> <span class="o">=</span> <span class="n">window</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>  <span class="c1"># add channels dimension</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="p">{</span><span class="n">IMAGE</span><span class="p">:</span> <span class="n">window</span><span class="p">,</span> <span class="n">LOCATION</span><span class="p">:</span> <span class="n">location</span><span class="p">}</span>
-        <span class="k">return</span> <span class="n">sample</span>
+        <span class="n">index_ini</span> <span class="o">=</span> <span class="n">location</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">index_fin</span> <span class="o">=</span> <span class="n">location</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+        <span class="n">cropped_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">index_ini</span><span class="p">,</span> <span class="n">index_fin</span><span class="p">)</span>
+        <span class="n">cropped_sample</span><span class="p">[</span><span class="n">LOCATION</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="k">return</span> <span class="n">cropped_sample</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_enumerate_step_points</span><span class="p">(</span>
-            <span class="n">starting</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">ending</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">win_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">step_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">parse_sizes</span><span class="p">(</span>
+            <span class="n">image_size</span><span class="p">:</span> <span class="n">TypeTripletInt</span><span class="p">,</span>
+            <span class="n">patch_size</span><span class="p">:</span> <span class="n">TypeTripletInt</span><span class="p">,</span>
+            <span class="n">patch_overlap</span><span class="p">:</span> <span class="n">TypeTripletInt</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">image_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">image_size</span><span class="p">)</span>
+        <span class="n">patch_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span>
+        <span class="n">patch_overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">patch_size</span> <span class="o">&gt;</span> <span class="n">image_size</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Patch size </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span><span class="si">}</span><span class="s1"> cannot be&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; larger than image size </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">image_size</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">patch_overlap</span> <span class="o">&gt;=</span> <span class="n">patch_size</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Patch overlap </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">)</span><span class="si">}</span><span class="s1"> must be smaller&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; than patch size </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">image_size</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">patch_overlap</span> <span class="o">%</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Patch overlap must be a tuple of even integers,&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; not </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_patches_locations</span><span class="p">(</span>
+            <span class="n">image_size</span><span class="p">:</span> <span class="n">TypeTripletInt</span><span class="p">,</span>
+            <span class="n">patch_size</span><span class="p">:</span> <span class="n">TypeTripletInt</span><span class="p">,</span>
+            <span class="n">patch_overlap</span><span class="p">:</span> <span class="n">TypeTripletInt</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="n">starting</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">starting</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">ending</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ending</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="n">win_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">win_size</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">step_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">step_size</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">starting</span> <span class="o">&gt;</span> <span class="n">ending</span><span class="p">:</span>
-            <span class="n">starting</span><span class="p">,</span> <span class="n">ending</span> <span class="o">=</span> <span class="n">ending</span><span class="p">,</span> <span class="n">starting</span>
-        <span class="n">sampling_point_set</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">while</span> <span class="p">(</span><span class="n">starting</span> <span class="o">+</span> <span class="n">win_size</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">ending</span><span class="p">:</span>
-            <span class="n">sampling_point_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">starting</span><span class="p">)</span>
-            <span class="n">starting</span> <span class="o">=</span> <span class="n">starting</span> <span class="o">+</span> <span class="n">step_size</span>
-        <span class="n">additional_last_point</span> <span class="o">=</span> <span class="n">ending</span> <span class="o">-</span> <span class="n">win_size</span>
-        <span class="n">sampling_point_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">additional_last_point</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-        <span class="n">sampling_point_set</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sampling_point_set</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sampling_point_set</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">sampling_point_set</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">sampling_point_set</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sampling_point_set</span><span class="p">)))</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">uniq_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">sampling_point_set</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">sampling_point_set</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">uniq_idx</span><span class="p">)]</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_grid_spatial_coordinates</span><span class="p">(</span>
-            <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-            <span class="n">window_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-            <span class="n">border</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-            <span class="p">):</span>
-        <span class="n">shape</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">num_dims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">grid_size</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="nb">max</span><span class="p">(</span><span class="n">win_size</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">border</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="k">for</span> <span class="p">(</span><span class="n">win_size</span><span class="p">,</span> <span class="n">border</span><span class="p">)</span>
-            <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">window_shape</span><span class="p">,</span> <span class="n">border</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">steps_along_each_dim</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">GridSampler</span><span class="o">.</span><span class="n">_enumerate_step_points</span><span class="p">(</span>
-                <span class="n">starting</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">ending</span><span class="o">=</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                <span class="n">win_size</span><span class="o">=</span><span class="n">window_shape</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                <span class="n">step_size</span><span class="o">=</span><span class="n">grid_size</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-            <span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_dims</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="n">starting_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">steps_along_each_dim</span><span class="p">))</span>
-        <span class="n">starting_coords</span> <span class="o">=</span> <span class="n">starting_coords</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_dims</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
-        <span class="n">n_locations</span> <span class="o">=</span> <span class="n">starting_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="c1"># prepare the output coordinates matrix</span>
-        <span class="n">spatial_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_locations</span><span class="p">,</span> <span class="n">num_dims</span> <span class="o">*</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-        <span class="n">spatial_coords</span><span class="p">[:,</span> <span class="p">:</span><span class="n">num_dims</span><span class="p">]</span> <span class="o">=</span> <span class="n">starting_coords</span>
-        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_dims</span><span class="p">):</span>
-            <span class="n">spatial_coords</span><span class="p">[:,</span> <span class="n">num_dims</span> <span class="o">+</span> <span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">starting_coords</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span>
-                <span class="o">+</span> <span class="n">window_shape</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-            <span class="p">)</span>
-        <span class="n">max_coordinates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">spatial_coords</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="n">num_dims</span><span class="p">:]</span>
-        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">max_coordinates</span> <span class="o">&lt;=</span> <span class="n">shape</span><span class="p">[:</span><span class="n">num_dims</span><span class="p">]),</span> \
-            <span class="s2">&quot;window size greater than the spatial coordinates </span><span class="si">{}</span><span class="s2"> : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">max_coordinates</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">spatial_coords</span></div>
+        <span class="c1"># Example with image_size 10, patch_size 5, overlap 2:</span>
+        <span class="c1"># [0 1 2 3 4 5 6 7 8 9]</span>
+        <span class="c1"># [0 0 0 0 0]</span>
+        <span class="c1">#       [1 1 1 1 1]</span>
+        <span class="c1">#           [2 2 2 2 2]</span>
+        <span class="c1"># Locations:</span>
+        <span class="c1"># [[0, 5],</span>
+        <span class="c1">#  [3, 8],</span>
+        <span class="c1">#  [5, 10]]</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">zipped</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">image_size</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">,</span> <span class="n">patch_overlap</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">im_size_dim</span><span class="p">,</span> <span class="n">patch_size_dim</span><span class="p">,</span> <span class="n">patch_overlap_dim</span> <span class="ow">in</span> <span class="n">zipped</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">im_size_dim</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">patch_size_dim</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">patch_size_dim</span> <span class="o">-</span> <span class="n">patch_overlap_dim</span>
+            <span class="n">indices_dim</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">indices_dim</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">im_size_dim</span> <span class="o">-</span> <span class="n">patch_size_dim</span><span class="p">:</span>
+                <span class="n">indices_dim</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">im_size_dim</span> <span class="o">-</span> <span class="n">patch_size_dim</span><span class="p">)</span>
+            <span class="n">indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">indices_dim</span><span class="p">)</span>
+        <span class="n">indices_ini</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">indices_ini</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">indices_ini</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">indices_fin</span> <span class="o">=</span> <span class="n">indices_ini</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span>
+        <span class="n">locations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">indices_ini</span><span class="p">,</span> <span class="n">indices_fin</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">locations</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span></div>
 </pre></div>
 
            </div>
@@ -286,11 +308,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -301,7 +331,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

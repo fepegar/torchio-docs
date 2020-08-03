@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.data.queue &mdash; TorchIO 0.14.0 documentation</title>
+  <title>torchio.data.queue &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> TorchIO
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -76,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -83,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -155,33 +162,29 @@
   <h1>Source code for torchio.data.queue</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">islice</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">trange</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="k">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataLoader</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">TypeTuple</span>
-<span class="kn">from</span> <span class="nn">.images</span> <span class="k">import</span> <span class="n">ImagesDataset</span>
-<span class="kn">from</span> <span class="nn">.sampler</span> <span class="k">import</span> <span class="n">ImageSampler</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Iterator</span>
+
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DataLoader</span>
+
+<span class="kn">from</span> <span class="nn">.sampler</span> <span class="kn">import</span> <span class="n">PatchSampler</span>
+<span class="kn">from</span> <span class="nn">.dataset</span> <span class="kn">import</span> <span class="n">ImagesDataset</span>
 
 
-<div class="viewcode-block" id="Queue"><a class="viewcode-back" href="../../../data/queue.html#torchio.data.Queue">[docs]</a><span class="k">class</span> <span class="nc">Queue</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<div class="viewcode-block" id="Queue"><a class="viewcode-back" href="../../../data/patch_training.html#torchio.data.Queue">[docs]</a><span class="k">class</span> <span class="nc">Queue</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Patches queue used for patch-based training.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        subjects_dataset: Instance of</span>
-<span class="sd">            :class:`~torchio.data.images.ImagesDataset`.</span>
+<span class="sd">            :class:`~torchio.data.dataset.ImagesDataset`.</span>
 <span class="sd">        max_length: Maximum number of patches that can be stored in the queue.</span>
 <span class="sd">            Using a large number means that the queue needs to be filled less</span>
-<span class="sd">            often, but more RAM is needed to store the patches.</span>
+<span class="sd">            often, but more CPU memory is needed to store the patches.</span>
 <span class="sd">        samples_per_volume: Number of patches to extract from each volume.</span>
 <span class="sd">            A small number of patches ensures a large variability in the queue,</span>
 <span class="sd">            but training will be slower.</span>
-<span class="sd">        patch_size: Tuple of integers :math:`(d, h, w)` to generate patches</span>
-<span class="sd">            of size :math:`d \times h \times w`.</span>
-<span class="sd">            If a single number :math:`n` is provided,</span>
-<span class="sd">            :math:`d = h = w = n`.</span>
-<span class="sd">        sampler_class: An instance of :class:`~torchio.data.ImageSampler` used</span>
-<span class="sd">            to define the patches sampling strategy.</span>
+<span class="sd">        sampler: A sampler used to extract patches from the volumes.</span>
 <span class="sd">        num_workers: Number of subprocesses to use for data loading</span>
 <span class="sd">            (as in :class:`torch.utils.data.DataLoader`).</span>
 <span class="sd">            ``0`` means that the data will be loaded in the main process.</span>
@@ -192,40 +195,52 @@
 <span class="sd">            queue.</span>
 <span class="sd">        verbose: If ``True``, some debugging messages are printed.</span>
 
+<span class="sd">    This sketch can be used to experiment and understand how the queue works.</span>
+<span class="sd">    In this case, :attr:`shuffle_subjects` is ``False``</span>
+<span class="sd">    and :attr:`shuffle_patches` is ``True``.</span>
+
+<span class="sd">    .. raw:: html</span>
+
+<span class="sd">        &lt;embed&gt;</span>
+<span class="sd">            &lt;iframe style=&quot;width: 640px; height: 360px; overflow: hidden;&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; src=&quot;https://editor.p5js.org/embed/DZwjZzkkV&quot;&gt;&lt;/iframe&gt;</span>
+<span class="sd">        &lt;/embed&gt;</span>
+
 <span class="sd">    .. note:: :attr:`num_workers` refers to the number of workers used to</span>
 <span class="sd">        load and transform the volumes. Multiprocessing is not needed to pop</span>
 <span class="sd">        patches from the queue.</span>
 
 <span class="sd">    Example:</span>
 
-<span class="sd">    &gt;&gt;&gt; form torch.utils.data import DataLoader</span>
+<span class="sd">    &gt;&gt;&gt; from torch.utils.data import DataLoader</span>
 <span class="sd">    &gt;&gt;&gt; import torchio</span>
+<span class="sd">    &gt;&gt;&gt; patch_size = 96</span>
+<span class="sd">    &gt;&gt;&gt; queue_length = 300</span>
+<span class="sd">    &gt;&gt;&gt; samples_per_volume = 10</span>
+<span class="sd">    &gt;&gt;&gt; sample = torchio.data.UniformSampler(patch_size)</span>
 <span class="sd">    &gt;&gt;&gt; patches_queue = torchio.Queue(</span>
-<span class="sd">    ...     subjects_dataset=subjects_dataset,  # instance of torchio.ImagesDataset</span>
-<span class="sd">    ...     max_length=300,</span>
-<span class="sd">    ...     samples_per_volume=10,</span>
-<span class="sd">    ...     patch_size=96,</span>
-<span class="sd">    ...     sampler_class=torchio.sampler.ImageSampler,</span>
+<span class="sd">    ...     subjects_dataset,  # instance of torchio.ImagesDataset</span>
+<span class="sd">    ...     queue_length,</span>
+<span class="sd">    ...     samples_per_volume,</span>
+<span class="sd">    ...     sampler,</span>
 <span class="sd">    ...     num_workers=4,</span>
 <span class="sd">    ...     shuffle_subjects=True,</span>
 <span class="sd">    ...     shuffle_patches=True,</span>
 <span class="sd">    ... )</span>
-<span class="sd">    &gt;&gt;&gt; patches_loader = DataLoader(patches_queue, batch_size=4)</span>
+<span class="sd">    &gt;&gt;&gt; patches_loader = DataLoader(patches_queue, batch_size=16)</span>
 <span class="sd">    &gt;&gt;&gt; num_epochs = 20</span>
 <span class="sd">    &gt;&gt;&gt; for epoch_index in range(num_epochs):</span>
 <span class="sd">    ...     for patches_batch in patches_loader:</span>
 <span class="sd">    ...         inputs = patches_batch[&#39;image_name&#39;][torchio.DATA]</span>
 <span class="sd">    ...         targets = patches_batch[&#39;targets_name&#39;][torchio.DATA]</span>
-<span class="sd">    ...         logits = model(inputs)  # model is some torch.nn.Module</span>
+<span class="sd">    ...         logits = model(inputs)  # model being an instance of torch.nn.Module</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">subjects_dataset</span><span class="p">:</span> <span class="n">ImagesDataset</span><span class="p">,</span>
             <span class="n">max_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
             <span class="n">samples_per_volume</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">patch_size</span><span class="p">:</span> <span class="n">TypeTuple</span><span class="p">,</span>
-            <span class="n">sampler_class</span><span class="p">:</span> <span class="n">ImageSampler</span><span class="p">,</span>
+            <span class="n">sampler</span><span class="p">:</span> <span class="n">PatchSampler</span><span class="p">,</span>
             <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
             <span class="n">shuffle_subjects</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">shuffle_patches</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -236,18 +251,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shuffle_subjects</span> <span class="o">=</span> <span class="n">shuffle_subjects</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shuffle_patches</span> <span class="o">=</span> <span class="n">shuffle_patches</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">samples_per_volume</span> <span class="o">=</span> <span class="n">samples_per_volume</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sampler_class</span> <span class="o">=</span> <span class="n">sampler_class</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span> <span class="o">=</span> <span class="n">patch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="o">=</span> <span class="n">sampler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span> <span class="o">=</span> <span class="n">num_workers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subjects_iterable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subjects_iterable</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">patches_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_sampled_patches</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterations_per_epoch</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
         <span class="c1"># There are probably more elegant ways of doing this</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">patches_list</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s1">&#39;Patches list is empty.&#39;</span><span class="p">)</span>
@@ -256,17 +270,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">num_sampled_patches</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">sample_patch</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">f</span><span class="s1">&#39;max_length=</span><span class="si">{self.max_length}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">f</span><span class="s1">&#39;num_subjects=</span><span class="si">{self.num_subjects}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">f</span><span class="s1">&#39;num_patches=</span><span class="si">{self.num_patches}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">f</span><span class="s1">&#39;samples_per_volume=</span><span class="si">{self.samples_per_volume}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">f</span><span class="s1">&#39;num_sampled_patches=</span><span class="si">{self.num_sampled_patches}</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="n">f</span><span class="s1">&#39;iterations_per_epoch=</span><span class="si">{self.iterations_per_epoch}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;max_length=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;num_subjects=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_subjects</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;num_patches=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_patches</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;samples_per_volume=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">samples_per_volume</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;num_sampled_patches=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_sampled_patches</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s1">&#39;iterations_per_epoch=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iterations_per_epoch</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">attributes_string</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;Queue(</span><span class="si">{attributes_string}</span><span class="s1">)&#39;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Queue(</span><span class="si">{</span><span class="n">attributes_string</span><span class="si">}</span><span class="s1">)&#39;</span>
 
     <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
@@ -285,13 +299,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_subjects</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_per_volume</span>
 
     <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_length</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_per_volume</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">f</span><span class="s1">&#39;Queue length (</span><span class="si">{self.max_length}</span><span class="s1">)&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Queue length (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_length</span><span class="si">}</span><span class="s1">)&#39;</span>
                 <span class="s1">&#39; not divisible by the number of&#39;</span>
-                <span class="n">f</span><span class="s1">&#39; patches per volume (</span><span class="si">{self.samples_per_volume}</span><span class="s1">)&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; patches per volume (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">samples_per_volume</span><span class="si">}</span><span class="s1">)&#39;</span>
             <span class="p">)</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
@@ -301,17 +314,16 @@
         <span class="n">num_subjects_for_queue</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_subjects</span><span class="p">,</span> <span class="n">max_num_subjects_for_queue</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Filling queue from </span><span class="si">{num_subjects_for_queue}</span><span class="s1"> subjects...&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Filling queue from </span><span class="si">{</span><span class="n">num_subjects_for_queue</span><span class="si">}</span><span class="s1"> subjects...&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">iterable</span> <span class="o">=</span> <span class="n">trange</span><span class="p">(</span><span class="n">num_subjects_for_queue</span><span class="p">,</span> <span class="n">leave</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">iterable</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_subjects_for_queue</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
             <span class="n">subject_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_subject_sample</span><span class="p">()</span>
-            <span class="n">sampler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler_class</span><span class="p">(</span><span class="n">subject_sample</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span><span class="p">)</span>
-            <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">islice</span><span class="p">(</span><span class="n">sampler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_per_volume</span><span class="p">)]</span>
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">patches_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span>
+            <span class="n">iterable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="p">(</span><span class="n">subject_sample</span><span class="p">)</span>
+            <span class="n">patches</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_per_volume</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patches_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle_patches</span><span class="p">:</span>
             <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patches_list</span><span class="p">)</span>
 
@@ -353,11 +365,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -368,7 +388,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

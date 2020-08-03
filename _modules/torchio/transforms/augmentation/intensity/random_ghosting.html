@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.augmentation.intensity.random_ghosting &mdash; TorchIO 0.14.0 documentation</title>
+  <title>torchio.transforms.augmentation.intensity.random_ghosting &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
 </head>
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> TorchIO
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -76,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -83,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../../../index.html">Module code</a> &raquo;</li>
         
@@ -153,14 +160,12 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.transforms.augmentation.intensity.random_ghosting</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
-<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span>
-<span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">INTENSITY</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">AFFINE</span><span class="p">,</span> <span class="n">TYPE</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RandomTransform</span>
+<span class="kn">from</span> <span class="nn">....torchio</span> <span class="kn">import</span> <span class="n">DATA</span>
+<span class="kn">from</span> <span class="nn">....data.subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">RandomTransform</span>
 
 
 <div class="viewcode-block" id="RandomGhosting"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomGhosting">[docs]</a><span class="k">class</span> <span class="nc">RandomGhosting</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
@@ -170,131 +175,148 @@
 <span class="sd">        num_ghosts: Number of &#39;ghosts&#39; :math:`n` in the image.</span>
 <span class="sd">            If :py:attr:`num_ghosts` is a tuple :math:`(a, b)`, then</span>
 <span class="sd">            :math:`n \sim \mathcal{U}(a, b) \cap \mathbb{N}`.</span>
+<span class="sd">            If only one value :math:`d` is provided,</span>
+<span class="sd">            :math:`\n \sim \mathcal{U}(0, d) \cap \mathbb{N}`.</span>
 <span class="sd">        axes: Axis along which the ghosts will be created. If</span>
 <span class="sd">            :py:attr:`axes` is a tuple, the axis will be randomly chosen</span>
 <span class="sd">            from the passed values.</span>
-<span class="sd">        proportion_to_augment: Probability that this transform will be applied.</span>
+<span class="sd">        intensity: Positive number representing the artifact strength</span>
+<span class="sd">            :math:`s` with respect to the maximum of the :math:`k`-space.</span>
+<span class="sd">            If ``0``, the ghosts will not be visible. If a tuple</span>
+<span class="sd">            :math:`(a, b)` is provided then :math:`s \sim \mathcal{U}(a, b)`.</span>
+<span class="sd">            If only one value :math:`d` is provided,</span>
+<span class="sd">            :math:`\s \sim \mathcal{U}(0, d)`.</span>
+<span class="sd">        restore: Number between ``0`` and ``1`` indicating how much of the</span>
+<span class="sd">            :math:`k`-space center should be restored after removing the planes</span>
+<span class="sd">            that generate the artifact.</span>
+<span class="sd">        p: Probability that this transform will be applied.</span>
 <span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
 
 <span class="sd">    .. note:: The execution time of this transform does not depend on the</span>
 <span class="sd">        number of ghosts.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">num_ghosts</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
             <span class="n">axes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-            <span class="n">proportion_to_augment</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">intensity</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">restore</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
             <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">proportion_to_augment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_probability</span><span class="p">(</span>
-            <span class="n">proportion_to_augment</span><span class="p">,</span>
-            <span class="s1">&#39;proportion_to_augment&#39;</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="n">axes</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes</span><span class="p">,)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">axes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">axes</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes</span><span class="p">,)</span>
+        <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">axis</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Axes must be in (0, 1, 2), not &quot;</span><span class="si">{</span><span class="n">axes</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_ghosts</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">num_ghosts_range</span> <span class="o">=</span> <span class="n">num_ghosts</span><span class="p">,</span> <span class="n">num_ghosts</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_ghosts</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_ghosts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">num_ghosts_range</span> <span class="o">=</span> <span class="n">num_ghosts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_ghosts_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_range</span><span class="p">(</span>
+            <span class="n">num_ghosts</span><span class="p">,</span> <span class="s1">&#39;num_ghosts&#39;</span><span class="p">,</span> <span class="n">min_constraint</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">type_constraint</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intensity_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_range</span><span class="p">(</span>
+            <span class="n">intensity</span><span class="p">,</span> <span class="s1">&#39;intensity_range&#39;</span><span class="p">,</span> <span class="n">min_constraint</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restore</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_restore</span><span class="p">(</span><span class="n">restore</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_image_dict</span><span class="p">(</span><span class="n">image_dict</span><span class="p">):</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">TYPE</span><span class="p">]</span> <span class="o">!=</span> <span class="n">INTENSITY</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">num_ghosts_range</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">proportion_to_augment</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">num_ghosts_param</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="n">do_it</span> <span class="o">=</span> <span class="n">params</span>
-            <span class="n">sample</span><span class="p">[</span><span class="n">image_name</span><span class="p">][</span><span class="s1">&#39;random_ghosting_axis&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">axis_param</span>
-            <span class="n">sample</span><span class="p">[</span><span class="n">image_name</span><span class="p">][</span><span class="s1">&#39;random_ghosting_num_ghosts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_ghosts_param</span>
-            <span class="n">sample</span><span class="p">[</span><span class="n">image_name</span><span class="p">][</span><span class="s1">&#39;random_ghosting_do&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">do_it</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">do_it</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">sample</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-                <span class="c1"># I use -0.1 instead of 0 because Python was warning me when</span>
-                <span class="c1"># a value in a voxel was -7.191084e-35</span>
-                <span class="c1"># There must be a better way of solving this</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">f</span><span class="s1">&#39;Image &quot;</span><span class="si">{image_name}</span><span class="s1">&quot; from &quot;</span><span class="si">{image_dict[&quot;stem&quot;]}</span><span class="s1">&quot;&#39;</span>
-                    <span class="s1">&#39; has negative values.&#39;</span>
-                    <span class="s1">&#39; Results can be unexpected because the transformed sample&#39;</span>
-                    <span class="s1">&#39; is computed as the absolute values&#39;</span>
-                    <span class="s1">&#39; of an inverse Fourier transform&#39;</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_restore</span><span class="p">(</span><span class="n">restore</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">restore</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Restore must be a float, not </span><span class="si">{</span><span class="n">restore</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">restore</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Restore must be a number between 0 and 1, not </span><span class="si">{</span><span class="n">restore</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">restore</span>
+
+    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">random_parameters_images_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">get_images_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">transformed_tensors</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">is_2d</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">is_2d</span><span class="p">()</span>
+            <span class="n">axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="k">if</span> <span class="n">a</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">is_2d</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span>
+            <span class="k">for</span> <span class="n">channel_idx</span><span class="p">,</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="n">DATA</span><span class="p">]):</span>
+                <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">num_ghosts_range</span><span class="p">,</span>
+                    <span class="n">axes</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">intensity_range</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nib_to_sitk</span><span class="p">(</span>
-                <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">image_dict</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">],</span>
-            <span class="p">)</span>
-            <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_artifact</span><span class="p">(</span>
-                <span class="n">image</span><span class="p">,</span>
-                <span class="n">num_ghosts_param</span><span class="p">,</span>
-                <span class="n">axis_param</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="c1"># Add channels dimension</span>
-            <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-            <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">])</span>
+                <span class="n">num_ghosts_param</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="n">intensity_param</span> <span class="o">=</span> <span class="n">params</span>
+                <span class="n">random_parameters_dict</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;axis&#39;</span><span class="p">:</span> <span class="n">axis_param</span><span class="p">,</span>
+                    <span class="s1">&#39;num_ghosts&#39;</span><span class="p">:</span> <span class="n">num_ghosts_param</span><span class="p">,</span>
+                    <span class="s1">&#39;intensity&#39;</span><span class="p">:</span> <span class="n">intensity_param</span><span class="p">,</span>
+                <span class="p">}</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">image_name</span><span class="si">}</span><span class="s1">_channel_</span><span class="si">{</span><span class="n">channel_idx</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">random_parameters_images_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_parameters_dict</span>
+                <span class="n">transformed_tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_artifact</span><span class="p">(</span>
+                    <span class="n">tensor</span><span class="p">,</span>
+                    <span class="n">num_ghosts_param</span><span class="p">,</span>
+                    <span class="n">axis_param</span><span class="p">,</span>
+                    <span class="n">intensity_param</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">restore</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">transformed_tensors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">transformed_tensor</span><span class="p">)</span>
+            <span class="n">image</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">transformed_tensors</span><span class="p">)</span>
+        <span class="n">sample</span><span class="o">.</span><span class="n">add_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">random_parameters_images_dict</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sample</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span>
             <span class="n">num_ghosts_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
             <span class="n">axes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
-            <span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">intensity_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
         <span class="n">ng_min</span><span class="p">,</span> <span class="n">ng_max</span> <span class="o">=</span> <span class="n">num_ghosts_range</span>
-        <span class="n">num_ghosts_param</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">ng_min</span><span class="p">,</span> <span class="n">ng_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))]</span>
-        <span class="n">do_it</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">probability</span>
-        <span class="k">return</span> <span class="n">num_ghosts_param</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="n">do_it</span>
+        <span class="n">num_ghosts</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">ng_min</span><span class="p">,</span> <span class="n">ng_max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))]</span>
+        <span class="n">intensity</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">*</span><span class="n">intensity_range</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">num_ghosts</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">intensity</span>
 
     <span class="k">def</span> <span class="nf">add_artifact</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">image</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Image</span><span class="p">,</span>
+            <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
             <span class="n">num_ghosts</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
             <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">intensity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">restore_center</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="n">array</span> <span class="o">=</span> <span class="n">sitk</span><span class="o">.</span><span class="n">GetArrayFromImage</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-        <span class="c1"># Leave first 5% of frequencies untouched. If the image is in RAS</span>
-        <span class="c1"># orientation, this helps applying the ghosting in the desired axis</span>
-        <span class="c1"># intuitively</span>
-        <span class="c1"># [Why? I forgot]</span>
-        <span class="n">percentage_to_avoid</span> <span class="o">=</span> <span class="mf">0.05</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">size</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">size</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># we will also traverse in sagittal (if RAS)</span>
-            <span class="n">size</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">num_ghosts</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">intensity</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tensor</span>
 
-        <span class="k">for</span> <span class="n">slice_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
-            <span class="c1"># Comments apply if RAS</span>
-            <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># sagittal (columns) - artifact AP</span>
-                <span class="n">slice_</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">slice_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># coronal (columns) - artifact LR</span>
-                <span class="n">slice_</span> <span class="o">=</span> <span class="n">array</span><span class="p">[:,</span> <span class="n">slice_idx</span><span class="p">,</span> <span class="p">:]</span>
-            <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># sagittal (rows) - artifact IS</span>
-                <span class="n">slice_</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">slice_idx</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
-            <span class="n">spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fourier_transform</span><span class="p">(</span><span class="n">slice_</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">row_idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spectrum</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">row_idx</span> <span class="o">%</span> <span class="n">num_ghosts</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="n">progress</span> <span class="o">=</span> <span class="n">row_idx</span> <span class="o">/</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">progress</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">percentage_to_avoid</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="n">row</span> <span class="o">*=</span> <span class="mi">0</span>
-            <span class="n">slice_</span> <span class="o">*=</span> <span class="mi">0</span>
-            <span class="n">slice_</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_fourier_transform</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">spectrum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fourier_transform</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">array</span></div>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">ri</span><span class="p">,</span> <span class="n">rj</span><span class="p">,</span> <span class="n">rk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">restore_center</span> <span class="o">*</span> <span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+        <span class="n">mi</span><span class="p">,</span> <span class="n">mj</span><span class="p">,</span> <span class="n">mk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="c1"># Variable &quot;planes&quot; is the part of the spectrum that will be modified</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">planes</span> <span class="o">=</span> <span class="n">spectrum</span><span class="p">[::</span><span class="n">num_ghosts</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+            <span class="n">restore</span> <span class="o">=</span> <span class="n">spectrum</span><span class="p">[</span><span class="n">mi</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">planes</span> <span class="o">=</span> <span class="n">spectrum</span><span class="p">[:,</span> <span class="p">::</span><span class="n">num_ghosts</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">restore</span> <span class="o">=</span> <span class="n">spectrum</span><span class="p">[:,</span> <span class="n">mj</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">planes</span> <span class="o">=</span> <span class="n">spectrum</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">::</span><span class="n">num_ghosts</span><span class="p">]</span>
+            <span class="n">restore</span> <span class="o">=</span> <span class="n">spectrum</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">mk</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Multiply by 0 if intensity is 1</span>
+        <span class="n">planes</span> <span class="o">*=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">intensity</span>
+
+        <span class="c1"># Restore the center of k-space to avoid extreme artifacts</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">spectrum</span><span class="p">[</span><span class="n">mi</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">restore</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">spectrum</span><span class="p">[:,</span> <span class="n">mj</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">restore</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">spectrum</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">mk</span><span class="p">]</span> <span class="o">=</span> <span class="n">restore</span>
+
+        <span class="n">array_ghosts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_fourier_transform</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+        <span class="n">array_ghosts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">array_ghosts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">array_ghosts</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
@@ -311,11 +333,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -326,7 +356,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

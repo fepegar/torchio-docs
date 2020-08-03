@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>3D Slicer GUI &mdash; TorchIO 0.17.14 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Command-line tools" href="cli.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.17.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/patch_based.html">Patch-based pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command-line tools</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">3D Slicer GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torchio-transforms">TorchIO Transforms</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>3D Slicer GUI</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/slicer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+           <div itemprop="articleBody">
+            
+  <div class="section" id="d-slicer-gui">
+<h1>3D Slicer GUI<a class="headerlink" href="#d-slicer-gui" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://www.slicer.org/">3D Slicer</a> is an open-source software platform for
+medical image informatics, image processing,
+and three-dimensional visualization.</p>
+<p>You can download and install Slicer 4.11 from
+<a class="reference external" href="https://www.download.slicer.org/">their download website</a> or, if you are on
+macOS, using <a class="reference external" href="https://docs.brew.sh/">Homebrew</a>:
+<code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">cask</span> <span class="pre">install</span> <span class="pre">slicer-nightly</span></code>.</p>
+<p>TorchIO provides a 3D Slicer extension for quick experimentation and
+visualization of the package features without any coding.</p>
+<p>The TorchIO extension can be easily installed using the
+<a class="reference external" href="https://www.slicer.org/wiki/Documentation/4.10/SlicerApplication/ExtensionsManager">Extensions Manager</a>.</p>
+<p>The code and installation instructions are available on
+<a class="reference external" href="https://github.com/fepegar/SlicerTorchIO">GitHub</a>.</p>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="torchio-transforms">
+<h3>TorchIO Transforms<a class="headerlink" href="#torchio-transforms" title="Permalink to this headline">¶</a></h3>
+<p>This module can be used to quickly visualize the effect of each transform
+parameter.
+That way, users can have an intuitive feeling of what the output
+of a transform looks like without any coding at all.</p>
+<img alt="TorchIO Transforms module for 3D Slicer" src="https://raw.githubusercontent.com/fepegar/SlicerTorchIO/master/Screenshots/TorchIO.png" />
+<div class="section" id="usage-example">
+<h4>Usage example<a class="headerlink" href="#usage-example" title="Permalink to this headline">¶</a></h4>
+<p>Go to the <cite>Sample Data</cite> module to get an image we can use:</p>
+<img alt="Go to Sample Data module" src="https://raw.githubusercontent.com/fepegar/SlicerTorchIO/master/Screenshots/usage_1.png" />
+<p>Click on an image to download, for example MRHead <a class="footnote-reference brackets" href="#id2" id="id1">1</a>,
+and go to the <cite>TorchIO Transforms</cite> module:</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>All the data in <cite>Sample Data</cite> can be downloaded and used in the TorchIO
+Python library using the <a class="reference internal" href="datasets.html#torchio.datasets.slicer.Slicer" title="torchio.datasets.slicer.Slicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.datasets.slicer.Slicer</span></code></a> class.</p>
+</dd>
+</dl>
+<img alt="Download MRHead and go to TorchIO Transforms module" src="https://raw.githubusercontent.com/fepegar/SlicerTorchIO/master/Screenshots/usage_2.png" />
+<p>Select the input and output volume nodes:</p>
+<img alt="Select volume nodes" src="https://raw.githubusercontent.com/fepegar/SlicerTorchIO/master/Screenshots/usage_3.png" />
+<p>Modify the transform parameters and click on <cite>Apply transform</cite>.
+Hovering the mouse over the transforms will show tooltips extracted from the
+TorchIO documentation.</p>
+<img alt="Select volume nodes" src="https://raw.githubusercontent.com/fepegar/SlicerTorchIO/master/Screenshots/usage_4.png" />
+<p>You can click on the <cite>Toggle volumes</cite> button to switch between input and output
+volumes.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+    <a href="https://github.com/fepegar/torchio">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="cli.html" class="btn btn-neutral float-left" title="Command-line tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #d45848;
+    }
+    .wy-menu > .caption > span.caption-text {
+      color: #d45848;
+    }
+    /* .property {
+      color: #d45848;
+    } */
+  </style>
+
+
+</body>
+</html>

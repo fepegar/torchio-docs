@@ -1,0 +1,600 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dataset &mdash; TorchIO 0.17.14 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Patch-based pipelines" href="patch_based.html" />
+    <link rel="prev" title="Getting started" href="../quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.17.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#imagesdataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scalarimage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarImage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#labelmap"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelMap</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="patch_based.html">Patch-based pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../transforms/transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../slicer.html">3D Slicer GUI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Dataset</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/data/dataset.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dataset">
+<h1>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h1>
+<img alt="Training with volumes" src="../_images/diagram_volumes.svg" /><div class="section" id="imagesdataset">
+<h2><a class="reference internal" href="#torchio.data.ImagesDataset" title="torchio.data.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a><a class="headerlink" href="#imagesdataset" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchio.data.ImagesDataset">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.data.</code><code class="sig-name descname">ImagesDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subjects</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>torchio.data.subject.Subject<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">transform</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Callable<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/dataset.html#ImagesDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.ImagesDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.dataset.Dataset</span></code></p>
+<p>Base TorchIO dataset.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code>
+is a reader of 3D medical images that directly
+inherits from <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.Dataset" title="(in PyTorch vmaster (1.7.0a0+b87f0e5 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code></a>.
+It can be used with a <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.7.0a0+b87f0e5 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.DataLoader</span></code></a>
+for efficient loading and augmentation.
+It receives a list of subjects, where each subject is an instance of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.subject.Subject</span></code> containing instances of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.image.Image</span></code>.
+The file format must be compatible with <a class="reference external" href="https://nipy.org/nibabel/#nibabel">NiBabel</a> or <a class="reference external" href="https://itk.org/Wiki/ITK/FAQ#What_3D_file_formats_can_ITK_import_and_export.3F">SimpleITK</a> readers.
+It can also be a directory containing
+<a class="reference external" href="https://www.dicomstandard.org/">DICOM</a> files.</p>
+<p>Indexing an <code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code> returns an
+instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code>. Check out the
+documentation for both classes for usage examples.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">images_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span>
+<span class="go">Subject(Keys: (&#39;image&#39;, &#39;label&#39;); images: 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="s1">&#39;image&#39;</span><span class="p">]</span>  <span class="c1"># or sample.image</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">torch.Size([1, 176, 256, 256])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span><span class="o">.</span><span class="n">affine</span>
+<span class="go">array([[   0.03,    1.13,   -0.08,  -88.54],</span>
+<span class="go">       [   0.06,    0.08,    0.95, -129.66],</span>
+<span class="go">       [   1.18,   -0.06,   -0.11,  -67.15],</span>
+<span class="go">       [   0.  ,    0.  ,    0.  ,    1.  ]])</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subjects</strong> – Sequence of instances of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code>.</p></li>
+<li><p><strong>transform</strong> – An instance of <a class="reference internal" href="../transforms/transforms.html#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.Transform</span></code></a>
+that will be applied to each sample.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio</span> <span class="kn">import</span> <span class="n">ImagesDataset</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">Subject</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="kn">import</span> <span class="n">RescaleIntensity</span><span class="p">,</span> <span class="n">RandomAffine</span><span class="p">,</span> <span class="n">Compose</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject_a</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="n">t1</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t1.nrrd&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">t2</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t2.mha&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">label</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t1_seg.nii.gz&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">age</span><span class="o">=</span><span class="mi">31</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Fernando Perez&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject_b</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">t1</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;colin27_t1_tal_lin.minc&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">t2</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;colin27_t2_tal_lin_dicom&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">label</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;colin27_seg1.nii.gz&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">age</span><span class="o">=</span><span class="mi">56</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Colin Holmes&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">subject_a</span><span class="p">,</span> <span class="n">subject_b</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transforms</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">RescaleIntensity</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>
+<span class="gp">... </span>    <span class="n">RandomAffine</span><span class="p">(),</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subjects_dataset</span> <span class="o">=</span> <span class="n">ImagesDataset</span><span class="p">(</span><span class="n">subjects_list</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject_sample</span> <span class="o">=</span> <span class="n">subjects_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="torchio.data.ImagesDataset.set_transform">
+<code class="sig-name descname">set_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transform</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Callable<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a><a class="reference internal" href="../_modules/torchio/data/dataset.html#ImagesDataset.set_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.ImagesDataset.set_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the <code class="xref py py-attr docutils literal notranslate"><span class="pre">transform</span></code> attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>transform</strong> – An instance of <a class="reference internal" href="../transforms/transforms.html#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.Transform</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="subject">
+<h2><a class="reference internal" href="#torchio.data.Subject" title="torchio.data.Subject"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code></a><a class="headerlink" href="#subject" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchio.data.Subject">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.data.</code><code class="sig-name descname">Subject</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/subject.html#Subject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.Subject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<p>Class to store information about the images corresponding to a subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – If provided, a dictionary of items.</p></li>
+<li><p><strong>**kwargs</strong> – Items that will be added to the subject sample.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">Subject</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># One way:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">one_image</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;path_to_image.nii.gz&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">a_segmentation</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;path_to_seg.nii.gz&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">age</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;John Doe&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">hospital</span><span class="o">=</span><span class="s1">&#39;Hospital Juan Negrín&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># If you want to create the mapping before, or have spaces in the keys:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject_dict</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;one image&#39;</span><span class="p">:</span> <span class="n">Image</span><span class="p">(</span><span class="s1">&#39;path_to_image.nii.gz&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="s1">&#39;a segmentation&#39;</span><span class="p">:</span> <span class="n">Image</span><span class="p">(</span><span class="s1">&#39;path_to_seg.nii.gz&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John Doe&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;hospital&#39;</span><span class="p">:</span> <span class="s1">&#39;Hospital Juan Negrín&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Subject</span><span class="p">(</span><span class="n">subject_dict</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="torchio.data.Subject.shape">
+<em class="property">property </em><code class="sig-name descname">shape</code><a class="headerlink" href="#torchio.data.Subject.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return shape of first image in subject.</p>
+<p>Consistency of shapes across images in the subject is checked first.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="torchio.data.Subject.spacing">
+<em class="property">property </em><code class="sig-name descname">spacing</code><a class="headerlink" href="#torchio.data.Subject.spacing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return spacing of first image in subject.</p>
+<p>Consistency of shapes across images in the subject is checked first.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="torchio.data.Subject.spatial_shape">
+<em class="property">property </em><code class="sig-name descname">spatial_shape</code><a class="headerlink" href="#torchio.data.Subject.spatial_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return spatial shape of first image in subject.</p>
+<p>Consistency of shapes across images in the subject is checked first.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="scalarimage">
+<h2><a class="reference internal" href="#torchio.data.ScalarImage" title="torchio.data.ScalarImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarImage</span></code></a><a class="headerlink" href="#scalarimage" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchio.data.ScalarImage">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.data.</code><code class="sig-name descname">ScalarImage</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/image.html#ScalarImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.ScalarImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.image.Image</span></code></p>
+<p>Alias for <code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code> of type <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.INTENSITY</span></code>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">ScalarImage</span><span class="p">(</span><span class="s1">&#39;t1.nii.gz&#39;</span><span class="p">)</span>  <span class="c1"># loading from a file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">ScalarImage</span><span class="p">(</span><span class="n">tensor</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">68</span><span class="p">))</span>  <span class="c1"># from tensor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">affine</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">affine</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">affine</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(4, 4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="n">image</span><span class="p">[</span><span class="n">torchio</span><span class="o">.</span><span class="n">DATA</span><span class="p">]</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="n">image</span><span class="o">.</span><span class="n">tensor</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">torch.Tensor</span>
+</pre></div>
+</div>
+<p>See <code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code> for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – A <code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code> is used for instantiation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="labelmap">
+<h2><a class="reference internal" href="#torchio.data.LabelMap" title="torchio.data.LabelMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">LabelMap</span></code></a><a class="headerlink" href="#labelmap" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchio.data.LabelMap">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.data.</code><code class="sig-name descname">LabelMap</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/image.html#LabelMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.LabelMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.image.Image</span></code></p>
+<p>Alias for <code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code> of type <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.LABEL</span></code>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">LabelMap</span><span class="p">(</span><span class="n">tensor</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">68</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">labels</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">LabelMap</span><span class="p">(</span><span class="s1">&#39;t1_seg.nii.gz&#39;</span><span class="p">)</span>  <span class="c1"># loading from a file</span>
+</pre></div>
+</div>
+<p>See <code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code> for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – If a value for <code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code> is given.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="image">
+<h2><a class="reference internal" href="#torchio.data.Image" title="torchio.data.Image"><code class="xref py py-class docutils literal notranslate"><span class="pre">Image</span></code></a><a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="torchio.data.Image">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.data.</code><code class="sig-name descname">Image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.8)">pathlib.Path</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">type</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span> <span class="o">=</span> <span class="default_value">'intensity'</span></em>, <em class="sig-param"><span class="n">tensor</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (1.7.0a0+b87f0e5 ))">torch.Tensor</a><span class="p">, </span>numpy.ndarray<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">affine</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (1.7.0a0+b87f0e5 ))">torch.Tensor</a><span class="p">, </span>numpy.ndarray<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">check_nans</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">num_spatial_dims</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">channels_last</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">, </span>Any<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/image.html#Image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.Image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+<p>TorchIO image.</p>
+<p>For information about medical image orientation, check out <a class="reference external" href="https://nipy.org/nibabel/image_orientation.html">NiBabel docs</a>,
+the <a class="reference external" href="https://www.slicer.org/wiki/Coordinate_systems">3D Slicer wiki</a>, <a class="reference external" href="http://www.grahamwideman.com/gw/brain/orientation/orientterms.htm">Graham Wideman’s website</a>, <a class="reference external" href="https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Orientation%20Explained">FSL docs</a> or
+<a class="reference external" href="https://simpleitk.readthedocs.io/en/master/fundamentalConcepts.html">SimpleITK docs</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – Path to a file that can be read by
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">SimpleITK</span></code> or <a class="reference external" href="https://nipy.org/nibabel/reference/nibabel.html#module-nibabel" title="(in NiBabel v3.1.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nibabel</span></code></a>, or to a directory containing
+DICOM files. If <code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code> is given, the data in
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code> will not be read. The data is expected to be 2D or
+3D, and may have multiple channels (see <code class="xref py py-attr docutils literal notranslate"><span class="pre">num_spatial_dims</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">channels_last</span></code>).</p></li>
+<li><p><strong>type</strong> – Type of image, such as <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.INTENSITY</span></code> or
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.LABEL</span></code>. This will be used by the transforms to
+decide whether to apply an operation, or which interpolation to use
+when resampling. For example, <a class="reference external" href="https://torchio.readthedocs.io/transforms/preprocessing.html#intensity">preprocessing</a> and <a class="reference external" href="https://torchio.readthedocs.io/transforms/augmentation.html#intensity">augmentation</a>
+intensity transforms will only be applied to images with type
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.INTENSITY</span></code>. Spatial transforms will be applied to
+all types, and nearest neighbor interpolation is always used to
+resample images with type <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.LABEL</span></code>.
+The type <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.SAMPLING_MAP</span></code> may be used with instances of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">WeightedSampler</span></code>.</p></li>
+<li><p><strong>tensor</strong> – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code> is not given, <code class="xref py py-attr docutils literal notranslate"><span class="pre">tensor</span></code> must be a 4D
+<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (1.7.0a0+b87f0e5 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a> or NumPy array with dimensions
+<span class="math notranslate nohighlight">\((C, D, H, W)\)</span>. If it is not 4D, TorchIO will try to guess
+the dimensions meanings. If 2D, the shape will be interpreted as
+<span class="math notranslate nohighlight">\((H, W)\)</span>. If 3D, the number of spatial dimensions should be
+determined in <code class="xref py py-attr docutils literal notranslate"><span class="pre">num_spatial_dims</span></code>. If <code class="xref py py-attr docutils literal notranslate"><span class="pre">num_spatial_dims</span></code>
+is not given and the shape is 3 along the first or last dimensions,
+it will be interpreted as a multichannel 2D image. Otherwise, it
+be interpreted as a 3D image with a single channel.</p></li>
+<li><p><strong>affine</strong> – If <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code> is not given, <code class="xref py py-attr docutils literal notranslate"><span class="pre">affine</span></code> must be a
+<span class="math notranslate nohighlight">\(4 \times 4\)</span> NumPy array. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">affine</span></code> is an
+identity matrix.</p></li>
+<li><p><strong>check_nans</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, issues a warning if NaNs are found
+in the image. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, images will not be checked for the
+presence of NaNs.</p></li>
+<li><p><strong>num_spatial_dims</strong> – If <code class="docutils literal notranslate"><span class="pre">2</span></code> and the input tensor has 3 dimensions, it
+will be interpreted as a multichannel 2D image. If <code class="docutils literal notranslate"><span class="pre">3</span></code> and the
+input has 3 dimensions, it will be interpreted as a
+single-channel 3D volume.</p></li>
+<li><p><strong>channels_last</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the last dimension of the input will be
+interpreted as the channels. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="xref py py-attr docutils literal notranslate"><span class="pre">path</span></code> is
+given and <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p></li>
+<li><p><strong>**kwargs</strong> – Items that will be added to the image dictionary, e.g.
+acquisition parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Loading from a file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t1_image</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t1.nii.gz&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">label_image</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t1_seg.nii.gz&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="n">tensor</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;safe_image.nrrd&#39;</span><span class="p">,</span> <span class="n">check_nans</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="p">,</span> <span class="n">affine</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">affine</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">affine</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(4, 4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="n">image</span><span class="p">[</span><span class="n">torchio</span><span class="o">.</span><span class="n">DATA</span><span class="p">]</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="n">image</span><span class="o">.</span><span class="n">tensor</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">torch.Tensor</span>
+</pre></div>
+</div>
+<p>TorchIO images are <a class="reference external" href="https://en.wikipedia.org/wiki/Lazy_loading">lazy loaders</a>, i.e. the data is only loaded from disk
+when needed.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t1.nii.gz&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span>  <span class="c1"># not loaded yet</span>
+<span class="go">Image(path: t1.nii.gz; type: intensity)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">times_two</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">image</span><span class="o">.</span><span class="n">data</span>  <span class="c1"># data is loaded and cached here</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span>
+<span class="go">Image(shape: (1, 256, 256, 176); spacing: (1.00, 1.00, 1.00); orientation: PIR+; memory: 44.0 MiB; type: intensity)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;doubled_image.nii.gz&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="torchio.data.Image.as_sitk">
+<code class="sig-name descname">as_sitk</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; SimpleITK.SimpleITK.Image<a class="reference internal" href="../_modules/torchio/data/image.html#Image.as_sitk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.Image.as_sitk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the image as an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">sitk.Image</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="torchio.data.Image.get_center">
+<code class="sig-name descname">get_center</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lps</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">]</span><a class="reference internal" href="../_modules/torchio/data/image.html#Image.get_center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.Image.get_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get image center in RAS+ or LPS+ coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>lps</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the coordinates will be in LPS+ orientation, i.e.
+the first dimension grows towards the left, etc. Otherwise, the
+coordinates will be in RAS+ orientation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="torchio.data.Image.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (1.7.0a0+b87f0e5 ))">torch.Tensor</a><span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="reference internal" href="../_modules/torchio/data/image.html#Image.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.Image.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the image from disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Tuple containing a 4D tensor of size <span class="math notranslate nohighlight">\((C, D, H, W)\)</span> and a 2D
+<span class="math notranslate nohighlight">\(4 \times 4\)</span> affine matrix to convert voxel indices to world
+coordinates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="torchio.data.Image.numpy">
+<code class="sig-name descname">numpy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="../_modules/torchio/data/image.html#Image.numpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.Image.numpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a NumPy array containing the image data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="torchio.data.Image.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">squeeze</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">channels_last</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/data/image.html#Image.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.data.Image.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save image to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – String or instance of <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>.</p></li>
+<li><p><strong>squeeze</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the singleton dimensions will be removed
+before saving.</p></li>
+<li><p><strong>channels_last</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the channels will be saved in the last
+dimension.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+    <a href="https://github.com/fepegar/torchio">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="patch_based.html" class="btn btn-neutral float-right" title="Patch-based pipelines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../quickstart.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #d45848;
+    }
+    .wy-menu > .caption > span.caption-text {
+      color: #d45848;
+    }
+    /* .property {
+      color: #d45848;
+    } */
+  </style>
+
+
+</body>
+</html>

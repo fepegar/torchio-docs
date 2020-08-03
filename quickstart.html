@@ -1,42 +1,44 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Getting started &mdash; TorchIO 0.14.0 documentation</title>
+  <title>Getting started &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Handling data" href="data/data.html" />
+    <link rel="next" title="Dataset" href="data/dataset.html" />
     <link rel="prev" title="TorchIO" href="index.html" /> 
 </head>
 
@@ -51,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> TorchIO
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -61,7 +63,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -78,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -85,22 +88,26 @@
               
             
             
-              <ul class="current">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#hello-world">Hello World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hello-world">Hello, World!</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#google-colab-jupyter-notebok">Google Colab Jupyter Notebok</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -139,7 +146,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Getting started</li>
     
@@ -162,7 +169,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="getting-started">
-<h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>The Python package is hosted on the
@@ -178,38 +185,51 @@ using Pip Installs Packages (<code class="docutils literal notranslate"><span cl
 </div>
 </div>
 <div class="section" id="hello-world">
-<h2>Hello World<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
-<p>This example shows the basic usage of TorchIO, where an
-<a class="reference internal" href="data/images.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code></a> is passed to
-a PyTorch <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.6.0a0+539d3ff ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></a> to generate training batches
+<h2>Hello, World!<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
+<p>This example shows the basic usage of TorchIO, where an instance of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code> is passed to
+a PyTorch <a class="reference external" href="https://pytorch.org/docs/master/data.html#torch.utils.data.DataLoader" title="(in PyTorch vmaster (1.7.0a0+b87f0e5 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code></a> to generate training batches
 of 3D images that are loaded, preprocessed and augmented in on the fly,
 in parallel:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torchio</span>
-<span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="k">import</span> <span class="n">RescaleIntensity</span><span class="p">,</span> <span class="n">RandomAffine</span>
-<span class="kn">from</span> <span class="nn">torchvision.transforms</span> <span class="k">import</span> <span class="n">Compose</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="k">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RescaleIntensity</span><span class="p">,</span>
+    <span class="n">RandomAffine</span><span class="p">,</span>
+    <span class="n">RandomElasticDeformation</span><span class="p">,</span>
+    <span class="n">Compose</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
 
-<span class="c1"># Each instance of torchio.Subject is passed an arbitrary number of</span>
-<span class="c1"># instances of torchio.Image, whose name is also arbitrary</span>
-<span class="n">subject_a</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">Subject</span><span class="p">([</span>
-    <span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t1&#39;</span><span class="p">,</span> <span class="s1">&#39;subject_a.nii.gz&#39;</span><span class="p">,</span> <span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
-    <span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;subject_a.nii&#39;</span><span class="p">,</span> <span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
-<span class="p">])</span>
+<span class="c1"># Each instance of torchio.Subject is passed arbitrary keyword arguments.</span>
+<span class="c1"># Typically, these arguments will be instances of torchio.Image</span>
+<span class="n">subject_a</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span>
+    <span class="n">t1</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;subject_a.nii.gz&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+    <span class="n">label</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;subject_a.nii&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
+    <span class="n">diagnosis</span><span class="o">=</span><span class="s1">&#39;positive&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="c1"># Images can be in any format supported by SimpleITK or NiBabel, including DICOM</span>
 <span class="n">subject_b</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">Subject</span><span class="p">(</span>
-    <span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;t1&#39;</span><span class="p">,</span> <span class="s1">&#39;subject_b_dicom_folder&#39;</span><span class="p">,</span> <span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
-    <span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;subject_b_seg.nrrd&#39;</span><span class="p">,</span> <span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
+    <span class="n">t1</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;subject_b_dicom_folder&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">INTENSITY</span><span class="p">),</span>
+    <span class="n">label</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">Image</span><span class="p">(</span><span class="s1">&#39;subject_b_seg.nrrd&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">LABEL</span><span class="p">),</span>
+    <span class="n">diagnosis</span><span class="o">=</span><span class="s1">&#39;negative&#39;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">subjects_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">subject_a</span><span class="p">,</span> <span class="n">subject_b</span><span class="p">]</span>
 
 <span class="c1"># Let&#39;s use one preprocessing transform and one augmentation transform</span>
-<span class="n">transforms</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">RescaleIntensity</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>  <span class="c1"># applied only to torchio.INTENSITY images</span>
-    <span class="n">RandomAffine</span><span class="p">(),</span>  <span class="c1"># applied to all images in the sample</span>
-<span class="p">]</span>
+<span class="c1"># This transform will be applied only to torchio.INTENSITY images:</span>
+<span class="n">rescale</span> <span class="o">=</span> <span class="n">RescaleIntensity</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># As RandomAffine is faster then RandomElasticDeformation, we choose to</span>
+<span class="c1"># apply RandomAffine 80% of the times and RandomElasticDeformation the rest</span>
+<span class="c1"># Also, there is a 25% chance that none of them will be applied</span>
+<span class="n">spatial</span> <span class="o">=</span> <span class="n">OneOf</span><span class="p">(</span>
+    <span class="p">{</span><span class="n">RandomAffine</span><span class="p">():</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">RandomElasticDeformation</span><span class="p">():</span> <span class="mf">0.2</span><span class="p">},</span>
+    <span class="n">p</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="c1"># Transforms can be composed as in torchvision.transforms</span>
+<span class="n">transforms</span> <span class="o">=</span> <span class="p">[</span><span class="n">rescale</span><span class="p">,</span> <span class="n">spatial</span><span class="p">]</span>
 <span class="n">transform</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span>
 
 <span class="c1"># ImagesDataset is a subclass of torch.data.utils.Dataset</span>
@@ -250,7 +270,7 @@ with image patches.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="data/data.html" class="btn btn-neutral float-right" title="Handling data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="data/dataset.html" class="btn btn-neutral float-right" title="Dataset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="TorchIO" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -262,11 +282,19 @@ with image patches.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -277,7 +305,6 @@ with image patches.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

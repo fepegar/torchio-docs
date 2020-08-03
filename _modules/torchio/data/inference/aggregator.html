@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.data.inference.aggregator &mdash; TorchIO 0.14.0 documentation</title>
+  <title>torchio.data.inference.aggregator &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script src="../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
 </head>
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../../index.html" class="icon icon-home"> TorchIO
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -76,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -83,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../../index.html">Module code</a> &raquo;</li>
         
@@ -153,92 +160,131 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.data.inference.aggregator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">...utils</span> <span class="k">import</span> <span class="n">to_tuple</span>
-<span class="kn">from</span> <span class="nn">...torchio</span> <span class="k">import</span> <span class="n">TypeData</span><span class="p">,</span> <span class="n">TypeTuple</span>
+<span class="kn">from</span> <span class="nn">...torchio</span> <span class="kn">import</span> <span class="n">TypeData</span><span class="p">,</span> <span class="n">CHANNELS_DIMENSION</span>
+<span class="kn">from</span> <span class="nn">.grid_sampler</span> <span class="kn">import</span> <span class="n">GridSampler</span>
 
 
-<div class="viewcode-block" id="GridAggregator"><a class="viewcode-back" href="../../../../data/sampling.html#torchio.data.GridAggregator">[docs]</a><span class="k">class</span> <span class="nc">GridAggregator</span><span class="p">:</span>
+<div class="viewcode-block" id="GridAggregator"><a class="viewcode-back" href="../../../../data/patch_inference.html#torchio.data.GridAggregator">[docs]</a><span class="k">class</span> <span class="nc">GridAggregator</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Aggregate patches for dense inference.</span>
 
-<span class="sd">    This class is typically used to build a volume made of batches after</span>
-<span class="sd">    inference of patches coming from a</span>
-<span class="sd">    :py:class:`~torchio.data.inference.grid_sampler.GridSampler`.</span>
-
-<span class="sd">    Adapted from NiftyNet. See</span>
-<span class="sd">    `this NiftyNet tutorial &lt;https://niftynet.readthedocs.io/en/dev/window_sizes.html&gt;`_</span>
-<span class="sd">    for more information.</span>
+<span class="sd">    This class is typically used to build a volume made of patches after</span>
+<span class="sd">    inference of batches extracted by a :py:class:`~torchio.data.GridSampler`.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        data: Tensor from which patches were extracted.</span>
-<span class="sd">        patch_overlap: Tuple of integers :math:`(d_o, h_o, w_o)` specifying the</span>
-<span class="sd">            overlap between patches. If a single number</span>
-<span class="sd">            :math:`n` is provided, :math:`d_o = h_o = w_o = n`.</span>
+<span class="sd">        sampler: Instance of :py:class:`~torchio.data.GridSampler` used to</span>
+<span class="sd">            extract the patches.</span>
 
-<span class="sd">    .. note:: In the future, the :py:attr:`data` argument will be replaced by</span>
-<span class="sd">        :py:attr:`shape`.</span>
-
+<span class="sd">    .. note:: Adapted from NiftyNet. See `this NiftyNet tutorial</span>
+<span class="sd">        &lt;https://niftynet.readthedocs.io/en/dev/window_sizes.html&gt;`_ for more</span>
+<span class="sd">        information about patch based sampling.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampler</span><span class="p">:</span> <span class="n">GridSampler</span><span class="p">):</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">sample</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume_padded</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">padding_mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_shape</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">spatial_shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">patch_overlap</span>
+
+    <span class="k">def</span> <span class="nf">crop_batch</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">data</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">,</span>
-            <span class="n">patch_overlap</span><span class="p">:</span> <span class="n">TypeTuple</span><span class="p">,</span>
-            <span class="p">):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_overlap</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_crop_batch</span><span class="p">(</span>
-            <span class="n">patches</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
-            <span class="n">location</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-            <span class="n">border</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+            <span class="n">batch</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+            <span class="n">locations</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">overlap</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TypeData</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-        <span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
-        <span class="n">batch_shape</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">spatial_shape</span> <span class="o">=</span> <span class="n">batch_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>  <span class="c1"># ignore batch and channels dim</span>
-        <span class="n">num_dimensions</span> <span class="o">=</span> <span class="mi">3</span>
-        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_dimensions</span><span class="p">):</span>
-            <span class="n">location</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span><span class="p">[:,</span> <span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">border</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-            <span class="n">location</span><span class="p">[:,</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">location</span><span class="p">[:,</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">border</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-        <span class="n">cropped_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">location</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">-</span> <span class="n">location</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">diff</span> <span class="o">=</span> <span class="n">spatial_shape</span> <span class="o">-</span> <span class="n">cropped_shape</span>
-        <span class="n">left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">diff</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
-        <span class="n">i_ini</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">,</span> <span class="n">k_ini</span> <span class="o">=</span> <span class="n">left</span>
-        <span class="n">i_fin</span><span class="p">,</span> <span class="n">j_fin</span><span class="p">,</span> <span class="n">k_fin</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">cropped_shape</span>
-        <span class="n">batch</span> <span class="o">=</span> <span class="n">patches</span><span class="p">[</span>
-            <span class="p">:,</span>  <span class="c1"># batch dimension</span>
-            <span class="p">:,</span>  <span class="c1"># channels dimension</span>
-            <span class="n">i_ini</span><span class="p">:</span><span class="n">i_fin</span><span class="p">,</span>
-            <span class="n">j_ini</span><span class="p">:</span><span class="n">j_fin</span><span class="p">,</span>
-            <span class="n">k_ini</span><span class="p">:</span><span class="n">k_fin</span><span class="p">,</span>
-        <span class="p">]</span>
-        <span class="k">return</span> <span class="n">batch</span><span class="p">,</span> <span class="n">location</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">overlap</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># overlap is even in grid sampler</span>
+        <span class="n">crop_locations</span> <span class="o">=</span> <span class="n">locations</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">indices_ini</span><span class="p">,</span> <span class="n">indices_fin</span> <span class="o">=</span> <span class="n">crop_locations</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">crop_locations</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">:]</span>
+        <span class="n">num_locations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">crop_locations</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_ensure_output_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Make sure the output tensor type is the same as the input patches.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">tensor</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">border_ini</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">border</span><span class="p">,</span> <span class="p">(</span><span class="n">num_locations</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">border_fin</span> <span class="o">=</span> <span class="n">border_ini</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># Do not crop patches at the border of the volume</span>
+        <span class="c1"># Unless we&#39;re padding the volume in the grid sampler. In that case,</span>
+        <span class="c1"># it doesn&#39;t matter if we don&#39;t crop patches at the border, because the</span>
+        <span class="c1"># output volume will be cropped</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume_padded</span><span class="p">:</span>
+            <span class="n">mask_border_ini</span> <span class="o">=</span> <span class="n">indices_ini</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="n">border_ini</span><span class="p">[</span><span class="n">mask_border_ini</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_shape</span><span class="p">):</span>
+                <span class="n">mask_border_fin</span> <span class="o">=</span> <span class="n">indices_fin</span><span class="p">[:,</span> <span class="n">axis</span><span class="p">]</span> <span class="o">==</span> <span class="n">size</span>
+                <span class="n">border_fin</span><span class="p">[</span><span class="n">mask_border_fin</span><span class="p">,</span> <span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="k">def</span> <span class="nf">add_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patches</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">locations</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">patches</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_output_dtype</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
-        <span class="n">location_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span>
-        <span class="n">init_ones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
-        <span class="n">patches</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crop_batch</span><span class="p">(</span>
-            <span class="n">patches</span><span class="p">,</span> <span class="n">location_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">)</span>
-        <span class="n">location_init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_crop_batch</span><span class="p">(</span>
-            <span class="n">init_ones</span><span class="p">,</span> <span class="n">location_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">patch</span><span class="p">,</span> <span class="n">location</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">locations</span><span class="p">):</span>
-            <span class="n">patch</span> <span class="o">=</span> <span class="n">patch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">i_ini</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">,</span> <span class="n">k_ini</span><span class="p">,</span> <span class="n">i_fin</span><span class="p">,</span> <span class="n">j_fin</span><span class="p">,</span> <span class="n">k_fin</span> <span class="o">=</span> <span class="n">location</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span><span class="p">[</span><span class="n">i_ini</span><span class="p">:</span><span class="n">i_fin</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">:</span><span class="n">j_fin</span><span class="p">,</span> <span class="n">k_ini</span><span class="p">:</span><span class="n">k_fin</span><span class="p">]</span> <span class="o">=</span> <span class="n">patch</span>
+        <span class="n">indices_ini</span> <span class="o">+=</span> <span class="n">border_ini</span>
+        <span class="n">indices_fin</span> <span class="o">-=</span> <span class="n">border_fin</span>
 
-    <span class="k">def</span> <span class="nf">get_output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span></div>
+        <span class="n">crop_shapes</span> <span class="o">=</span> <span class="n">indices_fin</span> <span class="o">-</span> <span class="n">indices_ini</span>
+        <span class="n">patch_shape</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>  <span class="c1"># ignore batch and channels dim</span>
+        <span class="n">cropped_patches</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">patch</span><span class="p">,</span> <span class="n">crop_shape</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">crop_shapes</span><span class="p">):</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">patch_shape</span> <span class="o">-</span> <span class="n">crop_shape</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="p">(</span><span class="n">diff</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">i_ini</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">,</span> <span class="n">k_ini</span> <span class="o">=</span> <span class="n">left</span>
+            <span class="n">i_fin</span><span class="p">,</span> <span class="n">j_fin</span><span class="p">,</span> <span class="n">k_fin</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">crop_shape</span>
+            <span class="n">cropped_patch</span> <span class="o">=</span> <span class="n">patch</span><span class="p">[:,</span> <span class="n">i_ini</span><span class="p">:</span><span class="n">i_fin</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">:</span><span class="n">j_fin</span><span class="p">,</span> <span class="n">k_ini</span><span class="p">:</span><span class="n">k_fin</span><span class="p">]</span>
+            <span class="n">cropped_patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cropped_patch</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cropped_patches</span><span class="p">,</span> <span class="n">crop_locations</span>
+
+    <span class="k">def</span> <span class="nf">initialize_output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">num_channels</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">CHANNELS_DIMENSION</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="n">num_channels</span><span class="p">,</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">batch</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="GridAggregator.add_batch"><a class="viewcode-back" href="../../../../data/patch_inference.html#torchio.data.GridAggregator.add_batch">[docs]</a>    <span class="k">def</span> <span class="nf">add_batch</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">batch_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+            <span class="n">locations</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add batch processed by a CNN to the output prediction volume.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch_tensor: 5D tensor, typically the output of a convolutional</span>
+<span class="sd">                neural network, e.g. ``batch[&#39;image&#39;][torchio.DATA]``.</span>
+<span class="sd">            locations: 2D tensor with shape :math:`(B, 6)` representing the</span>
+<span class="sd">                patch indices in the original image. They are typically</span>
+<span class="sd">                extracted using ``batch[torchio.LOCATION]``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">batch_tensor</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+        <span class="n">locations</span> <span class="o">=</span> <span class="n">locations</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_output_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">cropped_patches</span><span class="p">,</span> <span class="n">crop_locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop_batch</span><span class="p">(</span>
+            <span class="n">batch</span><span class="p">,</span>
+            <span class="n">locations</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">patch</span><span class="p">,</span> <span class="n">crop_location</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cropped_patches</span><span class="p">,</span> <span class="n">crop_locations</span><span class="p">):</span>
+            <span class="n">i_ini</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">,</span> <span class="n">k_ini</span><span class="p">,</span> <span class="n">i_fin</span><span class="p">,</span> <span class="n">j_fin</span><span class="p">,</span> <span class="n">k_fin</span> <span class="o">=</span> <span class="n">crop_location</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span><span class="p">[</span>
+                <span class="p">:,</span>
+                <span class="n">i_ini</span><span class="p">:</span><span class="n">i_fin</span><span class="p">,</span>
+                <span class="n">j_ini</span><span class="p">:</span><span class="n">j_fin</span><span class="p">,</span>
+                <span class="n">k_ini</span><span class="p">:</span><span class="n">k_fin</span><span class="p">]</span> <span class="o">=</span> <span class="n">patch</span></div>
+
+<div class="viewcode-block" id="GridAggregator.get_output_tensor"><a class="viewcode-back" href="../../../../data/patch_inference.html#torchio.data.GridAggregator.get_output_tensor">[docs]</a>    <span class="k">def</span> <span class="nf">get_output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the aggregated volume after dense inference.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Medical image frameworks such as ITK do not support int64.&#39;</span>
+                <span class="s1">&#39; Casting to int32...&#39;</span>
+            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">volume_padded</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">...transforms</span> <span class="kn">import</span> <span class="n">Crop</span>
+            <span class="n">border</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">cropping</span> <span class="o">=</span> <span class="n">border</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">crop</span> <span class="o">=</span> <span class="n">Crop</span><span class="p">(</span><span class="n">cropping</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">crop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_tensor</span></div></div>
 </pre></div>
 
            </div>
@@ -255,11 +301,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -270,7 +324,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

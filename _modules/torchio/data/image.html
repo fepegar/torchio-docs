@@ -1,0 +1,625 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchio.data.image &mdash; TorchIO 0.17.14 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.17.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/patch_based.html">Patch-based pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../transforms/transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../slicer.html">3D Slicer GUI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torchio.data.image</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torchio.data.image</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">humanize</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+<span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
+
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">nib_to_sitk</span><span class="p">,</span>
+    <span class="n">get_rotation_and_spacing_from_affine</span><span class="p">,</span>
+    <span class="n">get_stem</span><span class="p">,</span>
+    <span class="n">ensure_4d</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..torchio</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TypeData</span><span class="p">,</span>
+    <span class="n">TypePath</span><span class="p">,</span>
+    <span class="n">TypeTripletInt</span><span class="p">,</span>
+    <span class="n">TypeTripletFloat</span><span class="p">,</span>
+    <span class="n">DATA</span><span class="p">,</span>
+    <span class="n">TYPE</span><span class="p">,</span>
+    <span class="n">AFFINE</span><span class="p">,</span>
+    <span class="n">PATH</span><span class="p">,</span>
+    <span class="n">STEM</span><span class="p">,</span>
+    <span class="n">INTENSITY</span><span class="p">,</span>
+    <span class="n">LABEL</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.io</span> <span class="kn">import</span> <span class="n">read_image</span><span class="p">,</span> <span class="n">write_image</span>
+
+
+<span class="n">PROTECTED_KEYS</span> <span class="o">=</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">AFFINE</span><span class="p">,</span> <span class="n">TYPE</span><span class="p">,</span> <span class="n">PATH</span><span class="p">,</span> <span class="n">STEM</span>
+
+
+<div class="viewcode-block" id="Image"><a class="viewcode-back" href="../../../data/dataset.html#torchio.data.Image">[docs]</a><span class="k">class</span> <span class="nc">Image</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;TorchIO image.</span>
+
+<span class="sd">    For information about medical image orientation, check out `NiBabel docs`_,</span>
+<span class="sd">    the `3D Slicer wiki`_, `Graham Wideman&#39;s website`_, `FSL docs`_ or</span>
+<span class="sd">    `SimpleITK docs`_.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path: Path to a file that can be read by</span>
+<span class="sd">            :mod:`SimpleITK` or :mod:`nibabel`, or to a directory containing</span>
+<span class="sd">            DICOM files. If :py:attr:`tensor` is given, the data in</span>
+<span class="sd">            :py:attr:`path` will not be read. The data is expected to be 2D or</span>
+<span class="sd">            3D, and may have multiple channels (see :attr:`num_spatial_dims` and</span>
+<span class="sd">            :attr:`channels_last`).</span>
+<span class="sd">        type: Type of image, such as :attr:`torchio.INTENSITY` or</span>
+<span class="sd">            :attr:`torchio.LABEL`. This will be used by the transforms to</span>
+<span class="sd">            decide whether to apply an operation, or which interpolation to use</span>
+<span class="sd">            when resampling. For example, `preprocessing`_ and `augmentation`_</span>
+<span class="sd">            intensity transforms will only be applied to images with type</span>
+<span class="sd">            :attr:`torchio.INTENSITY`. Spatial transforms will be applied to</span>
+<span class="sd">            all types, and nearest neighbor interpolation is always used to</span>
+<span class="sd">            resample images with type :attr:`torchio.LABEL`.</span>
+<span class="sd">            The type :attr:`torchio.SAMPLING_MAP` may be used with instances of</span>
+<span class="sd">            :py:class:`~torchio.data.sampler.weighted.WeightedSampler`.</span>
+<span class="sd">        tensor: If :py:attr:`path` is not given, :attr:`tensor` must be a 4D</span>
+<span class="sd">            :py:class:`torch.Tensor` or NumPy array with dimensions</span>
+<span class="sd">            :math:`(C, D, H, W)`. If it is not 4D, TorchIO will try to guess</span>
+<span class="sd">            the dimensions meanings. If 2D, the shape will be interpreted as</span>
+<span class="sd">            :math:`(H, W)`. If 3D, the number of spatial dimensions should be</span>
+<span class="sd">            determined in :attr:`num_spatial_dims`. If :attr:`num_spatial_dims`</span>
+<span class="sd">            is not given and the shape is 3 along the first or last dimensions,</span>
+<span class="sd">            it will be interpreted as a multichannel 2D image. Otherwise, it</span>
+<span class="sd">            be interpreted as a 3D image with a single channel.</span>
+<span class="sd">        affine: If :attr:`path` is not given, :attr:`affine` must be a</span>
+<span class="sd">            :math:`4 \times 4` NumPy array. If ``None``, :attr:`affine` is an</span>
+<span class="sd">            identity matrix.</span>
+<span class="sd">        check_nans: If ``True``, issues a warning if NaNs are found</span>
+<span class="sd">            in the image. If ``False``, images will not be checked for the</span>
+<span class="sd">            presence of NaNs.</span>
+<span class="sd">        num_spatial_dims: If ``2`` and the input tensor has 3 dimensions, it</span>
+<span class="sd">            will be interpreted as a multichannel 2D image. If ``3`` and the</span>
+<span class="sd">            input has 3 dimensions, it will be interpreted as a</span>
+<span class="sd">            single-channel 3D volume.</span>
+<span class="sd">        channels_last: If ``True``, the last dimension of the input will be</span>
+<span class="sd">            interpreted as the channels. Defaults to ``True`` if :attr:`path` is</span>
+<span class="sd">            given and ``False`` otherwise.</span>
+<span class="sd">        **kwargs: Items that will be added to the image dictionary, e.g.</span>
+<span class="sd">            acquisition parameters.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; # Loading from a file</span>
+<span class="sd">        &gt;&gt;&gt; t1_image = torchio.Image(&#39;t1.nii.gz&#39;, type=torchio.INTENSITY)</span>
+<span class="sd">        &gt;&gt;&gt; label_image = torchio.Image(&#39;t1_seg.nii.gz&#39;, type=torchio.LABEL)</span>
+<span class="sd">        &gt;&gt;&gt; image = torchio.Image(tensor=torch.rand(3, 4, 5))</span>
+<span class="sd">        &gt;&gt;&gt; image = torchio.Image(&#39;safe_image.nrrd&#39;, check_nans=False)</span>
+<span class="sd">        &gt;&gt;&gt; data, affine = image.data, image.affine</span>
+<span class="sd">        &gt;&gt;&gt; affine.shape</span>
+<span class="sd">        (4, 4)</span>
+<span class="sd">        &gt;&gt;&gt; image.data is image[torchio.DATA]</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; image.data is image.tensor</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; type(image.data)</span>
+<span class="sd">        torch.Tensor</span>
+
+<span class="sd">    TorchIO images are `lazy loaders`_, i.e. the data is only loaded from disk</span>
+<span class="sd">    when needed.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; image = torchio.Image(&#39;t1.nii.gz&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; image  # not loaded yet</span>
+<span class="sd">        Image(path: t1.nii.gz; type: intensity)</span>
+<span class="sd">        &gt;&gt;&gt; times_two = 2 * image.data  # data is loaded and cached here</span>
+<span class="sd">        &gt;&gt;&gt; image</span>
+<span class="sd">        Image(shape: (1, 256, 256, 176); spacing: (1.00, 1.00, 1.00); orientation: PIR+; memory: 44.0 MiB; type: intensity)</span>
+<span class="sd">        &gt;&gt;&gt; image.save(&#39;doubled_image.nii.gz&#39;)</span>
+
+<span class="sd">    .. _lazy loaders: https://en.wikipedia.org/wiki/Lazy_loading</span>
+<span class="sd">    .. _preprocessing: https://torchio.readthedocs.io/transforms/preprocessing.html#intensity</span>
+<span class="sd">    .. _augmentation: https://torchio.readthedocs.io/transforms/augmentation.html#intensity</span>
+<span class="sd">    .. _NiBabel docs: https://nipy.org/nibabel/image_orientation.html</span>
+<span class="sd">    .. _3D Slicer wiki: https://www.slicer.org/wiki/Coordinate_systems</span>
+<span class="sd">    .. _FSL docs: https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Orientation%20Explained</span>
+<span class="sd">    .. _SimpleITK docs: https://simpleitk.readthedocs.io/en/master/fundamentalConcepts.html</span>
+<span class="sd">    .. _Graham Wideman&#39;s website: http://www.grahamwideman.com/gw/brain/orientation/orientterms.htm</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypePath</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">INTENSITY</span><span class="p">,</span>
+            <span class="n">tensor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypeData</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">affine</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypeData</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">check_nans</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">num_spatial_dims</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">channels_last</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+            <span class="p">):</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;A value for path or tensor must be given&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_spatial_dims</span> <span class="o">=</span> <span class="n">num_spatial_dims</span>
+
+        <span class="c1"># Number of channels are typically stored in the last dimensions in disk</span>
+        <span class="c1"># But if a tensor is given, the channels should be in the first dim</span>
+        <span class="k">if</span> <span class="n">channels_last</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">channels_last</span> <span class="o">=</span> <span class="n">path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channels_last</span> <span class="o">=</span> <span class="n">channels_last</span>
+
+        <span class="n">tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_tensor</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+        <span class="n">affine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_affine</span><span class="p">(</span><span class="n">affine</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">affine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">affine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span> <span class="o">=</span> <span class="n">tensor</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">]</span> <span class="o">=</span> <span class="n">affine</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">PROTECTED_KEYS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Key &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot; is reserved. Use a different one&#39;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">PATH</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">STEM</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">get_stem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">TYPE</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_nans</span> <span class="o">=</span> <span class="n">check_nans</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="p">:</span>
+            <span class="n">properties</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+                <span class="sa">f</span><span class="s1">&#39;shape: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;spacing: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_spacing_string</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;orientation: </span><span class="si">{</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientation</span><span class="p">)</span><span class="si">}</span><span class="s1">+&#39;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s1">&#39;memory: </span><span class="si">{</span><span class="n">humanize</span><span class="o">.</span><span class="n">naturalsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;path: &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+        <span class="n">properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;type: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="n">properties</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="k">return</span> <span class="n">string</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">(</span><span class="n">DATA</span><span class="p">,</span> <span class="n">AFFINE</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">affine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">TYPE</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spatial_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeTripletInt</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">nib</span><span class="o">.</span><span class="n">aff2axcodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spacing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">spacing</span> <span class="o">=</span> <span class="n">get_rotation_and_spacing_from_affine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">memory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>  <span class="c1"># float32, i.e. 4 bytes per voxel</span>
+
+    <span class="k">def</span> <span class="nf">get_spacing_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">strings</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span><span class="p">]</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="k">return</span> <span class="n">string</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_parse_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">TypePath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Conversion to path not possible for variable: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()):</span>  <span class="c1"># might be a dir with DICOM</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;File not found: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span>
+
+    <span class="k">def</span> <span class="nf">parse_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_tensor_shape</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tensor</span>
+
+    <span class="k">def</span> <span class="nf">parse_tensor_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ensure_4d</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels_last</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_spatial_dims</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_affine</span><span class="p">(</span><span class="n">affine</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">affine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Affine must be a NumPy array, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">affine</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">affine</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Affine shape must be (4, 4), not </span><span class="si">{</span><span class="n">affine</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">affine</span>
+
+<div class="viewcode-block" id="Image.load"><a class="viewcode-back" href="../../../data/dataset.html#torchio.data.Image.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load the image from disk.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple containing a 4D tensor of size :math:`(C, D, H, W)` and a 2D</span>
+<span class="sd">            :math:`4 \times 4` affine matrix to convert voxel indices to world</span>
+<span class="sd">            coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">tensor</span><span class="p">,</span> <span class="n">affine</span> <span class="o">=</span> <span class="n">read_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_tensor_shape</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_nans</span> <span class="ow">and</span> <span class="n">torch</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;NaNs found in file &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span> <span class="o">=</span> <span class="n">tensor</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">]</span> <span class="o">=</span> <span class="n">affine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Image.save"><a class="viewcode-back" href="../../../data/dataset.html#torchio.data.Image.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">squeeze</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">channels_last</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save image to disk.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path: String or instance of :py:class:`pathlib.Path`.</span>
+<span class="sd">            squeeze: If ``True``, the singleton dimensions will be removed</span>
+<span class="sd">                before saving.</span>
+<span class="sd">            channels_last: If ``True``, the channels will be saved in the last</span>
+<span class="sd">                dimension.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">write_image</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">DATA</span><span class="p">],</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">],</span>
+            <span class="n">path</span><span class="p">,</span>
+            <span class="n">squeeze</span><span class="o">=</span><span class="n">squeeze</span><span class="p">,</span>
+            <span class="n">channels_last</span><span class="o">=</span><span class="n">channels_last</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">is_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="Image.numpy"><a class="viewcode-back" href="../../../data/dataset.html#torchio.data.Image.numpy">[docs]</a>    <span class="k">def</span> <span class="nf">numpy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get a NumPy array containing the image data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Image.as_sitk"><a class="viewcode-back" href="../../../data/dataset.html#torchio.data.Image.as_sitk">[docs]</a>    <span class="k">def</span> <span class="nf">as_sitk</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the image as an instance of :py:class:`sitk.Image`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">nib_to_sitk</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">DATA</span><span class="p">],</span> <span class="bp">self</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Image.get_center"><a class="viewcode-back" href="../../../data/dataset.html#torchio.data.Image.get_center">[docs]</a>    <span class="k">def</span> <span class="nf">get_center</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lps</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeTripletFloat</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get image center in RAS+ or LPS+ coordinates.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            lps: If ``True``, the coordinates will be in LPS+ orientation, i.e.</span>
+<span class="sd">                the first dimension grows towards the left, etc. Otherwise, the</span>
+<span class="sd">                coordinates will be in RAS+ orientation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_shape</span><span class="p">)</span>
+        <span class="n">center_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">apply_affine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">center_index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="o">-</span><span class="n">r</span><span class="p">,</span> <span class="o">-</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">set_check_nans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check_nans</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_nans</span> <span class="o">=</span> <span class="n">check_nans</span>
+
+    <span class="k">def</span> <span class="nf">crop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index_ini</span><span class="p">,</span> <span class="n">index_fin</span><span class="p">):</span>
+        <span class="n">new_origin</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">affines</span><span class="o">.</span><span class="n">apply_affine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="p">,</span> <span class="n">index_ini</span><span class="p">)</span>
+        <span class="n">new_affine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">new_affine</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_origin</span>
+        <span class="n">i0</span><span class="p">,</span> <span class="n">j0</span><span class="p">,</span> <span class="n">k0</span> <span class="o">=</span> <span class="n">index_ini</span>
+        <span class="n">i1</span><span class="p">,</span> <span class="n">j1</span><span class="p">,</span> <span class="n">k1</span> <span class="o">=</span> <span class="n">index_fin</span>
+        <span class="n">patch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i0</span><span class="p">:</span><span class="n">i1</span><span class="p">,</span> <span class="n">j0</span><span class="p">:</span><span class="n">j1</span><span class="p">,</span> <span class="n">k0</span><span class="p">:</span><span class="n">k1</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">tensor</span><span class="o">=</span><span class="n">patch</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">new_affine</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">PROTECTED_KEYS</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>  <span class="c1"># should I copy? deepcopy?</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ScalarImage"><a class="viewcode-back" href="../../../data/dataset.html#torchio.data.ScalarImage">[docs]</a><span class="k">class</span> <span class="nc">ScalarImage</span><span class="p">(</span><span class="n">Image</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Alias for :py:class:`~torchio.Image` of type :py:attr:`torchio.INTENSITY`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; image = torchio.ScalarImage(&#39;t1.nii.gz&#39;)  # loading from a file</span>
+<span class="sd">        &gt;&gt;&gt; image = torchio.ScalarImage(tensor=torch.rand(128, 128, 68))  # from tensor</span>
+<span class="sd">        &gt;&gt;&gt; data, affine = image.data, image.affine</span>
+<span class="sd">        &gt;&gt;&gt; affine.shape</span>
+<span class="sd">        (4, 4)</span>
+<span class="sd">        &gt;&gt;&gt; image.data is image[torchio.DATA]</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; image.data is image.tensor</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; type(image.data)</span>
+<span class="sd">        torch.Tensor</span>
+
+<span class="sd">    See :py:class:`~torchio.Image` for more information.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: A :py:attr:`type` is used for instantiation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">INTENSITY</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Type of ScalarImage is always torchio.INTENSITY&#39;</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">INTENSITY</span><span class="p">})</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LabelMap"><a class="viewcode-back" href="../../../data/dataset.html#torchio.data.LabelMap">[docs]</a><span class="k">class</span> <span class="nc">LabelMap</span><span class="p">(</span><span class="n">Image</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Alias for :py:class:`~torchio.Image` of type :py:attr:`torchio.LABEL`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torch</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; labels = torchio.LabelMap(tensor=torch.rand(128, 128, 68) &gt; 0.5)</span>
+<span class="sd">        &gt;&gt;&gt; labels = torchio.LabelMap(&#39;t1_seg.nii.gz&#39;)  # loading from a file</span>
+
+<span class="sd">    See :py:class:`~torchio.data.image.Image` for more information.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If a value for :py:attr:`type` is given.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">LABEL</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Type of LabelMap is always torchio.LABEL&#39;</span><span class="p">)</span>
+        <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">LABEL</span><span class="p">})</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+    <a href="https://github.com/fepegar/torchio">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #d45848;
+    }
+    .wy-menu > .caption > span.caption-text {
+      color: #d45848;
+    }
+    /* .property {
+      color: #d45848;
+    } */
+  </style>
+
+
+</body>
+</html>

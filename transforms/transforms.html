@@ -1,43 +1,45 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Transforms &mdash; TorchIO 0.14.0 documentation</title>
+  <title>Transforms &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Preprocessing" href="preprocessing.html" />
-    <link rel="prev" title="Queue" href="../data/queue.html" /> 
+    <link rel="prev" title="Inference" href="../data/patch_inference.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +53,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> TorchIO
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -61,7 +63,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -78,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -85,11 +88,12 @@
               
             
             
-              <ul class="current">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Transforms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#interpolation">Interpolation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#transforms-api">Transforms API</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
@@ -101,11 +105,13 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -144,7 +150,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Transforms</li>
     
@@ -170,51 +176,132 @@
 <h1>Transforms<a class="headerlink" href="#transforms" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchio.transforms</span></code> module should remind users of
 <code class="xref py py-mod docutils literal notranslate"><span class="pre">torchvision.transforms</span></code>.</p>
-<p>TorchIO transforms take as input samples generated
-by an <code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code>.</p>
+<p>TorchIO transforms take as input instances of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code>, 4D PyTorch tensors
+or 4D NumPy arrays (see <a class="reference internal" href="#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></a>).</p>
 <p>For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="k">import</span> <span class="n">RandomAffine</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.datasets</span> <span class="k">import</span> <span class="n">IXITiny</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torch</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="kn">import</span> <span class="n">RandomAffine</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">affine_transform</span> <span class="o">=</span> <span class="n">RandomAffine</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">IXITiny</span><span class="p">(</span><span class="s1">&#39;ixi&#39;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sample</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_sample</span> <span class="o">=</span> <span class="n">affine_transform</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">159</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_tensor</span> <span class="o">=</span> <span class="n">affine_transform</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">transformed_tensor</span><span class="p">)</span>
+<span class="go">torch.Tensor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">159</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_array</span> <span class="o">=</span> <span class="n">affine_transform</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_array</span>
+<span class="go">np.ndarray</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Colin27</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_subject</span> <span class="o">=</span> <span class="n">affine_transform</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_subject</span>
+<span class="go">Colin27(Keys: (&#39;t1&#39;, &#39;head&#39;, &#39;brain&#39;); images: 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transformed_subject</span><span class="o">.</span><span class="n">history</span>
+<span class="go">[(&#39;RandomAffine&#39;,</span>
+<span class="go">   {&#39;scaling&#39;: array([1.0208164, 0.9096418, 1.0978225], dtype=float32),</span>
+<span class="go">    &#39;rotation&#39;: array([ 8.183947  ,  0.6384735 , -0.82128906], dtype=float32),</span>
+<span class="go">    &#39;translation&#39;: array([0., 0., 0.], dtype=float32)})]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">subject</span><span class="o">.</span><span class="n">history</span>
+<span class="go">[]</span>
 </pre></div>
 </div>
+<p>Transforms can also be applied from the command line using
+<a class="reference internal" href="../cli.html#torchio-transform"><span class="std std-ref">torchio-transform</span></a>.</p>
 <p>All transforms inherit from <a class="reference internal" href="#torchio.transforms.Transform" title="torchio.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.Transform</span></code></a>:</p>
-<dl class="class">
+<dl class="py class">
 <dt id="torchio.transforms.Transform">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Transform</code><a class="reference internal" href="../_modules/torchio/transforms/transform.html#Transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Transform" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchio.transforms.</code><code class="sig-name descname">Transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">copy</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/transform.html#Transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Transform" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="torchio.transforms.Transform.__call__">
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>torchio.data.subject.Subject<span class="p">, </span><a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (1.7.0a0+b87f0e5 ))">torch.Tensor</a><span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/transform.html#Transform.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Transform.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a sample and return the result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – Instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">Subject</span></code>, 4D
+<a class="reference external" href="https://pytorch.org/docs/master/tensors.html#torch.Tensor" title="(in PyTorch vmaster (1.7.0a0+b87f0e5 ))"><code class="xref py py-class docutils literal notranslate"><span class="pre">torch.Tensor</span></code></a> or 4D NumPy array with dimensions
+<span class="math notranslate nohighlight">\((C, D, H, W)\)</span>, where <span class="math notranslate nohighlight">\(C\)</span> is the number of channels
+and <span class="math notranslate nohighlight">\(D, H, W\)</span> are the spatial dimensions. If the input is
+a tensor, the affine matrix is an identity and a tensor will be
+also returned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="torchio.transforms.Transform.image_name">
+<code class="sig-name descname">image_name</code><em class="property"> = 'image'</em><a class="headerlink" href="#torchio.transforms.Transform.image_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract class for all TorchIO transforms.</p>
 <p>All classes used to transform a sample from an
 <code class="xref py py-class docutils literal notranslate"><span class="pre">ImagesDataset</span></code> should subclass it.
 All subclasses should overwrite
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">torchio.tranforms.Transform.apply_transform()</span></code>,
 which takes a sample, applies some transformation and returns the result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> – Probability that this transform will be applied.</p></li>
+<li><p><strong>copy</strong> – Make a deep copy of the input before applying the transform.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
-<div class="section" id="command-line-interface">
-<h2>Command-line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
-<p>A transform can be quickly applied to an image file using the command-line
-tool <code class="docutils literal notranslate"><span class="pre">torchio-transform</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs &quot;num_transforms=4 --seed 42&quot;
-</pre></div>
-</div>
-<p>For more information, run <code class="docutils literal notranslate"><span class="pre">torchio-transform</span> <span class="pre">--help</span></code>.</p>
-</div>
+<dl class="py method">
+<dt id="torchio.transforms.Transform.parse_range">
+<em class="property">static </em><code class="sig-name descname">parse_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nums_range</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">, </span>Tuple<span class="p">[</span>Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">]</span><span class="p">, </span>Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></span></em>, <em class="sig-param"><span class="n">min_constraint</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_constraint</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">type_constraint</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.8)">type</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">]</span><span class="p">, </span>Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a><span class="p">]</span><span class="p">]</span><a class="reference internal" href="../_modules/torchio/transforms/transform.html#Transform.parse_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Transform.parse_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adapted from <code class="docutils literal notranslate"><span class="pre">torchvision.transforms.RandomRotation</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nums_range</strong> – Tuple of two numbers <span class="math notranslate nohighlight">\((n_{min}, n_{max})\)</span>,
+where <span class="math notranslate nohighlight">\(n_{min} \leq n_{max}\)</span>.
+If a single positive number <span class="math notranslate nohighlight">\(n\)</span> is provided,
+<span class="math notranslate nohighlight">\(n_{min} = -n\)</span> and <span class="math notranslate nohighlight">\(n_{max} = n\)</span>.</p></li>
+<li><p><strong>name</strong> – Name of the parameter, so that an informative error message
+can be printed.</p></li>
+<li><p><strong>min_constraint</strong> – Minimal value that <span class="math notranslate nohighlight">\(n_{min}\)</span> can take,
+default is None, i.e. there is no minimal value.</p></li>
+<li><p><strong>max_constraint</strong> – Maximal value that <span class="math notranslate nohighlight">\(n_{max}\)</span> can take,
+default is None, i.e. there is no maximal value.</p></li>
+<li><p><strong>type_constraint</strong> – Precise type that <span class="math notranslate nohighlight">\(n_{max}\)</span> and
+<span class="math notranslate nohighlight">\(n_{min}\)</span> must take.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple of two numbers <span class="math notranslate nohighlight">\((n_{min}, n_{max})\)</span>.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if <code class="xref py py-attr docutils literal notranslate"><span class="pre">nums_range</span></code> is negative</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if <span class="math notranslate nohighlight">\(n_{max}\)</span> or <span class="math notranslate nohighlight">\(n_{min}\)</span> is not a number</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if <span class="math notranslate nohighlight">\(n_{max} \lt n_{min}\)</span></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if <code class="xref py py-attr docutils literal notranslate"><span class="pre">min_constraint</span></code> is not None and
+    <span class="math notranslate nohighlight">\(n_{min}\)</span> is smaller than <code class="xref py py-attr docutils literal notranslate"><span class="pre">min_constraint</span></code></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if <code class="xref py py-attr docutils literal notranslate"><span class="pre">max_constraint</span></code> is not None and
+    <span class="math notranslate nohighlight">\(n_{max}\)</span> is greater than <code class="xref py py-attr docutils literal notranslate"><span class="pre">max_constraint</span></code></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if <code class="xref py py-attr docutils literal notranslate"><span class="pre">type_constraint</span></code> is not None and
+    <span class="math notranslate nohighlight">\(n_{max}\)</span> and <span class="math notranslate nohighlight">\(n_{max}\)</span> are not of type
+    <code class="xref py py-attr docutils literal notranslate"><span class="pre">type_constraint</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <div class="section" id="interpolation">
 <span id="id1"></span><h2>Interpolation<a class="headerlink" href="#interpolation" title="Permalink to this headline">¶</a></h2>
 <p>Some transforms such as
 <a class="reference internal" href="augmentation.html#torchio.transforms.RandomAffine" title="torchio.transforms.RandomAffine"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomAffine</span></code></a> or
 <a class="reference internal" href="augmentation.html#torchio.transforms.RandomMotion" title="torchio.transforms.RandomMotion"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMotion</span></code></a>
 need to interpolate intensity values during resampling.</p>
-<p>The available interpolation strategies are enumerated in
+<p>The available interpolation strategies can be inferred from the elements of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.transforms.interpolation.Interpolation</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Interpolation.NEAREST</span></code> can be used for quick experimentation as it is very
+<p><code class="docutils literal notranslate"><span class="pre">'nearest'</span></code> can be used for quick experimentation as it is very
 fast, but produces relatively poor results.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Interpolation.LINEAR</span></code>, defaut in TorchIO, is usually a good compromise
+<p><code class="docutils literal notranslate"><span class="pre">'linear'</span></code>, default in TorchIO, is usually a good compromise
 between image quality and speed to be used for data augmentation during training.</p>
-<p>Methods such as <code class="docutils literal notranslate"><span class="pre">Interpolation.BSPLINE</span></code> or <code class="docutils literal notranslate"><span class="pre">Interpolation.LANCZOS</span></code> generate
+<p>Methods such as <code class="docutils literal notranslate"><span class="pre">'bspline'</span></code> or <code class="docutils literal notranslate"><span class="pre">'lanczos'</span></code> generate
 high-quality results, but are generally slower. They can be used to obtain
 optimal resampling results during offline data preprocessing.</p>
 <p>Visit the
@@ -222,67 +309,67 @@ optimal resampling results during offline data preprocessing.</p>
 for more information and see
 <a class="reference external" href="https://simpleitk-prototype.readthedocs.io/en/latest/user_guide/transforms/plot_interpolation.html">this SimpleITK example</a>
 for some interpolation results on test images.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="torchio.transforms.Interpolation">
-<em class="property">class </em><code class="descclassname">torchio.transforms.</code><code class="descname">Interpolation</code><a class="reference internal" href="../_modules/torchio/transforms/interpolation.html#Interpolation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Interpolation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">torchio.transforms.</code><code class="sig-name descname">Interpolation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchio/transforms/interpolation.html#Interpolation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.transforms.Interpolation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></a></p>
 <p>Interpolation techniques available in ITK.</p>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="k">import</span> <span class="n">RandomAffine</span><span class="p">,</span> <span class="n">Interpolation</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">RandomAffine</span><span class="p">(</span><span class="n">image_interpolation</span><span class="o">=</span><span class="n">Interpolation</span><span class="o">.</span><span class="n">NEAREST</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">torchio.transforms</span> <span class="kn">import</span> <span class="n">RandomAffine</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform</span> <span class="o">=</span> <span class="n">RandomAffine</span><span class="p">(</span><span class="n">image_interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.BLACKMAN">
-<code class="descname">BLACKMAN</code><em class="property"> = 'sitkBlackmanWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.BLACKMAN" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">BLACKMAN</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkBlackmanWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.BLACKMAN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.BSPLINE">
-<code class="descname">BSPLINE</code><em class="property"> = 'sitkBSpline'</em><a class="headerlink" href="#torchio.transforms.Interpolation.BSPLINE" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">BSPLINE</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkBSpline'</em><a class="headerlink" href="#torchio.transforms.Interpolation.BSPLINE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the B-spline interpolation weights over the support region of the B-spline.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.COSINE">
-<code class="descname">COSINE</code><em class="property"> = 'sitkCosineWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.COSINE" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">COSINE</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkCosineWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.COSINE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.GAUSSIAN">
-<code class="descname">GAUSSIAN</code><em class="property"> = 'sitkGaussian'</em><a class="headerlink" href="#torchio.transforms.Interpolation.GAUSSIAN" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GAUSSIAN</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkGaussian'</em><a class="headerlink" href="#torchio.transforms.Interpolation.GAUSSIAN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.HAMMING">
-<code class="descname">HAMMING</code><em class="property"> = 'sitkHammingWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.HAMMING" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">HAMMING</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkHammingWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.HAMMING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.LABEL_GAUSSIAN">
-<code class="descname">LABEL_GAUSSIAN</code><em class="property"> = 'sitkLabelGaussian'</em><a class="headerlink" href="#torchio.transforms.Interpolation.LABEL_GAUSSIAN" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">LABEL_GAUSSIAN</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkLabelGaussian'</em><a class="headerlink" href="#torchio.transforms.Interpolation.LABEL_GAUSSIAN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.LANCZOS">
-<code class="descname">LANCZOS</code><em class="property"> = 'sitkLanczosWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.LANCZOS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">LANCZOS</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkLanczosWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.LANCZOS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.LINEAR">
-<code class="descname">LINEAR</code><em class="property"> = 'sitkLinear'</em><a class="headerlink" href="#torchio.transforms.Interpolation.LINEAR" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">LINEAR</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkLinear'</em><a class="headerlink" href="#torchio.transforms.Interpolation.LINEAR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Linearly interpolates image intensity at a non-integer pixel position.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.NEAREST">
-<code class="descname">NEAREST</code><em class="property"> = 'sitkNearestNeighbor'</em><a class="headerlink" href="#torchio.transforms.Interpolation.NEAREST" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">NEAREST</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkNearestNeighbor'</em><a class="headerlink" href="#torchio.transforms.Interpolation.NEAREST" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolates image intensity at a non-integer pixel position by copying the intensity for the nearest neighbor.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="torchio.transforms.Interpolation.WELCH">
-<code class="descname">WELCH</code><em class="property"> = 'sitkWelchWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.WELCH" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">WELCH</code><em class="property">: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></em><em class="property"> = 'sitkWelchWindowedSinc'</em><a class="headerlink" href="#torchio.transforms.Interpolation.WELCH" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -294,44 +381,54 @@ for some interpolation results on test images.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="preprocessing.html#intensity">Intensity</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#normalizationtransform"><code class="docutils literal notranslate"><span class="pre">NormalizationTransform</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#rescaleintensity"><code class="docutils literal notranslate"><span class="pre">RescaleIntensity</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#znormalization"><code class="docutils literal notranslate"><span class="pre">ZNormalization</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#histogramstandardization"><code class="docutils literal notranslate"><span class="pre">HistogramStandardization</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#normalizationtransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">NormalizationTransform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#rescaleintensity"><code class="xref py py-class docutils literal notranslate"><span class="pre">RescaleIntensity</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#znormalization"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZNormalization</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#histogramstandardization"><code class="xref py py-class docutils literal notranslate"><span class="pre">HistogramStandardization</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="preprocessing.html#spatial">Spatial</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#centercroporpad"><code class="docutils literal notranslate"><span class="pre">CenterCropOrPad</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#crop"><code class="docutils literal notranslate"><span class="pre">Crop</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#pad"><code class="docutils literal notranslate"><span class="pre">Pad</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#resample"><code class="docutils literal notranslate"><span class="pre">Resample</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#tocanonical"><code class="docutils literal notranslate"><span class="pre">ToCanonical</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#croporpad"><code class="xref py py-class docutils literal notranslate"><span class="pre">CropOrPad</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#crop"><code class="xref py py-class docutils literal notranslate"><span class="pre">Crop</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#pad"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pad</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#resample"><code class="xref py py-class docutils literal notranslate"><span class="pre">Resample</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="preprocessing.html#tocanonical"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToCanonical</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="augmentation.html">Augmentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="augmentation.html#randomtransform"><code class="docutils literal notranslate"><span class="pre">RandomTransform</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="augmentation.html#base-class">Base class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomtransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomTransform</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="augmentation.html#composition">Composition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#compose"><code class="xref py py-class docutils literal notranslate"><span class="pre">Compose</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#oneof"><code class="xref py py-class docutils literal notranslate"><span class="pre">OneOf</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="augmentation.html#spatial">Spatial</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomflip"><code class="docutils literal notranslate"><span class="pre">RandomFlip</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomaffine"><code class="docutils literal notranslate"><span class="pre">RandomAffine</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomelasticdeformation"><code class="docutils literal notranslate"><span class="pre">RandomElasticDeformation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomflip"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomFlip</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomaffine"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomAffine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomelasticdeformation"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomElasticDeformation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomdownsample"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomDownsample</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="augmentation.html#intensity">Intensity</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randommotion"><code class="docutils literal notranslate"><span class="pre">RandomMotion</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomghosting"><code class="docutils literal notranslate"><span class="pre">RandomGhosting</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomspike"><code class="docutils literal notranslate"><span class="pre">RandomSpike</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randombiasfield"><code class="docutils literal notranslate"><span class="pre">RandomBiasField</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomblur"><code class="docutils literal notranslate"><span class="pre">RandomBlur</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomnoise"><code class="docutils literal notranslate"><span class="pre">RandomNoise</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomswap"><code class="docutils literal notranslate"><span class="pre">RandomSwap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randommotion"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomMotion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomghosting"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomGhosting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomspike"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSpike</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randombiasfield"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBiasField</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomblur"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomBlur</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomnoise"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomNoise</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomswap"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomSwap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="augmentation.html#randomlabelstoimage"><code class="xref py py-class docutils literal notranslate"><span class="pre">RandomLabelsToImage</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="others.html">Others</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="others.html#lambda"><code class="docutils literal notranslate"><span class="pre">Lambda</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="others.html#lambda"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lambda</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -354,7 +451,7 @@ for some interpolation results on test images.</p>
         <a href="preprocessing.html" class="btn btn-neutral float-right" title="Preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../data/queue.html" class="btn btn-neutral float-left" title="Queue" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../data/patch_inference.html" class="btn btn-neutral float-left" title="Inference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -363,11 +460,19 @@ for some interpolation results on test images.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -378,7 +483,6 @@ for some interpolation results on test images.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

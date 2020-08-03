@@ -1,41 +1,44 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Command-line tools &mdash; TorchIO 0.14.0 documentation</title>
+  <title>Command-line tools &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3D Slicer GUI" href="slicer.html" />
     <link rel="prev" title="Medical image datasets" href="datasets.html" /> 
 </head>
 
@@ -50,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> TorchIO
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -60,7 +63,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -77,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -84,20 +88,24 @@
               
             
             
-              <ul class="current">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Command-line tools</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#torchio-transform"><code class="docutils literal notranslate"><span class="pre">torchio-transform</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -136,7 +144,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Command-line tools</li>
     
@@ -161,12 +169,14 @@
   <div class="section" id="command-line-tools">
 <h1>Command-line tools<a class="headerlink" href="#command-line-tools" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="torchio-transform">
-<h2><code class="docutils literal notranslate"><span class="pre">torchio-transform</span></code><a class="headerlink" href="#torchio-transform" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2><code class="docutils literal notranslate"><span class="pre">torchio-transform</span></code><a class="headerlink" href="#torchio-transform" title="Permalink to this headline">¶</a></h2>
 <p>A transform can be quickly applied to an image file using the command-line
-tool <code class="docutils literal notranslate"><span class="pre">torchio-transform</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs &quot;proportion_to_augment=1 num_transforms=4&quot;
+tool <code class="docutils literal notranslate"><span class="pre">torchio-transform</span></code>, which is automatically installed by PIP when
+during installation of TorchIO:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ torchio-transform input.nii.gz RandomMotion output.nii.gz --kwargs &quot;num_transforms=4&quot; --seed 42
 </pre></div>
 </div>
+<p>For more information, run <code class="docutils literal notranslate"><span class="pre">torchio-transform</span> <span class="pre">--help</span></code>.</p>
 </div>
 </div>
 
@@ -182,6 +192,8 @@ tool <code class="docutils literal notranslate"><span class="pre">torchio-transf
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="slicer.html" class="btn btn-neutral float-right" title="3D Slicer GUI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
       
         <a href="datasets.html" class="btn btn-neutral float-left" title="Medical image datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
@@ -192,11 +204,19 @@ tool <code class="docutils literal notranslate"><span class="pre">torchio-transf
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -207,7 +227,6 @@ tool <code class="docutils literal notranslate"><span class="pre">torchio-transf
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

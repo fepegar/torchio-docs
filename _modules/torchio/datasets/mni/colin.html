@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchio.datasets.mni.colin &mdash; TorchIO 0.17.14 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script src="../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.17.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data/patch_based.html">Patch-based pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../transforms/transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../slicer.html">3D Slicer GUI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torchio.datasets.mni.colin</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torchio.datasets.mni.colin</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">urllib.parse</span>
+<span class="kn">from</span> <span class="nn">torchvision.datasets.utils</span> <span class="kn">import</span> <span class="n">download_and_extract_archive</span>
+<span class="kn">from</span> <span class="nn">...utils</span> <span class="kn">import</span> <span class="n">get_torchio_cache_dir</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">LABEL</span><span class="p">,</span> <span class="n">DATA</span>
+<span class="kn">from</span> <span class="nn">.mni</span> <span class="kn">import</span> <span class="n">SubjectMNI</span>
+
+
+<span class="n">TISSUES_2008</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Cerebro-spinal fluid&#39;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Gray Matter&#39;</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;White Matter&#39;</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Fat&#39;</span><span class="p">,</span>
+    <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;Muscles&#39;</span><span class="p">,</span>
+    <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;Skin and Muscles&#39;</span><span class="p">,</span>
+    <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;Skull&#39;</span><span class="p">,</span>
+    <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;Fat 2&#39;</span><span class="p">,</span>
+    <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;Dura&#39;</span><span class="p">,</span>
+    <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;Marrow&#39;</span><span class="p">,</span>
+    <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;Vessels&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="Colin27"><a class="viewcode-back" href="../../../../datasets.html#torchio.datasets.mni.Colin27">[docs]</a><span class="k">class</span> <span class="nc">Colin27</span><span class="p">(</span><span class="n">SubjectMNI</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Colin27 MNI template.</span>
+
+<span class="sd">    More information can be found in the website of the</span>
+<span class="sd">    `1998 &lt;http://nist.mni.mcgill.ca/?p=935&gt;`_ and</span>
+<span class="sd">    `2008 &lt;http://www.bic.mni.mcgill.ca/ServicesAtlases/Colin27Highres&gt;`_</span>
+<span class="sd">    versions.</span>
+
+<span class="sd">    .. image:: http://www.bic.mni.mcgill.ca/uploads/ServicesAtlases/mni_colin27_2008.jpg</span>
+<span class="sd">        :alt: MNI Colin 27 2008 version</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        version: Template year. It can be ``1998`` or ``2008``.</span>
+
+<span class="sd">    .. warning:: The resolution of the ``2008`` version is quite high. The</span>
+<span class="sd">        subject instance will contain four images of size</span>
+<span class="sd">        :math:`362 \times 434 \times 362`, therefore applying a transform to</span>
+<span class="sd">        it might take longer than expected.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; colin_1998 = torchio.datasets.Colin27(version=1998)</span>
+<span class="sd">        &gt;&gt;&gt; colin_1998</span>
+<span class="sd">        Colin27(Keys: (&#39;t1&#39;, &#39;head&#39;, &#39;brain&#39;); images: 3)</span>
+<span class="sd">        &gt;&gt;&gt; colin_1998._load()</span>
+<span class="sd">        &gt;&gt;&gt; colin_1998.t1</span>
+<span class="sd">        Image(shape: (1, 181, 217, 181); spacing: (1.00, 1.00, 1.00); orientation: RAS+; memory: 27.1 MiB; type: intensity)</span>
+<span class="sd">        &gt;&gt;&gt;</span>
+<span class="sd">        &gt;&gt;&gt; colin_2008 = torchio.datasets.Colin27(version=2008)</span>
+<span class="sd">        &gt;&gt;&gt; colin_2008</span>
+<span class="sd">        Colin27(Keys: (&#39;t1&#39;, &#39;t2&#39;, &#39;pd&#39;, &#39;cls&#39;); images: 4)</span>
+<span class="sd">        &gt;&gt;&gt; colin_2008._load()</span>
+<span class="sd">        &gt;&gt;&gt; colin_2008.t1</span>
+<span class="sd">        Image(shape: (1, 362, 434, 362); spacing: (0.50, 0.50, 0.50); orientation: RAS+; memory: 217.0 MiB; type: intensity)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">1998</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">version</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1998</span><span class="p">,</span> <span class="mi">2008</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Version must be 1998 or 2008, not &quot;</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;mni_colin27_</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s1">_nifti&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url_dir</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_base</span><span class="p">,</span> <span class="s1">&#39;colin27/&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">.zip&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">download_root</span> <span class="o">=</span> <span class="n">get_torchio_cache_dir</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">download_root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using cache found in </span><span class="si">{</span><span class="n">download_root</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">download_and_extract_archive</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+                <span class="n">download_root</span><span class="o">=</span><span class="n">download_root</span><span class="p">,</span>
+                <span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># Fix label map (https://github.com/fepegar/torchio/issues/220)</span>
+            <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">2008</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">download_root</span> <span class="o">/</span> <span class="s1">&#39;colin27_cls_tal_hires.nii&#39;</span>
+                <span class="n">cls_image</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">LABEL</span><span class="p">)</span>
+                <span class="n">cls_image</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span> <span class="o">=</span> <span class="n">cls_image</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">()</span><span class="o">.</span><span class="n">byte</span><span class="p">()</span>
+                <span class="n">cls_image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">1998</span><span class="p">:</span>
+            <span class="n">t1</span><span class="p">,</span> <span class="n">head</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">download_root</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;colin27_t1_tal_lin</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s1">.nii&#39;</span>
+                <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;_headmask&#39;</span><span class="p">,</span> <span class="s1">&#39;_mask&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="n">t1</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="n">t1</span><span class="p">),</span>
+                <span class="n">head</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">LABEL</span><span class="p">),</span>
+                <span class="n">brain</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">LABEL</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">version</span> <span class="o">==</span> <span class="mi">2008</span><span class="p">:</span>
+            <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">,</span> <span class="n">pd</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">download_root</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;colin27_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">_tal_hires.nii&#39;</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;t1&#39;</span><span class="p">,</span> <span class="s1">&#39;t2&#39;</span><span class="p">,</span> <span class="s1">&#39;pd&#39;</span><span class="p">,</span> <span class="s1">&#39;cls&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="n">t1</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="n">t1</span><span class="p">),</span>
+                <span class="n">t2</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="n">t2</span><span class="p">),</span>
+                <span class="n">pd</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="n">pd</span><span class="p">),</span>
+                <span class="bp">cls</span><span class="o">=</span><span class="n">Image</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">LABEL</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">TISSUES_2008</span><span class="p">),</span>
+            <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+    <a href="https://github.com/fepegar/torchio">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #d45848;
+    }
+    .wy-menu > .caption > span.caption-text {
+      color: #d45848;
+    }
+    /* .property {
+      color: #d45848;
+    } */
+  </style>
+
+
+</body>
+</html>

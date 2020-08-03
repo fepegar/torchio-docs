@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.augmentation.intensity.random_swap &mdash; TorchIO 0.14.0 documentation</title>
+  <title>torchio.transforms.augmentation.intensity.random_swap &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
 </head>
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> TorchIO
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -76,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -83,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../../../index.html">Module code</a> &raquo;</li>
         
@@ -153,13 +160,13 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.transforms.augmentation.intensity.random_swap</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span><span class="p">,</span> <span class="n">to_tuple</span>
-<span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TYPE</span><span class="p">,</span> <span class="n">INTENSITY</span><span class="p">,</span> <span class="n">TypeTuple</span><span class="p">,</span> <span class="n">TypeData</span>
-<span class="kn">from</span> <span class="nn">....data.sampler.sampler</span> <span class="k">import</span> <span class="n">get_random_indices_from_shape</span><span class="p">,</span> <span class="n">crop</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">RandomTransform</span>
+<span class="kn">from</span> <span class="nn">....data.subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">....utils</span> <span class="kn">import</span> <span class="n">to_tuple</span>
+<span class="kn">from</span> <span class="nn">....torchio</span> <span class="kn">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypeTuple</span><span class="p">,</span> <span class="n">TypeData</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">RandomTransform</span>
 
 
 <div class="viewcode-block" id="RandomSwap"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomSwap">[docs]</a><span class="k">class</span> <span class="nc">RandomSwap</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
@@ -170,30 +177,39 @@
 <span class="sd">            of size :math:`d \times h \times w`.</span>
 <span class="sd">            If a single number :math:`n` is provided, :math:`d = h = w = n`.</span>
 <span class="sd">        num_iterations: Number of times that two patches will be swapped.</span>
+<span class="sd">        p: Probability that this transform will be applied.</span>
 <span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">patch_size</span><span class="p">:</span> <span class="n">TypeTuple</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
             <span class="n">num_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
             <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">num_iterations</span> <span class="o">=</span> <span class="n">num_iterations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_iterations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_num_iterations</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_num_iterations</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;num_iterations must be an int,&#39;</span>
+                            <span class="sa">f</span><span class="s1">&#39;not </span><span class="si">{</span><span class="n">num_iterations</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">num_iterations</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;num_iterations must be positive,&#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;not </span><span class="si">{</span><span class="n">num_iterations</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">num_iterations</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_params</span><span class="p">():</span>
         <span class="c1"># TODO: return locations?</span>
         <span class="k">return</span>
 
-    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_image_dict</span><span class="p">(</span><span class="n">image_dict</span><span class="p">):</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">TYPE</span><span class="p">]</span> <span class="o">!=</span> <span class="n">INTENSITY</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="n">swap</span><span class="p">(</span><span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_iterations</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">get_images</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="n">image</span><span class="p">[</span><span class="n">DATA</span><span class="p">]:</span>
+                <span class="n">swap</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_iterations</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sample</span></div>
 
 
@@ -230,6 +246,42 @@
     <span class="n">i_ini</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">,</span> <span class="n">k_ini</span> <span class="o">=</span> <span class="n">index_ini</span>
     <span class="n">i_fin</span><span class="p">,</span> <span class="n">j_fin</span><span class="p">,</span> <span class="n">k_fin</span> <span class="o">=</span> <span class="n">index_fin</span>
     <span class="n">tensor</span><span class="p">[</span><span class="n">i_ini</span><span class="p">:</span><span class="n">i_fin</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">:</span><span class="n">j_fin</span><span class="p">,</span> <span class="n">k_ini</span><span class="p">:</span><span class="n">k_fin</span><span class="p">]</span> <span class="o">=</span> <span class="n">patch</span>
+
+
+<span class="k">def</span> <span class="nf">crop</span><span class="p">(</span>
+        <span class="n">image</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+        <span class="n">index_ini</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">index_fin</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+    <span class="n">i_ini</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">,</span> <span class="n">k_ini</span> <span class="o">=</span> <span class="n">index_ini</span>
+    <span class="n">i_fin</span><span class="p">,</span> <span class="n">j_fin</span><span class="p">,</span> <span class="n">k_fin</span> <span class="o">=</span> <span class="n">index_fin</span>
+    <span class="k">return</span> <span class="n">image</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">i_ini</span><span class="p">:</span><span class="n">i_fin</span><span class="p">,</span> <span class="n">j_ini</span><span class="p">:</span><span class="n">j_fin</span><span class="p">,</span> <span class="n">k_ini</span><span class="p">:</span><span class="n">k_fin</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">get_random_indices_from_shape</span><span class="p">(</span>
+        <span class="n">shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">patch_size</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="n">shape_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">patch_size_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span>
+    <span class="n">max_index_ini</span> <span class="o">=</span> <span class="n">shape_array</span> <span class="o">-</span> <span class="n">patch_size_array</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">max_index_ini</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Patch size </span><span class="si">{</span><span class="n">patch_size</span><span class="si">}</span><span class="s1"> must not be&#39;</span>
+            <span class="sa">f</span><span class="s1">&#39; larger than image size </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+    <span class="n">max_index_ini</span> <span class="o">=</span> <span class="n">max_index_ini</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">max_coordinate</span> <span class="ow">in</span> <span class="n">max_index_ini</span><span class="o">.</span><span class="n">tolist</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">max_coordinate</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">coordinate</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">coordinate</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">max_coordinate</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">coordinates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coordinate</span><span class="p">)</span>
+    <span class="n">index_ini</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+    <span class="n">index_fin</span> <span class="o">=</span> <span class="n">index_ini</span> <span class="o">+</span> <span class="n">patch_size_array</span>
+    <span class="k">return</span> <span class="n">index_ini</span><span class="p">,</span> <span class="n">index_fin</span>
 </pre></div>
 
            </div>
@@ -246,11 +298,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -261,7 +321,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

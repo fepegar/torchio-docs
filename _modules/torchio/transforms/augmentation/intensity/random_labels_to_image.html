@@ -1,0 +1,506 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchio.transforms.augmentation.intensity.random_labels_to_image &mdash; TorchIO 0.17.14 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.17.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/patch_based.html">Patch-based pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../slicer.html">3D Slicer GUI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torchio.transforms.augmentation.intensity.random_labels_to_image</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torchio.transforms.augmentation.intensity.random_labels_to_image</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">....torchio</span> <span class="kn">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypeData</span><span class="p">,</span> <span class="n">TypeRangeFloat</span><span class="p">,</span> <span class="n">TypeNumber</span><span class="p">,</span> <span class="n">AFFINE</span>
+<span class="kn">from</span> <span class="nn">....data.subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">....data.image</span> <span class="kn">import</span> <span class="n">ScalarImage</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">RandomTransform</span>
+
+
+<span class="n">TypeGaussian</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeNumber</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeRangeFloat</span><span class="p">]]]</span>
+
+
+<div class="viewcode-block" id="RandomLabelsToImage"><a class="viewcode-back" href="../../../../../transforms/augmentation.html#torchio.transforms.RandomLabelsToImage">[docs]</a><span class="k">class</span> <span class="nc">RandomLabelsToImage</span><span class="p">(</span><span class="n">RandomTransform</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate an image from a segmentation.</span>
+
+<span class="sd">    Based on the work by `Billot et al., A Learning Strategy for</span>
+<span class="sd">    Contrast-agnostic MRI Segmentation &lt;https://arxiv.org/abs/2003.01995&gt;`_.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        label_key: String designating the label map in the sample</span>
+<span class="sd">            that will be used to generate the new image.</span>
+<span class="sd">            Cannot be set at the same time as :py:attr:`pv_label_keys`.</span>
+<span class="sd">        pv_label_keys: Sequence of strings designating the partial-volume</span>
+<span class="sd">            label maps in the sample that will be used to generate the new</span>
+<span class="sd">            image. Cannot be set at the same time as :py:attr:`label_key`.</span>
+<span class="sd">        image_key: String designating the key to which the new volume will be</span>
+<span class="sd">            saved. If this key corresponds to an already existing volume,</span>
+<span class="sd">            voxels that have a value of 0 in the label maps will be filled with</span>
+<span class="sd">            the corresponding values in the original volume.</span>
+<span class="sd">        gaussian_parameters: Dictionary containing the mean and standard</span>
+<span class="sd">            deviation for each label. For each value :math:`v`, if a tuple</span>
+<span class="sd">            :math:`(a, b)` is provided then :math:`v \sim \mathcal{U}(a, b)`.</span>
+<span class="sd">            If no value is given for a label, :py:attr:`default_mean` and</span>
+<span class="sd">            :py:attr:`default_std` ranges will be used.</span>
+<span class="sd">        default_mean: Default mean range.</span>
+<span class="sd">        default_std: Default standard deviation range.</span>
+<span class="sd">        discretize: If ``True``, partial-volume label maps will be discretized.</span>
+<span class="sd">            Does not have any effects if not using partial-volume label maps.</span>
+<span class="sd">            Discretization is done taking the class of the highest value per</span>
+<span class="sd">            voxel in the different partial-volume label maps using</span>
+<span class="sd">            :py:func:`torch.argmax()` on the channel dimension (i.e. 0).</span>
+<span class="sd">        p: Probability that this transform will be applied.</span>
+<span class="sd">        seed: See :py:class:`~torchio.transforms.augmentation.RandomTransform`.</span>
+
+<span class="sd">    .. note:: It is recommended to blur the new images to make the result more</span>
+<span class="sd">        realistic. See</span>
+<span class="sd">        :py:class:`~torchio.transforms.augmentation.intensity.random_blur.RandomBlur`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; from torchio import RandomLabelsToImage, DATA, RescaleIntensity, Compose</span>
+<span class="sd">        &gt;&gt;&gt; from torchio.datasets import Colin27</span>
+<span class="sd">        &gt;&gt;&gt; colin = Colin27(2008)</span>
+<span class="sd">        &gt;&gt;&gt; # Using the default gaussian_parameters</span>
+<span class="sd">        &gt;&gt;&gt; transform = RandomLabelsToImage(label_key=&#39;cls&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; # Using custom gaussian_parameters</span>
+<span class="sd">        &gt;&gt;&gt; label_values = colin[&#39;cls&#39;][DATA].unique().round().long()</span>
+<span class="sd">        &gt;&gt;&gt; gaussian_parameters = {</span>
+<span class="sd">        ...     label: {</span>
+<span class="sd">        ...         &#39;mean&#39;: i / len(label_values),</span>
+<span class="sd">        ...         &#39;std&#39;: 0.01</span>
+<span class="sd">        ...     }</span>
+<span class="sd">        ...     for i, label in enumerate(label_values)</span>
+<span class="sd">        ... }</span>
+<span class="sd">        &gt;&gt;&gt; transform = RandomLabelsToImage(label_key=&#39;cls&#39;, gaussian_parameters=gaussian_parameters)</span>
+<span class="sd">        &gt;&gt;&gt; transformed = transform(colin)  # colin has a new key &#39;image&#39; with the simulated image</span>
+<span class="sd">        &gt;&gt;&gt; # Filling holes of the simulated image with the original T1 image</span>
+<span class="sd">        &gt;&gt;&gt; rescale_transform = RescaleIntensity((0, 1), (1, 99))   # Rescale intensity before filling holes</span>
+<span class="sd">        &gt;&gt;&gt; simulation_transform = RandomLabelsToImage(</span>
+<span class="sd">        ...     label_key=&#39;cls&#39;,</span>
+<span class="sd">        ...     image_key=&#39;t1&#39;,</span>
+<span class="sd">        ...     gaussian_parameters={0: {&#39;mean&#39;: 0, &#39;std&#39;: 0}}</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; transform = Compose([rescale_transform, simulation_transform])</span>
+<span class="sd">        &gt;&gt;&gt; transformed = transform(colin)  # colin&#39;s key &#39;t1&#39; has been replaced with the simulated image</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">label_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">pv_label_keys</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">image_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;image&#39;</span><span class="p">,</span>
+            <span class="n">gaussian_parameters</span><span class="p">:</span> <span class="n">TypeGaussian</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">default_mean</span><span class="p">:</span> <span class="n">TypeRangeFloat</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span>
+            <span class="n">default_std</span><span class="p">:</span> <span class="n">TypeRangeFloat</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+            <span class="n">discretize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_label_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_keys</span><span class="p">(</span>
+            <span class="n">label_key</span><span class="p">,</span> <span class="n">pv_label_keys</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_gaussian_parameter</span><span class="p">(</span><span class="n">default_mean</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_gaussian_parameter</span><span class="p">(</span><span class="n">default_std</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_gaussian_parameters</span><span class="p">(</span>
+            <span class="n">gaussian_parameters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_key</span> <span class="o">=</span> <span class="n">image_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discretize</span> <span class="o">=</span> <span class="n">discretize</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_keys</span><span class="p">(</span>
+            <span class="n">label_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">pv_label_keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">label_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pv_label_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;&quot;label_key&quot; and &quot;pv_label_keys&quot; cannot be set at the same time&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">label_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pv_label_keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;One of &quot;label_key&quot; and &quot;pv_label_keys&quot; must be set&#39;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">label_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;label_key&quot; must be a string, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">label_key</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pv_label_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">iter</span><span class="p">(</span><span class="n">pv_label_keys</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;&quot;pv_label_keys&quot; must be a sequence of strings, &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;not </span><span class="si">{</span><span class="n">pv_label_keys</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pv_label_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;Every key of &quot;pv_label_keys&quot; must be a string, &#39;</span>
+                        <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="n">pv_label_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pv_label_keys</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">label_key</span><span class="p">,</span> <span class="n">pv_label_keys</span>
+
+    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">random_parameters_images_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">original_image</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_label_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">label_map</span><span class="p">,</span> <span class="n">affine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_pv_label_maps</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pv_label_keys</span><span class="p">,</span> <span class="n">sample</span><span class="p">)</span>
+            <span class="n">n_labels</span><span class="p">,</span> <span class="o">*</span><span class="n">image_shape</span> <span class="o">=</span> <span class="n">label_map</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_label_keys</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_labels</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretize</span><span class="p">:</span>
+                <span class="c1"># Take label with highest value in voxel</span>
+                <span class="n">max_label</span><span class="p">,</span> <span class="n">label_map</span> <span class="o">=</span> <span class="n">label_map</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="c1"># Remove values where all labels are 0</span>
+                <span class="n">label_map</span><span class="p">[</span><span class="n">max_label</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">label_map</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_key</span><span class="p">][</span><span class="n">DATA</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">affine</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_key</span><span class="p">][</span><span class="n">AFFINE</span><span class="p">]</span>
+            <span class="n">image_shape</span> <span class="o">=</span> <span class="n">label_map</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">label_map</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">round</span><span class="p">()]</span>
+
+        <span class="n">tissues</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">image_shape</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+            <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_params</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_label_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretize</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">label_map</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">label_map</span> <span class="o">==</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">tissues</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_tissue</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span>
+
+            <span class="n">random_parameters_images_dict</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="n">mean</span><span class="p">,</span>
+                <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">std</span>
+            <span class="p">}</span>
+
+        <span class="n">final_image</span> <span class="o">=</span> <span class="n">ScalarImage</span><span class="p">(</span><span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">,</span> <span class="n">tensor</span><span class="o">=</span><span class="n">tissues</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">original_image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_label_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretize</span><span class="p">:</span>
+                <span class="n">label_map</span> <span class="o">=</span> <span class="n">label_map</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">bg_mask</span> <span class="o">=</span> <span class="n">label_map</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="n">final_image</span><span class="p">[</span><span class="n">DATA</span><span class="p">][</span><span class="n">bg_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_image</span><span class="p">[</span><span class="n">DATA</span><span class="p">][</span><span class="n">bg_mask</span><span class="p">]</span>
+
+        <span class="n">sample</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="n">final_image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_key</span><span class="p">)</span>
+        <span class="n">sample</span><span class="o">.</span><span class="n">add_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">random_parameters_images_dict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sample</span>
+
+    <span class="k">def</span> <span class="nf">parse_gaussian_parameters</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="p">:</span> <span class="n">TypeGaussian</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeGaussian</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv_label_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_label_keys</span><span class="p">)</span><span class="o">.</span><span class="n">issuperset</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Found keys in gaussian parameters </span><span class="si">{</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s1"> &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;not in pv_label_keys </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pv_label_keys</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="n">parsed_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">label_key</span><span class="p">,</span> <span class="n">dictionary</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;mean&#39;</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="p">:</span>
+                <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_gaussian_parameter</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">],</span> <span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_mean</span>
+            <span class="k">if</span> <span class="s1">&#39;std&#39;</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="p">:</span>
+                <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_gaussian_parameter</span><span class="p">(</span><span class="n">dictionary</span><span class="p">[</span><span class="s1">&#39;std&#39;</span><span class="p">],</span> <span class="s1">&#39;std&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_std</span>
+            <span class="n">parsed_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">label_key</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="n">mean</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">std</span><span class="p">}})</span>
+
+        <span class="k">return</span> <span class="n">parsed_parameters</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_gaussian_parameter</span><span class="p">(</span>
+            <span class="n">nums_range</span><span class="p">:</span> <span class="n">TypeRangeFloat</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nums_range</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">nums_range</span><span class="p">,</span> <span class="n">nums_range</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums_range</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a sequence,&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; it must be of len 2, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span> <span class="o">=</span> <span class="n">nums_range</span>
+        <span class="k">if</span> <span class="n">min_value</span> <span class="o">&gt;</span> <span class="n">max_value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a sequence, the second value must be&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; equal or greater than the first, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_pv_label_maps</span><span class="p">(</span>
+            <span class="n">pv_label_keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+            <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">TypeData</span><span class="p">,</span> <span class="n">TypeData</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">label_map</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">sample</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">DATA</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pv_label_keys</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Partial-volume label maps have different shapes&#39;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">affine</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="n">pv_label_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">AFFINE</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pv_label_keys</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">affine</span><span class="p">,</span> <span class="n">sample</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">AFFINE</span><span class="p">]):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;Partial-volume label maps have different affine matrices&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeWarning</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">label_map</span><span class="p">,</span> <span class="n">affine</span>
+
+    <span class="k">def</span> <span class="nf">get_params</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">label</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeNumber</span><span class="p">]</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_parameters</span><span class="p">:</span>
+            <span class="n">mean_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_parameters</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span>
+            <span class="n">std_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_parameters</span><span class="p">[</span><span class="n">label</span><span class="p">][</span><span class="s1">&#39;std&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mean_range</span><span class="p">,</span> <span class="n">std_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_std</span>
+
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">*</span><span class="n">mean_range</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">*</span><span class="n">std_range</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">mean</span><span class="p">,</span> <span class="n">std</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">generate_tissue</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">,</span>
+            <span class="n">mean</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">std</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeData</span><span class="p">:</span>
+        <span class="c1"># Create the simulated tissue using a gaussian random variable</span>
+        <span class="n">data_shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">gaussian</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">data_shape</span><span class="p">)</span> <span class="o">*</span> <span class="n">std</span> <span class="o">+</span> <span class="n">mean</span>
+        <span class="k">return</span> <span class="n">gaussian</span> <span class="o">*</span> <span class="n">data</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+    <a href="https://github.com/fepegar/torchio">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #d45848;
+    }
+    .wy-menu > .caption > span.caption-text {
+      color: #d45848;
+    }
+    /* .property {
+      color: #d45848;
+    } */
+  </style>
+
+
+</body>
+</html>

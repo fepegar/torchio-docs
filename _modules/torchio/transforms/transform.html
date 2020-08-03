@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.transform &mdash; TorchIO 0.14.0 documentation</title>
+  <title>torchio.transforms.transform &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../index.html" class="icon icon-home"> TorchIO
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -76,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -83,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
@@ -153,16 +160,26 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.transforms.transform</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span></span><span class="kn">import</span> <span class="nn">numbers</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">SimpleITK</span> <span class="k">as</span> <span class="nn">sitk</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="k">import</span> <span class="n">is_image_dict</span><span class="p">,</span> <span class="n">nib_to_sitk</span><span class="p">,</span> <span class="n">sitk_to_nib</span>
-<span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">TypeData</span><span class="p">,</span> <span class="n">TYPE</span>
+
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">TypeData</span><span class="p">,</span> <span class="n">INTENSITY</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypeNumber</span>
+<span class="kn">from</span> <span class="nn">..data.subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">..data.image</span> <span class="kn">import</span> <span class="n">ScalarImage</span>
+<span class="kn">from</span> <span class="nn">..data.dataset</span> <span class="kn">import</span> <span class="n">ImagesDataset</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">nib_to_sitk</span><span class="p">,</span> <span class="n">sitk_to_nib</span>
+<span class="kn">from</span> <span class="nn">.interpolation</span> <span class="kn">import</span> <span class="n">Interpolation</span>
 
 
 <div class="viewcode-block" id="Transform"><a class="viewcode-back" href="../../../transforms/transforms.html#torchio.transforms.Transform">[docs]</a><span class="k">class</span> <span class="nc">Transform</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="n">image_name</span> <span class="o">=</span> <span class="s1">&#39;image&#39;</span>
     <span class="sd">&quot;&quot;&quot;Abstract class for all TorchIO transforms.</span>
 
 <span class="sd">    All classes used to transform a sample from an</span>
@@ -170,35 +187,219 @@
 <span class="sd">    All subclasses should overwrite</span>
 <span class="sd">    :py:meth:`torchio.tranforms.Transform.apply_transform`,</span>
 <span class="sd">    which takes a sample, applies some transformation and returns the result.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        p: Probability that this transform will be applied.</span>
+<span class="sd">        copy: Make a deep copy of the input before applying the transform.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Transform a sample and return the result.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">probability</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_probability</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">copy</span> <span class="o">=</span> <span class="n">copy</span>
+
+<div class="viewcode-block" id="Transform.__call__"><a class="viewcode-back" href="../../../transforms/transforms.html#torchio.transforms.Transform.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Subject</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Transform a sample and return the result.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: Instance of :py:class:`~torchio.Subject`, 4D</span>
+<span class="sd">                :py:class:`torch.Tensor` or 4D NumPy array with dimensions</span>
+<span class="sd">                :math:`(C, D, H, W)`, where :math:`C` is the number of channels</span>
+<span class="sd">                and :math:`D, H, W` are the spatial dimensions. If the input is</span>
+<span class="sd">                a tensor, the affine matrix is an identity and a tensor will be</span>
+<span class="sd">                also returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">probability</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)):</span>
+            <span class="n">is_array</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
+            <span class="n">is_tensor</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_tensor</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_tensor</span> <span class="o">=</span> <span class="n">is_array</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="n">data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parse_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_transform</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">sample</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">:</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="nb">all</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_transform</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">transformed</span><span class="o">.</span><span class="n">get_images</span><span class="p">(</span><span class="n">intensity_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">ndim</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="n">DATA</span><span class="p">]</span><span class="o">.</span><span class="n">ndim</span>
+            <span class="k">assert</span> <span class="n">ndim</span> <span class="o">==</span> <span class="mi">4</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;Output of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> is </span><span class="si">{</span><span class="n">ndim</span><span class="si">}</span><span class="s1">D&#39;</span>
+
+        <span class="k">if</span> <span class="n">is_tensor</span><span class="p">:</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="n">transformed</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_name</span><span class="p">][</span><span class="n">DATA</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">is_array</span><span class="p">:</span>
+            <span class="n">transformed</span> <span class="o">=</span> <span class="n">transformed</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">transformed</span></div>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">parse_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">images_found</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">type_in_dict</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">for</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_image_dict</span><span class="p">(</span><span class="n">image_dict</span><span class="p">):</span>
-                <span class="k">continue</span>
-            <span class="n">images_found</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">if</span> <span class="n">TYPE</span> <span class="ow">in</span> <span class="n">image_dict</span><span class="p">:</span>
-                <span class="n">type_in_dict</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">if</span> <span class="n">images_found</span> <span class="ow">and</span> <span class="n">type_in_dict</span><span class="p">:</span>
-                <span class="k">break</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">images_found</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s1">&#39;No image dicts found in sample.&#39;</span>
-                <span class="n">f</span><span class="s1">&#39; Sample keys: {sample.keys()}&#39;</span>
+<div class="viewcode-block" id="Transform.parse_range"><a class="viewcode-back" href="../../../transforms/transforms.html#torchio.transforms.Transform.parse_range">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_range</span><span class="p">(</span>
+            <span class="n">nums_range</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypeNumber</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TypeNumber</span><span class="p">,</span> <span class="n">TypeNumber</span><span class="p">]],</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">min_constraint</span><span class="p">:</span> <span class="n">TypeNumber</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">max_constraint</span><span class="p">:</span> <span class="n">TypeNumber</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">type_constraint</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TypeNumber</span><span class="p">,</span> <span class="n">TypeNumber</span><span class="p">]:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Adapted from ``torchvision.transforms.RandomRotation``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nums_range: Tuple of two numbers :math:`(n_{min}, n_{max})`,</span>
+<span class="sd">                where :math:`n_{min} \leq n_{max}`.</span>
+<span class="sd">                If a single positive number :math:`n` is provided,</span>
+<span class="sd">                :math:`n_{min} = -n` and :math:`n_{max} = n`.</span>
+<span class="sd">            name: Name of the parameter, so that an informative error message</span>
+<span class="sd">                can be printed.</span>
+<span class="sd">            min_constraint: Minimal value that :math:`n_{min}` can take,</span>
+<span class="sd">                default is None, i.e. there is no minimal value.</span>
+<span class="sd">            max_constraint: Maximal value that :math:`n_{max}` can take,</span>
+<span class="sd">                default is None, i.e. there is no maximal value.</span>
+<span class="sd">            type_constraint: Precise type that :math:`n_{max}` and</span>
+<span class="sd">                :math:`n_{min}` must take.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A tuple of two numbers :math:`(n_{min}, n_{max})`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if :attr:`nums_range` is negative</span>
+<span class="sd">            ValueError: if :math:`n_{max}` or :math:`n_{min}` is not a number</span>
+<span class="sd">            ValueError: if :math:`n_{max} \lt n_{min}`</span>
+<span class="sd">            ValueError: if :attr:`min_constraint` is not None and</span>
+<span class="sd">                :math:`n_{min}` is smaller than :attr:`min_constraint`</span>
+<span class="sd">            ValueError: if :attr:`max_constraint` is not None and</span>
+<span class="sd">                :math:`n_{max}` is greater than :attr:`max_constraint`</span>
+<span class="sd">            ValueError: if :attr:`type_constraint` is not None and</span>
+<span class="sd">                :math:`n_{max}` and :math:`n_{max}` are not of type</span>
+<span class="sd">                :attr:`type_constraint`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nums_range</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">nums_range</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a single number,&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39; it must be positive, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">min_constraint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">nums_range</span> <span class="o">&lt;</span> <span class="n">min_constraint</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a single number, it must be greater&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;than </span><span class="si">{</span><span class="n">min_constraint</span><span class="si">}</span><span class="s1">, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">max_constraint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">nums_range</span> <span class="o">&gt;</span> <span class="n">max_constraint</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a single number, it must be smaller&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;than </span><span class="si">{</span><span class="n">max_constraint</span><span class="si">}</span><span class="s1">, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">type_constraint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                    <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nums_range</span><span class="p">,</span> <span class="n">type_constraint</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a single number, it must be of&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;type </span><span class="si">{</span><span class="n">type_constraint</span><span class="si">}</span><span class="s1">, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+            <span class="n">min_range</span> <span class="o">=</span> <span class="o">-</span><span class="n">nums_range</span> <span class="k">if</span> <span class="n">min_constraint</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nums_range</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">min_range</span><span class="p">,</span> <span class="n">nums_range</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">min_degree</span><span class="p">,</span> <span class="n">max_degree</span> <span class="o">=</span> <span class="n">nums_range</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is not a single number, it muste be&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;a sequence of len 2, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">min_degree</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">)</span> <span class="ow">or</span> \
+                <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_degree</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> values must be numbers, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">min_degree</span> <span class="o">&gt;</span> <span class="n">max_degree</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a sequence, the second value must be&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; equal or greater than the first, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">min_constraint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">min_degree</span> <span class="o">&lt;</span> <span class="n">min_constraint</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a sequence, the first value must be greater&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;than </span><span class="si">{</span><span class="n">min_constraint</span><span class="si">}</span><span class="s1">, not </span><span class="si">{</span><span class="n">min_degree</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">max_constraint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">max_degree</span> <span class="o">&gt;</span> <span class="n">max_constraint</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a sequence, the second value must be smaller&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;than </span><span class="si">{</span><span class="n">max_constraint</span><span class="si">}</span><span class="s1">, not </span><span class="si">{</span><span class="n">max_degree</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">type_constraint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">min_degree</span><span class="p">,</span> <span class="n">type_constraint</span><span class="p">)</span> <span class="ow">or</span> \
+                    <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_degree</span><span class="p">,</span> <span class="n">type_constraint</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;If </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> is a sequence, its values must be of&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;type </span><span class="si">{</span><span class="n">type_constraint</span><span class="si">}</span><span class="s1">, not </span><span class="si">{</span><span class="n">nums_range</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">nums_range</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_probability</span><span class="p">(</span><span class="n">probability</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">is_number</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">probability</span><span class="p">,</span> <span class="n">numbers</span><span class="o">.</span><span class="n">Number</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_number</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">probability</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Probability must be a number in [0, 1],&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; not </span><span class="si">{</span><span class="n">probability</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">probability</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">Subject</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Input to a transform must be a tensor or an instance&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; of torchio.Subject, not &quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">parse_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Subject</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;The input must be a 4D tensor with dimensions&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; (channels, x, y, z) but it has shape </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subject_from_tensor</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">parse_interpolation</span><span class="p">(</span><span class="n">interpolation</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Interpolation</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interpolation</span><span class="p">,</span> <span class="n">Interpolation</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Interpolation of type torchio.Interpolation&#39;</span>
+                <span class="s1">&#39; is deprecated, please use a string instead&#39;</span>
+            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="ne">FutureWarning</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interpolation</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">interpolation</span> <span class="o">=</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">supported_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">Interpolation</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">interpolation</span> <span class="ow">in</span> <span class="n">supported_values</span><span class="p">:</span>
+                <span class="n">interpolation</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Interpolation</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;Interpolation &quot;</span><span class="si">{</span><span class="n">interpolation</span><span class="si">}</span><span class="s1">&quot; is not among&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39; the supported values: </span><span class="si">{</span><span class="n">supported_values</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;image_interpolation must be a string,&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">interpolation</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">interpolation</span>
+
+    <span class="k">def</span> <span class="nf">_get_subject_from_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Subject</span><span class="p">:</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">ScalarImage</span><span class="p">(</span><span class="n">tensor</span><span class="o">=</span><span class="n">tensor</span><span class="p">,</span> <span class="n">channels_last</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Subject</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">image_name</span><span class="p">:</span> <span class="n">image</span><span class="p">})</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">nib_to_sitk</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">,</span> <span class="n">affine</span><span class="p">:</span> <span class="n">TypeData</span><span class="p">):</span>
@@ -206,7 +407,11 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">sitk_to_nib</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">sitk</span><span class="o">.</span><span class="n">Image</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">sitk_to_nib</span><span class="p">(</span><span class="n">image</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">sitk_to_nib</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span></div>
 </pre></div>
 
            </div>
@@ -223,11 +428,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -238,7 +451,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

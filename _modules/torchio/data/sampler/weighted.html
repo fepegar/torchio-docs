@@ -1,0 +1,492 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>torchio.data.sampler.weighted &mdash; TorchIO 0.17.14 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script src="../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.17.14
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../data/patch_based.html">Patch-based pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../transforms/transforms.html">Transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets.html">Medical image datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../slicer.html">3D Slicer GUI</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">TorchIO</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>torchio.data.sampler.weighted</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+           <div itemprop="articleBody">
+            
+  <h1>Source code for torchio.data.sampler.weighted</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Generator</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">...torchio</span> <span class="kn">import</span> <span class="n">TypePatchSize</span>
+<span class="kn">from</span> <span class="nn">..subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">.sampler</span> <span class="kn">import</span> <span class="n">RandomSampler</span>
+
+
+
+<div class="viewcode-block" id="WeightedSampler"><a class="viewcode-back" href="../../../../data/patch_training.html#torchio.data.WeightedSampler">[docs]</a><span class="k">class</span> <span class="nc">WeightedSampler</span><span class="p">(</span><span class="n">RandomSampler</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Randomly extract patches from a volume given a probability map.</span>
+
+<span class="sd">    The probability of sampling a patch centered on a specific voxel is the</span>
+<span class="sd">    value of that voxel in the probability map. The probabilities need not be</span>
+<span class="sd">    normalized. For example, voxels can have values 0, 1 and 5. Voxels with</span>
+<span class="sd">    value 0 will never be at the center of a patch. Voxels with value 5 will</span>
+<span class="sd">    have 5 times more chance of being at the center of a patch that voxels</span>
+<span class="sd">    with a value of 1.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        sample: Sample generated by a</span>
+<span class="sd">            :py:class:`~torchio.data.dataset.ImagesDataset`, from which image</span>
+<span class="sd">            patches will be extracted.</span>
+<span class="sd">        patch_size: See :py:class:`~torchio.data.PatchSampler`.</span>
+<span class="sd">        probability_map: Name of the image in the sample that will be used</span>
+<span class="sd">            as a probability map.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: If the probability map is empty.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; subject = torchio.Subject(</span>
+<span class="sd">        ...     t1=torchio.Image(&#39;t1_mri.nii.gz&#39;, type=torchio.INTENSITY),</span>
+<span class="sd">        ...     sampling_map=torchio.Image(&#39;sampling.nii.gz&#39;, type=torchio.SAMPLING_MAP),</span>
+<span class="sd">        ... )</span>
+<span class="sd">        &gt;&gt;&gt; sample = torchio.ImagesDataset([subject])[0]</span>
+<span class="sd">        &gt;&gt;&gt; patch_size = 64</span>
+<span class="sd">        &gt;&gt;&gt; sampler = torchio.data.WeightedSampler(patch_size, probability_map=&#39;sampling_map&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; for patch in sampler(sample):</span>
+<span class="sd">        ...     print(patch[&#39;index_ini&#39;])</span>
+
+<span class="sd">    .. note:: The index of the center of a patch with even size :math:`s` is</span>
+<span class="sd">        arbitrarily set to :math:`s/2`. This is an implementation detail that</span>
+<span class="sd">        will typically not make any difference in practice.</span>
+
+<span class="sd">    .. note:: Values of the probability map near the border will be set to 0 as</span>
+<span class="sd">        the center of the patch cannot be at the border (unless the patch has</span>
+<span class="sd">        size 1 or 2 along that axis).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">patch_size</span><span class="p">:</span> <span class="n">TypePatchSize</span><span class="p">,</span>
+            <span class="n">probability_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">probability_map_name</span> <span class="o">=</span> <span class="n">probability_map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_indices</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">,</span>
+            <span class="n">num_patches</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Subject</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="n">sample</span><span class="o">.</span><span class="n">check_consistent_shape</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span> <span class="o">&gt;</span> <span class="n">sample</span><span class="o">.</span><span class="n">spatial_shape</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Patch size </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span><span class="p">)</span><span class="si">}</span><span class="s1"> cannot be&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; larger than image size </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">spatial_shape</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">probability_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_probability_map</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">probability_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_probability_map</span><span class="p">(</span><span class="n">probability_map</span><span class="p">)</span>
+        <span class="n">cdf</span><span class="p">,</span> <span class="n">sort_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cumulative_distribution_function</span><span class="p">(</span>
+            <span class="n">probability_map</span><span class="p">)</span>
+
+        <span class="n">patches_left</span> <span class="o">=</span> <span class="n">num_patches</span> <span class="k">if</span> <span class="n">num_patches</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">True</span>
+        <span class="k">while</span> <span class="n">patches_left</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_patch</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">probability_map</span><span class="p">,</span> <span class="n">cdf</span><span class="p">,</span> <span class="n">sort_indices</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">num_patches</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">patches_left</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">get_probability_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">probability_map_name</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">probability_map_name</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Image &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probability_map_name</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; not found in subject sample: </span><span class="si">{</span><span class="n">sample</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">data</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Negative values found&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; in probability map &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probability_map_name</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">process_probability_map</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">probability_map</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="c1"># Using float32 can create cdf with maximum very far from 1, e.g. 0.92!</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">probability_map</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_probability_borders</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span><span class="p">)</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">total</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Empty probability map found&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">probability_map_name</span><span class="si">}</span><span class="s1">)&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">/=</span> <span class="n">total</span>  <span class="c1"># normalize probabilities</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">clear_probability_borders</span><span class="p">(</span>
+            <span class="n">probability_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">patch_size</span><span class="p">:</span> <span class="n">TypePatchSize</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Set probability to 0 on voxels that wouldn&#39;t possibly be sampled given</span>
+        <span class="c1"># the current patch size</span>
+        <span class="c1"># We will arbitrarily define the center of an array with even length</span>
+        <span class="c1"># using the // Python operator</span>
+        <span class="c1"># For example, the center of an array (3, 4) will be on (1, 2)</span>
+        <span class="c1">#</span>
+        <span class="c1">#   Patch         center</span>
+        <span class="c1">#  . . . .        . . . .</span>
+        <span class="c1">#  . . . .   -&gt;   . . x .</span>
+        <span class="c1">#  . . . .        . . . .</span>
+        <span class="c1">#</span>
+        <span class="c1">#</span>
+        <span class="c1">#    Prob. map      After preprocessing</span>
+        <span class="c1">#</span>
+        <span class="c1">#  x x x x x x x       . . . . . . .</span>
+        <span class="c1">#  x x x x x x x       . . x x x x .</span>
+        <span class="c1">#  x x x x x x x  --&gt;  . . x x x x .</span>
+        <span class="c1">#  x x x x x x x  --&gt;  . . x x x x .</span>
+        <span class="c1">#  x x x x x x x       . . x x x x .</span>
+        <span class="c1">#  x x x x x x x       . . . . . . .</span>
+        <span class="c1">#</span>
+        <span class="c1"># The dots represent removed probabilities, x mark possible locations</span>
+        <span class="n">crop_ini</span> <span class="o">=</span> <span class="n">patch_size</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">crop_fin</span> <span class="o">=</span> <span class="p">(</span><span class="n">patch_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">crop_i</span><span class="p">,</span> <span class="n">crop_j</span><span class="p">,</span> <span class="n">crop_k</span> <span class="o">=</span> <span class="n">crop_ini</span>
+        <span class="n">probability_map</span><span class="p">[:</span><span class="n">crop_i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">probability_map</span><span class="p">[:,</span> <span class="p">:</span><span class="n">crop_j</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">probability_map</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="n">crop_k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># The call tolist() is very important. Using np.uint16 as negative index</span>
+        <span class="c1"># will not work because e.g. -np.uint16(2) == 65534</span>
+        <span class="n">crop_i</span><span class="p">,</span> <span class="n">crop_j</span><span class="p">,</span> <span class="n">crop_k</span> <span class="o">=</span> <span class="n">crop_fin</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">crop_i</span><span class="p">:</span>
+            <span class="n">probability_map</span><span class="p">[</span><span class="o">-</span><span class="n">crop_i</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">crop_j</span><span class="p">:</span>
+            <span class="n">probability_map</span><span class="p">[:,</span> <span class="o">-</span><span class="n">crop_j</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">crop_k</span><span class="p">:</span>
+            <span class="n">probability_map</span><span class="p">[:,</span> <span class="p">:,</span> <span class="o">-</span><span class="n">crop_k</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_cumulative_distribution_function</span><span class="p">(</span>
+            <span class="n">probability_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return the CDF of a probability map.</span>
+
+<span class="sd">        The cumulative distribution function (CDF) is computed as follows:</span>
+
+<span class="sd">        1. Flatten probability map</span>
+<span class="sd">        2. Compute sorting indices</span>
+<span class="sd">        3. Sort flattened map</span>
+<span class="sd">        4. Compute cumulative sum</span>
+
+<span class="sd">        For example,</span>
+<span class="sd">        if the probability map is [0.0, 0.0, 0.1, 0.2, 0.5, 0.1, 0.1, 0.0],</span>
+<span class="sd">        the sorting indices are [0, 1, 7, 2, 5, 6, 3, 4],</span>
+<span class="sd">        the sorted map is [0.0, 0.0, 0.0, 0.1, 0.1, 0.1, 0.2, 0.5],</span>
+<span class="sd">        and the CDF is [0.0, 0.0, 0.0, 0.1, 0.2, 0.3, 0.5, 1.0].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">flat_map</span> <span class="o">=</span> <span class="n">probability_map</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">flat_map_normalized</span> <span class="o">=</span> <span class="n">flat_map</span> <span class="o">/</span> <span class="n">flat_map</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="c1"># Get the sorting indices to that we can invert the sorting later on</span>
+        <span class="n">sort_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">flat_map_normalized</span><span class="p">)</span>
+        <span class="n">flat_map_normalized_sorted</span> <span class="o">=</span> <span class="n">flat_map_normalized</span><span class="p">[</span><span class="n">sort_indices</span><span class="p">]</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">flat_map_normalized_sorted</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cdf</span><span class="p">,</span> <span class="n">sort_indices</span>
+
+    <span class="k">def</span> <span class="nf">extract_patch</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">,</span>
+            <span class="n">probability_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">cdf</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">sort_indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Subject</span><span class="p">:</span>
+        <span class="n">index_ini</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_random_index_ini</span><span class="p">(</span><span class="n">probability_map</span><span class="p">,</span> <span class="n">cdf</span><span class="p">,</span> <span class="n">sort_indices</span><span class="p">)</span>
+        <span class="n">index_fin</span> <span class="o">=</span> <span class="n">index_ini</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span>
+        <span class="n">cropped_sample</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">index_ini</span><span class="p">,</span> <span class="n">index_fin</span><span class="p">)</span>
+        <span class="n">cropped_sample</span><span class="p">[</span><span class="s1">&#39;index_ini&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">index_ini</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cropped_sample</span>
+
+    <span class="k">def</span> <span class="nf">get_random_index_ini</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">probability_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">cdf</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">sort_indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_probability_map</span><span class="p">(</span><span class="n">probability_map</span><span class="p">,</span> <span class="n">cdf</span><span class="p">,</span> <span class="n">sort_indices</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">center</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># See self.clear_probability_borders</span>
+        <span class="n">index_ini</span> <span class="o">=</span> <span class="n">center</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">index_ini</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">index_ini</span>
+
+    <span class="k">def</span> <span class="nf">sample_probability_map</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">probability_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">cdf</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">sort_indices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Inverse transform sampling.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; probability_map = np.array(</span>
+<span class="sd">            ...    ((0,0,1,1,5,2,1,1,0),</span>
+<span class="sd">            ...     (2,2,2,2,2,2,2,2,2)))</span>
+<span class="sd">            &gt;&gt;&gt; probability_map</span>
+<span class="sd">            array([[0, 0, 1, 1, 5, 2, 1, 1, 0],</span>
+<span class="sd">                   [2, 2, 2, 2, 2, 2, 2, 2, 2]])</span>
+<span class="sd">            &gt;&gt;&gt; histogram = np.zeros_like(probability_map)</span>
+<span class="sd">            &gt;&gt;&gt; for _ in range(100000):</span>
+<span class="sd">            ...     histogram[sample_probability_map(probability_map)] += 1</span>
+<span class="sd">            ...</span>
+<span class="sd">            &gt;&gt;&gt; histogram</span>
+<span class="sd">            array([[    0,     0,  3479,  3478, 17121,  7023,  3355,  3378,     0],</span>
+<span class="sd">                   [ 6808,  6804,  6942,  6809,  6946,  6988,  7002,  6826,  7041]])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get first value larger than random number</span>
+        <span class="n">random_number</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="c1"># If probability map is float32, cdf.max() can be far from 1, e.g. 0.92</span>
+        <span class="k">if</span> <span class="n">random_number</span> <span class="o">&gt;</span> <span class="n">cdf</span><span class="o">.</span><span class="n">max</span><span class="p">():</span>
+            <span class="n">cdf_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># proceed as usual</span>
+            <span class="n">cdf_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">random_number</span> <span class="o">&lt;</span> <span class="n">cdf</span><span class="p">)</span>
+
+        <span class="n">random_location_index</span> <span class="o">=</span> <span class="n">sort_indices</span><span class="p">[</span><span class="n">cdf_index</span><span class="p">]</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span>
+            <span class="n">random_location_index</span><span class="p">,</span>
+            <span class="n">probability_map</span><span class="o">.</span><span class="n">shape</span>
+        <span class="p">)</span>
+
+        <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="n">center</span>
+        <span class="n">probability</span> <span class="o">=</span> <span class="n">probability_map</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">probability</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+        <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">center</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">center</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+    <a href="https://github.com/fepegar/torchio">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Fernando Pérez-García
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    
+
+  <style>
+    /* Sidebar header (and topbar for mobile) */
+    .wy-side-nav-search, .wy-nav-top {
+      background: #d45848;
+    }
+    .wy-menu > .caption > span.caption-text {
+      color: #d45848;
+    }
+    /* .property {
+      color: #d45848;
+    } */
+  </style>
+
+
+</body>
+</html>

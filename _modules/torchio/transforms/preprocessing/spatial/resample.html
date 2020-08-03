@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.spatial.resample &mdash; TorchIO 0.14.0 documentation</title>
+  <title>torchio.transforms.preprocessing.spatial.resample &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
 </head>
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> TorchIO
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -76,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -83,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../../../index.html">Module code</a> &raquo;</li>
         
@@ -153,49 +160,97 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.transforms.preprocessing.spatial.resample</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">numbers</span> <span class="k">import</span> <span class="n">Number</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">numbers</span> <span class="kn">import</span> <span class="n">Number</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
-<span class="kn">from</span> <span class="nn">nibabel.processing</span> <span class="k">import</span> <span class="n">resample_to_output</span>
-<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span>
-<span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">LABEL</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">AFFINE</span><span class="p">,</span> <span class="n">TYPE</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">Interpolation</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">nibabel.processing</span> <span class="kn">import</span> <span class="n">resample_to_output</span><span class="p">,</span> <span class="n">resample_from_to</span>
+
+<span class="kn">from</span> <span class="nn">....data.subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">....data.image</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">....torchio</span> <span class="kn">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">AFFINE</span><span class="p">,</span> <span class="n">TYPE</span><span class="p">,</span> <span class="n">INTENSITY</span><span class="p">,</span> <span class="n">TypeData</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">Interpolation</span>
+
 
 
 <span class="n">TypeSpacing</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+<span class="n">TypeTarget</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span>
+    <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Image</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span>
+    <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+<span class="p">]</span>
 
 
 <div class="viewcode-block" id="Resample"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.Resample">[docs]</a><span class="k">class</span> <span class="nc">Resample</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Change voxel spacing keeping the field of view.</span>
+    <span class="sd">&quot;&quot;&quot;Change voxel spacing by resampling.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        target_spacing: Tuple :math:`(s_d, s_h, s_w)`. If only one value</span>
+<span class="sd">        target: Tuple :math:`(s_d, s_h, s_w)`. If only one value</span>
 <span class="sd">            :math:`n` is specified, then :math:`s_d = s_h = s_w = n`.</span>
-<span class="sd">        antialiasing: (Not implemented yet).</span>
-<span class="sd">        image_interpolation: Member of :py:class:`torchio.Interpolation`.</span>
-<span class="sd">            Supported interpolation techniques for resampling are</span>
-<span class="sd">            :py:attr:`torchio.Interpolation.NEAREST`,</span>
-<span class="sd">            :py:attr:`torchio.Interpolation.LINEAR` and</span>
-<span class="sd">            :py:attr:`torchio.Interpolation.BSPLINE`.</span>
+<span class="sd">            If a string or :py:class:`~pathlib.Path` is given,</span>
+<span class="sd">            all images will be resampled using the image</span>
+<span class="sd">            with that name as reference or found at the path.</span>
+<span class="sd">        pre_affine_name: Name of the *image key* (not subject key) storing an</span>
+<span class="sd">            affine matrix that will be applied to the image header before</span>
+<span class="sd">            resampling. If ``None``, the image is resampled with an identity</span>
+<span class="sd">            transform. See usage in the example below.</span>
+<span class="sd">        image_interpolation: String that defines the interpolation technique.</span>
+<span class="sd">            Supported interpolation techniques for resampling</span>
+<span class="sd">            are ``&#39;nearest&#39;``, ``&#39;linear&#39;`` and ``&#39;bspline&#39;``.</span>
+<span class="sd">            Using a member of :py:class:`torchio.Interpolation` is still</span>
+<span class="sd">            supported for backward compatibility,</span>
+<span class="sd">            but will be removed in a future version.</span>
+<span class="sd">        p: Probability that this transform will be applied.</span>
 
-<span class="sd">    .. note:: The resampling is performed using</span>
-<span class="sd">        :py:meth:`nibabel.processing.resample_to_output`.</span>
+<span class="sd">    .. note:: Resampling is performed using</span>
+<span class="sd">        :py:meth:`nibabel.processing.resample_to_output` or</span>
+<span class="sd">        :py:meth:`nibabel.processing.resample_from_to`, depending on whether</span>
+<span class="sd">        the target is a spacing or a reference image.</span>
 
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
+<span class="sd">        &gt;&gt;&gt; from torchio import Resample</span>
+<span class="sd">        &gt;&gt;&gt; from torchio.datasets import Colin27, FPG</span>
+<span class="sd">        &gt;&gt;&gt; transform = Resample(1)                     # resample all images to 1mm iso</span>
+<span class="sd">        &gt;&gt;&gt; transform = Resample((2, 2, 2))             # resample all images to 2mm iso</span>
+<span class="sd">        &gt;&gt;&gt; transform = Resample(&#39;t1&#39;)                  # resample all images to &#39;t1&#39; image space</span>
+<span class="sd">        &gt;&gt;&gt; colin = Colin27()  # this images are in the MNI space</span>
+<span class="sd">        &gt;&gt;&gt; fpg = FPG()  # matrices to the MNI space are included here</span>
+<span class="sd">        &gt;&gt;&gt; # Resample all images into the MNI space</span>
+<span class="sd">        &gt;&gt;&gt; transform = Resample(colin.t1.path, pre_affine_name=&#39;affine_matrix&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; transformed = transform(fpg)  # images in fpg are now in MNI space</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">target_spacing</span><span class="p">:</span> <span class="n">TypeSpacing</span><span class="p">,</span>
-            <span class="n">antialiasing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="n">image_interpolation</span><span class="p">:</span> <span class="n">Interpolation</span> <span class="o">=</span> <span class="n">Interpolation</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">,</span>
+            <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypeSpacing</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+            <span class="n">image_interpolation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+            <span class="n">pre_affine_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">target_spacing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_spacing</span><span class="p">(</span><span class="n">target_spacing</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">antialiasing</span> <span class="o">=</span> <span class="n">antialiasing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interpolation_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_interpolation</span><span class="p">(</span>
-            <span class="n">image_interpolation</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_spacing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_target</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolation_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_interpolation</span><span class="p">(</span><span class="n">image_interpolation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affine_name</span> <span class="o">=</span> <span class="n">pre_affine_name</span>
+
+    <span class="k">def</span> <span class="nf">parse_target</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">target</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypeSpacing</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeTarget</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">target</span>
+                <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="n">reference_image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">affine</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">reference_image</span> <span class="o">=</span> <span class="n">target</span>
+            <span class="n">target_spacing</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reference_image</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">target_spacing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_spacing</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">reference_image</span><span class="p">,</span> <span class="n">target_spacing</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">parse_spacing</span><span class="p">(</span><span class="n">spacing</span><span class="p">:</span> <span class="n">TypeSpacing</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
@@ -203,53 +258,157 @@
             <span class="n">result</span> <span class="o">=</span> <span class="n">spacing</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spacing</span><span class="p">,</span> <span class="n">Number</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">spacing</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Target must be a string, a positive number&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; or a tuple of positive numbers, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Spacing must be positive, not &quot;</span><span class="si">{</span><span class="n">spacing</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">parse_interpolation</span><span class="p">(</span><span class="n">interpolation</span><span class="p">:</span> <span class="n">Interpolation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">interpolation</span> <span class="o">==</span> <span class="n">Interpolation</span><span class="o">.</span><span class="n">NEAREST</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">parse_interpolation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interpolation</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">interpolation</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">parse_interpolation</span><span class="p">(</span><span class="n">interpolation</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">interpolation</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Interpolation</span><span class="o">.</span><span class="n">NEAREST</span><span class="p">,</span> <span class="s1">&#39;nearest&#39;</span><span class="p">):</span>
             <span class="n">order</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">elif</span> <span class="n">interpolation</span> <span class="o">==</span> <span class="n">Interpolation</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">interpolation</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Interpolation</span><span class="o">.</span><span class="n">LINEAR</span><span class="p">,</span> <span class="s1">&#39;linear&#39;</span><span class="p">):</span>
             <span class="n">order</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">elif</span> <span class="n">interpolation</span> <span class="o">==</span> <span class="n">Interpolation</span><span class="o">.</span><span class="n">BSPLINE</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">interpolation</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Interpolation</span><span class="o">.</span><span class="n">BSPLINE</span><span class="p">,</span> <span class="s1">&#39;bspline&#39;</span><span class="p">):</span>
             <span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;Interpolation not implemented yet: </span><span class="si">{interpolation}</span><span class="s1">&#39;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Interpolation not implemented yet: </span><span class="si">{</span><span class="n">interpolation</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">order</span>
 
-    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_image_dict</span><span class="p">(</span><span class="n">image_dict</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_affine</span><span class="p">(</span><span class="n">affine_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">affine_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Affine name argument must be a string,&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39; not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">affine_name</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">affine_name</span> <span class="ow">in</span> <span class="n">image_dict</span><span class="p">:</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">affine_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;The affine matrix must be a NumPy array or PyTorch tensor,&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39; not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s1">&#39;The affine matrix shape must be (4, 4),&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39; not </span><span class="si">{</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_affine_key_presence</span><span class="p">(</span><span class="n">affine_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">get_images</span><span class="p">(</span><span class="n">intensity_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">affine_name</span> <span class="ow">in</span> <span class="n">image_dict</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;An affine name was given (&quot;</span><span class="si">{</span><span class="n">affine_name</span><span class="si">}</span><span class="s1">&quot;), but it was not found&#39;</span>
+            <span class="s1">&#39; in any image in the sample&#39;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">use_reference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">use_pre_affine</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">use_pre_affine</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_affine_key_presence</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affine_name</span><span class="p">,</span> <span class="n">sample</span><span class="p">)</span>
+        <span class="n">images_dict</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">get_images_dict</span><span class="p">(</span><span class="n">intensity_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images_dict</span><span class="p">:</span>
+            <span class="c1"># Do not resample the reference image if there is one</span>
+            <span class="k">if</span> <span class="n">use_reference</span> <span class="ow">and</span> <span class="n">image_name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_image</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">TYPE</span><span class="p">]</span> <span class="o">==</span> <span class="n">LABEL</span><span class="p">:</span>
+
+            <span class="c1"># Choose interpolator</span>
+            <span class="k">if</span> <span class="n">image</span><span class="p">[</span><span class="n">TYPE</span><span class="p">]</span> <span class="o">!=</span> <span class="n">INTENSITY</span><span class="p">:</span>
                 <span class="n">interpolation_order</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># nearest neighbor</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">interpolation_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolation_order</span>
-            <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">],</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_resample</span><span class="p">(</span>
-                <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">],</span>
-                <span class="n">image_dict</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">target_spacing</span><span class="p">,</span>
+
+            <span class="c1"># Apply given affine matrix if found in image</span>
+            <span class="k">if</span> <span class="n">use_pre_affine</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">affine_name</span> <span class="ow">in</span> <span class="n">image</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">check_affine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affine_name</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+                <span class="n">matrix</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">affine_name</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                    <span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                <span class="n">image</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">]</span> <span class="o">=</span> <span class="n">matrix</span> <span class="o">@</span> <span class="n">image</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">]</span>
+
+            <span class="c1"># Resample</span>
+            <span class="k">if</span> <span class="n">use_reference</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_image</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">ref_image</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_image</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;Reference name &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_image</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+                            <span class="s1">&#39; not found in sample&#39;</span>
+                        <span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+                    <span class="n">reference</span> <span class="o">=</span> <span class="n">ref_image</span><span class="p">[</span><span class="n">DATA</span><span class="p">],</span> <span class="n">ref_image</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">reference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_image</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">target_spacing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_spacing</span><span class="p">)</span>
+            <span class="n">image</span><span class="p">[</span><span class="n">DATA</span><span class="p">],</span> <span class="n">image</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_resample</span><span class="p">(</span>
+                <span class="n">image</span><span class="p">[</span><span class="n">DATA</span><span class="p">],</span>
+                <span class="n">image</span><span class="p">[</span><span class="n">AFFINE</span><span class="p">],</span>
                 <span class="n">interpolation_order</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">sample</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">apply_resample</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+            <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>  <span class="c1"># (C, D, H, W)</span>
             <span class="n">affine</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-            <span class="n">target_spacing</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
             <span class="n">interpolation_order</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">target_spacing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">reference</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-        <span class="n">array</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">nii</span> <span class="o">=</span> <span class="n">resample_to_output</span><span class="p">(</span>
-            <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">affine</span><span class="p">),</span>
-            <span class="n">voxel_sizes</span><span class="o">=</span><span class="n">target_spacing</span><span class="p">,</span>
-            <span class="n">order</span><span class="o">=</span><span class="n">interpolation_order</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">nii</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
-        <span class="n">tensor</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">nii</span><span class="o">.</span><span class="n">affine</span></div>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">niis</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">arrays_resampled</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">reference</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">array</span><span class="p">:</span>
+                <span class="n">nii</span> <span class="o">=</span> <span class="n">resample_to_output</span><span class="p">(</span>
+                    <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">affine</span><span class="p">),</span>
+                    <span class="n">voxel_sizes</span><span class="o">=</span><span class="n">target_spacing</span><span class="p">,</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">interpolation_order</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">arrays_resampled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nii</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reference_tensor</span><span class="p">,</span> <span class="n">reference_affine</span> <span class="o">=</span> <span class="n">reference</span>
+            <span class="n">reference_array</span> <span class="o">=</span> <span class="n">reference_tensor</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">channel_array</span> <span class="ow">in</span> <span class="n">array</span><span class="p">:</span>
+                <span class="n">nii</span> <span class="o">=</span> <span class="n">resample_from_to</span><span class="p">(</span>
+                    <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">channel_array</span><span class="p">,</span> <span class="n">affine</span><span class="p">),</span>
+                    <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">reference_array</span><span class="p">,</span> <span class="n">reference_affine</span><span class="p">),</span>
+                    <span class="n">order</span><span class="o">=</span><span class="n">interpolation_order</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">arrays_resampled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nii</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+        <span class="n">tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">arrays_resampled</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tensor</span><span class="p">,</span> <span class="n">nii</span><span class="o">.</span><span class="n">affine</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_sigma</span><span class="p">(</span><span class="n">downsampling_factor</span><span class="p">,</span> <span class="n">spacing</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute optimal standard deviation for Gaussian kernel.</span>
+
+<span class="sd">        From Cardoso et al., &quot;Scale factor point spread function matching:</span>
+<span class="sd">        beyond aliasing in image resampling&quot;, MICCAI 2015</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">downsampling_factor</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)))</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">spacing</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sigma</span></div>
 </pre></div>
 
            </div>
@@ -266,11 +425,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -281,7 +448,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

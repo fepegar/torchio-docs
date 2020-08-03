@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Medical image datasets &mdash; TorchIO 0.14.0 documentation</title>
+  <title>Medical image datasets &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Command-line tools" href="cli.html" />
@@ -51,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> TorchIO
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -61,7 +63,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -78,6 +80,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -85,24 +88,44 @@
               
             
             
-              <ul class="current">
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Medical image datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-torchio.datasets.ixi">IXI</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">IXI</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ixitiny"><code class="docutils literal notranslate"><span class="pre">IXITiny</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="xref py py-class docutils literal notranslate"><span class="pre">IXI</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ixitiny"><code class="xref py py-class docutils literal notranslate"><span class="pre">IXITiny</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchio.datasets.mni">MNI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#colin27"><code class="xref py py-class docutils literal notranslate"><span class="pre">Colin27</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pediatric"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pediatric</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sheep</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchio.datasets.itk_snap">ITK-SNAP</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#braintumor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrainTumor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#t1t2"><code class="xref py py-class docutils literal notranslate"><span class="pre">T1T2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aorticvalve"><code class="xref py py-class docutils literal notranslate"><span class="pre">AorticValve</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-torchio.datasets.slicer">3D Slicer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#slicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Slicer</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -141,7 +164,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Medical image datasets</li>
     
@@ -172,44 +195,39 @@ dataset contains “nearly 600 MR images from normal, healthy subjects”,
 including “T1, T2 and PD-weighted images,
 MRA images and Diffusion-weighted images (15 directions)”.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This data is made available under the
+<p class="admonition-title">Note</p>
+<p>This data is made available under the
 Creative Commons CC BY-SA 3.0 license.
 If you use it please acknowledge the source of the IXI data, e.g.
 <a class="reference external" href="https://brain-development.org/ixi-dataset/">the IXI website</a>.</p>
 </div>
 <div class="section" id="id1">
 <h3><a class="reference internal" href="#torchio.datasets.ixi.IXI" title="torchio.datasets.ixi.IXI"><code class="xref py py-class docutils literal notranslate"><span class="pre">IXI</span></code></a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
+<dl class="py class">
 <dt id="torchio.datasets.ixi.IXI">
-<em class="property">class </em><code class="descclassname">torchio.datasets.ixi.</code><code class="descname">IXI</code><span class="sig-paren">(</span><em>root: Union[pathlib.Path, str], transform: Optional[torchio.transforms.transform.Transform] = None, download: bool = False, modalities: Sequence[str] = ['T1', 'T2']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/datasets/ixi.html#IXI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.ixi.IXI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="data/images.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.images.ImagesDataset</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">torchio.datasets.ixi.</code><code class="sig-name descname">IXI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.8)">pathlib.Path</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">transform</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>torchio.transforms.transform.Transform<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">download</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">modalities</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'T1', 'T2'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/datasets/ixi.html#IXI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.ixi.IXI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.dataset.ImagesDataset</span></code></p>
 <p>Full IXI dataset.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>root</strong> – Root directory to which the dataset will be downloaded.</li>
-<li><strong>transform</strong> – An instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code>.</li>
-<li><strong>download</strong> – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, will download the data into <code class="xref py py-attr docutils literal notranslate"><span class="pre">root</span></code>.</li>
-<li><strong>modalities</strong> – List of modalities to be downloaded. They must be in
-<code class="docutils literal notranslate"><span class="pre">('T1',</span> <span class="pre">'T2',</span> <span class="pre">'PD',</span> <span class="pre">'MRA',</span> <span class="pre">'DTI')</span></code>.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Root directory to which the dataset will be downloaded.</p></li>
+<li><p><strong>transform</strong> – An instance of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code>.</p></li>
+<li><p><strong>download</strong> – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, will download the data into <code class="xref py py-attr docutils literal notranslate"><span class="pre">root</span></code>.</p></li>
+<li><p><strong>modalities</strong> – List of modalities to be downloaded. They must be in
+<code class="docutils literal notranslate"><span class="pre">('T1',</span> <span class="pre">'T2',</span> <span class="pre">'PD',</span> <span class="pre">'MRA',</span> <span class="pre">'DTI')</span></code>.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The size of this dataset is multiple GB.
+<p class="admonition-title">Warning</p>
+<p>The size of this dataset is multiple GB.
 If you set <code class="xref py py-attr docutils literal notranslate"><span class="pre">download</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>, it will take some time
 to be downloaded if it is not already present.</p>
 </div>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchvision</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">transforms</span> <span class="o">=</span> <span class="p">[</span>
 <span class="gp">... </span>    <span class="n">torchio</span><span class="o">.</span><span class="n">ToCanonical</span><span class="p">(),</span>  <span class="c1"># to RAS</span>
 <span class="gp">... </span>    <span class="n">torchio</span><span class="o">.</span><span class="n">Resample</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>  <span class="c1"># to 1 mm iso</span>
@@ -217,14 +235,14 @@ to be downloaded if it is not already present.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ixi_dataset</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">IXI</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="s1">&#39;path/to/ixi_root/&#39;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">modalities</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;T1&#39;</span><span class="p">,</span> <span class="s1">&#39;T2&#39;</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">transform</span><span class="o">=</span><span class="n">torchvision</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span><span class="n">transforms</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">transform</span><span class="o">=</span><span class="n">torchio</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span><span class="n">transforms</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of subjects in dataset:&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ixi_dataset</span><span class="p">))</span>  <span class="c1"># 577</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sample_subject</span> <span class="o">=</span> <span class="n">ixi_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Keys in subject sample:&#39;</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">sample_subject</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>  <span class="c1"># (&#39;T1&#39;, &#39;T2&#39;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Shape of T1 data:&#39;</span><span class="p">,</span> <span class="n">sample_subject</span><span class="p">[</span><span class="s1">&#39;T1&#39;</span><span class="p">][</span><span class="n">torchio</span><span class="o">.</span><span class="n">DATA</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># [1, 180, 268, 268]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Shape of T2 data:&#39;</span><span class="p">,</span> <span class="n">sample_subject</span><span class="p">[</span><span class="s1">&#39;T2&#39;</span><span class="p">][</span><span class="n">torchio</span><span class="o">.</span><span class="n">DATA</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># [1, 241, 257, 188]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Shape of T1 data:&#39;</span><span class="p">,</span> <span class="n">sample_subject</span><span class="p">[</span><span class="s1">&#39;T1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># [1, 180, 268, 268]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Shape of T2 data:&#39;</span><span class="p">,</span> <span class="n">sample_subject</span><span class="p">[</span><span class="s1">&#39;T2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># [1, 241, 257, 188]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -232,29 +250,156 @@ to be downloaded if it is not already present.</p>
 </div>
 <div class="section" id="ixitiny">
 <h3><a class="reference internal" href="#torchio.datasets.ixi.IXITiny" title="torchio.datasets.ixi.IXITiny"><code class="xref py py-class docutils literal notranslate"><span class="pre">IXITiny</span></code></a><a class="headerlink" href="#ixitiny" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
+<dl class="py class">
 <dt id="torchio.datasets.ixi.IXITiny">
-<em class="property">class </em><code class="descclassname">torchio.datasets.ixi.</code><code class="descname">IXITiny</code><span class="sig-paren">(</span><em>root: Union[pathlib.Path, str], transform: Optional[torchio.transforms.transform.Transform] = None, download: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/datasets/ixi.html#IXITiny"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.ixi.IXITiny" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="data/images.html#torchio.data.images.ImagesDataset" title="torchio.data.images.ImagesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.images.ImagesDataset</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">torchio.datasets.ixi.</code><code class="sig-name descname">IXITiny</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span><span class="p">:</span> <span class="n">Union<span class="p">[</span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.8)">pathlib.Path</a><span class="p">, </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">transform</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>torchio.transforms.transform.Transform<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">download</span><span class="p">:</span> <span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/datasets/ixi.html#IXITiny"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.ixi.IXITiny" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.dataset.ImagesDataset</span></code></p>
 <p>This is the dataset used in the <a class="reference external" href="https://colab.research.google.com/drive/112NTL8uJXzcMw4PQbUvMQN-WHlVwQS3i">notebook</a>.
 It is a tiny version of IXI, containing 566 <span class="math notranslate nohighlight">\(T_1\)</span>-weighted brain MR
 images and their corresponding brain segmentations,
 all with size <span class="math notranslate nohighlight">\(83 \times 44 \times 55\)</span>.</p>
 <p>It can be used as a medical image MNIST.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>root</strong> – Root directory to which the dataset will be downloaded.</li>
-<li><strong>transform</strong> – An instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code>.</li>
-<li><strong>download</strong> – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, will download the data into <code class="xref py py-attr docutils literal notranslate"><span class="pre">root</span></code>.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Root directory to which the dataset will be downloaded.</p></li>
+<li><p><strong>transform</strong> – An instance of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code>.</p></li>
+<li><p><strong>download</strong> – If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, will download the data into <code class="xref py py-attr docutils literal notranslate"><span class="pre">root</span></code>.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-torchio.datasets.mni">
+<span id="mni"></span><h2>MNI<a class="headerlink" href="#module-torchio.datasets.mni" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="colin27">
+<h3><a class="reference internal" href="#torchio.datasets.mni.Colin27" title="torchio.datasets.mni.Colin27"><code class="xref py py-class docutils literal notranslate"><span class="pre">Colin27</span></code></a><a class="headerlink" href="#colin27" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="torchio.datasets.mni.Colin27">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.datasets.mni.</code><code class="sig-name descname">Colin27</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">version</span><span class="o">=</span><span class="default_value">1998</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/datasets/mni/colin.html#Colin27"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.mni.Colin27" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.datasets.mni.mni.SubjectMNI</span></code></p>
+<p>Colin27 MNI template.</p>
+<p>More information can be found in the website of the
+<a class="reference external" href="http://nist.mni.mcgill.ca/?p=935">1998</a> and
+<a class="reference external" href="http://www.bic.mni.mcgill.ca/ServicesAtlases/Colin27Highres">2008</a>
+versions.</p>
+<img alt="MNI Colin 27 2008 version" src="http://www.bic.mni.mcgill.ca/uploads/ServicesAtlases/mni_colin27_2008.jpg" />
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>version</strong> – Template year. It can be <code class="docutils literal notranslate"><span class="pre">1998</span></code> or <code class="docutils literal notranslate"><span class="pre">2008</span></code>.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The resolution of the <code class="docutils literal notranslate"><span class="pre">2008</span></code> version is quite high. The
+subject instance will contain four images of size
+<span class="math notranslate nohighlight">\(362 \times 434 \times 362\)</span>, therefore applying a transform to
+it might take longer than expected.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">torchio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">colin_1998</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Colin27</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">1998</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">colin_1998</span>
+<span class="go">Colin27(Keys: (&#39;t1&#39;, &#39;head&#39;, &#39;brain&#39;); images: 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">colin_1998</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">colin_1998</span><span class="o">.</span><span class="n">t1</span>
+<span class="go">Image(shape: (1, 181, 217, 181); spacing: (1.00, 1.00, 1.00); orientation: RAS+; memory: 27.1 MiB; type: intensity)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">colin_2008</span> <span class="o">=</span> <span class="n">torchio</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">Colin27</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">2008</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">colin_2008</span>
+<span class="go">Colin27(Keys: (&#39;t1&#39;, &#39;t2&#39;, &#39;pd&#39;, &#39;cls&#39;); images: 4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">colin_2008</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">colin_2008</span><span class="o">.</span><span class="n">t1</span>
+<span class="go">Image(shape: (1, 362, 434, 362); spacing: (0.50, 0.50, 0.50); orientation: RAS+; memory: 217.0 MiB; type: intensity)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="pediatric">
+<h3><a class="reference internal" href="#torchio.datasets.mni.Pediatric" title="torchio.datasets.mni.Pediatric"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pediatric</span></code></a><a class="headerlink" href="#pediatric" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="torchio.datasets.mni.Pediatric">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.datasets.mni.</code><code class="sig-name descname">Pediatric</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">years</span></em>, <em class="sig-param"><span class="n">symmetric</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/datasets/mni/pediatric.html#Pediatric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.mni.Pediatric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.datasets.mni.mni.SubjectMNI</span></code></p>
+<p>MNI pediatric atlases.</p>
+<p>See <a class="reference external" href="http://nist.mni.mcgill.ca/?p=974">the MNI website</a> for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>years</strong> – Tuple of 2 ages. Possible values are: <code class="docutils literal notranslate"><span class="pre">(4.5,</span> <span class="pre">18.5)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">(4.5,</span> <span class="pre">8.5)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">(7,</span> <span class="pre">11)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">(7.5,</span> <span class="pre">13.5)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">(10,</span> <span class="pre">14)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">(13,</span> <span class="pre">18.5)</span></code>.</p></li>
+<li><p><strong>symmetric</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the left-right symmetric templates will be used.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the asymmetric (natural) templates will be used.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="sheep">
+<h3><a class="reference internal" href="#torchio.datasets.mni.Sheep" title="torchio.datasets.mni.Sheep"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sheep</span></code></a><a class="headerlink" href="#sheep" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="torchio.datasets.mni.Sheep">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.datasets.mni.</code><code class="sig-name descname">Sheep</code><a class="reference internal" href="_modules/torchio/datasets/mni/sheep.html#Sheep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.mni.Sheep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.datasets.mni.mni.SubjectMNI</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-torchio.datasets.itk_snap">
+<span id="itk-snap"></span><h2>ITK-SNAP<a class="headerlink" href="#module-torchio.datasets.itk_snap" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="braintumor">
+<h3><a class="reference internal" href="#torchio.datasets.itk_snap.BrainTumor" title="torchio.datasets.itk_snap.BrainTumor"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrainTumor</span></code></a><a class="headerlink" href="#braintumor" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="torchio.datasets.itk_snap.BrainTumor">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.datasets.itk_snap.</code><code class="sig-name descname">BrainTumor</code><a class="reference internal" href="_modules/torchio/datasets/itk_snap/itk_snap.html#BrainTumor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.itk_snap.BrainTumor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.datasets.itk_snap.itk_snap.SubjectITKSNAP</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="t1t2">
+<h3><a class="reference internal" href="#torchio.datasets.itk_snap.T1T2" title="torchio.datasets.itk_snap.T1T2"><code class="xref py py-class docutils literal notranslate"><span class="pre">T1T2</span></code></a><a class="headerlink" href="#t1t2" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="torchio.datasets.itk_snap.T1T2">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.datasets.itk_snap.</code><code class="sig-name descname">T1T2</code><a class="reference internal" href="_modules/torchio/datasets/itk_snap/itk_snap.html#T1T2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.itk_snap.T1T2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.datasets.itk_snap.itk_snap.SubjectITKSNAP</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="aorticvalve">
+<h3><a class="reference internal" href="#torchio.datasets.itk_snap.AorticValve" title="torchio.datasets.itk_snap.AorticValve"><code class="xref py py-class docutils literal notranslate"><span class="pre">AorticValve</span></code></a><a class="headerlink" href="#aorticvalve" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="torchio.datasets.itk_snap.AorticValve">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.datasets.itk_snap.</code><code class="sig-name descname">AorticValve</code><a class="reference internal" href="_modules/torchio/datasets/itk_snap/itk_snap.html#AorticValve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.itk_snap.AorticValve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.datasets.itk_snap.itk_snap.SubjectITKSNAP</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-torchio.datasets.slicer">
+<span id="d-slicer"></span><h2>3D Slicer<a class="headerlink" href="#module-torchio.datasets.slicer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="slicer">
+<h3><a class="reference internal" href="#torchio.datasets.slicer.Slicer" title="torchio.datasets.slicer.Slicer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Slicer</span></code></a><a class="headerlink" href="#slicer" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt id="torchio.datasets.slicer.Slicer">
+<em class="property">class </em><code class="sig-prename descclassname">torchio.datasets.slicer.</code><code class="sig-name descname">Slicer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'MRHead'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchio/datasets/slicer.html#Slicer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#torchio.datasets.slicer.Slicer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torchio.data.subject.Subject</span></code></p>
+<p>Sample data provided by <a class="reference external" href="https://www.slicer.org/">3D Slicer</a>.</p>
+<p>See <a class="reference external" href="https://www.slicer.org/wiki/SampleData">the Slicer wiki</a>
+for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – One of the keys in <code class="xref py py-attr docutils literal notranslate"><span class="pre">torchio.datasets.slicer.URLS_DICT</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -285,11 +430,19 @@ all with size <span class="math notranslate nohighlight">\(83 \times 44 \times 5
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -300,7 +453,6 @@ all with size <span class="math notranslate nohighlight">\(83 \times 44 \times 5
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

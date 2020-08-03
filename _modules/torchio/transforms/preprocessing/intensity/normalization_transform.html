@@ -1,39 +1,41 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>torchio.transforms.preprocessing.intensity.normalization_transform &mdash; TorchIO 0.14.0 documentation</title>
+  <title>torchio.transforms.preprocessing.intensity.normalization_transform &mdash; TorchIO 0.17.14 documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
 </head>
@@ -49,7 +51,7 @@
           
 
           
-            <a href="../../../../../index.html" class="icon icon-home"> TorchIO
+            <a href="../../../../../index.html" class="icon icon-home" alt="Documentation Home"> TorchIO
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.14.0
+                0.17.14
               </div>
             
           
@@ -76,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -83,17 +86,21 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../quickstart.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../data/data.html">Handling data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/dataset.html">Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../data/patch_based.html">Patch-based pipelines</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../transforms/transforms.html">Transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../datasets.html">Medical image datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../cli.html">Command-line tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../slicer.html">3D Slicer GUI</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -132,7 +139,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../../../../index.html">Module code</a> &raquo;</li>
         
@@ -153,11 +160,14 @@
            <div itemprop="articleBody">
             
   <h1>Source code for torchio.transforms.preprocessing.intensity.normalization_transform</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">....utils</span> <span class="k">import</span> <span class="n">is_image_dict</span>
-<span class="kn">from</span> <span class="nn">....torchio</span> <span class="k">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TYPE</span><span class="p">,</span> <span class="n">INTENSITY</span><span class="p">,</span> <span class="n">TypeCallable</span>
-<span class="kn">from</span> <span class="nn">...</span> <span class="k">import</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">....data.subject</span> <span class="kn">import</span> <span class="n">Subject</span>
+<span class="kn">from</span> <span class="nn">....torchio</span> <span class="kn">import</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">TypeCallable</span>
+<span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">Transform</span>
+
+
+<span class="n">TypeMaskingMethod</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeCallable</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="NormalizationTransform"><a class="viewcode-back" href="../../../../../transforms/preprocessing.html#torchio.transforms.preprocessing.intensity.NormalizationTransform">[docs]</a><span class="k">class</span> <span class="nc">NormalizationTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
@@ -173,23 +183,23 @@
 <span class="sd">            - A function: the mask image is computed as a function of the intensity image. The function must receive and return a :py:class:`torch.Tensor`</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; from torchio.datasets import IXITiny</span>
+<span class="sd">        &gt;&gt;&gt; import torchio</span>
 <span class="sd">        &gt;&gt;&gt; from torchio.transforms import ZNormalization</span>
-<span class="sd">        &gt;&gt;&gt; dataset = IXITiny(&#39;ixi_root&#39;, download=True)</span>
-<span class="sd">        &gt;&gt;&gt; sample = dataset[0]</span>
-<span class="sd">        &gt;&gt;&gt; sample.keys()  # image is the MRI, label is a brain segmentation</span>
-<span class="sd">        dict_keys([&#39;image&#39;, &#39;label&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; subject = torchio.datasets.Colin27()</span>
+<span class="sd">        &gt;&gt;&gt; subject</span>
+<span class="sd">        Colin27(Keys: (&#39;t1&#39;, &#39;head&#39;, &#39;brain&#39;); images: 3)</span>
 <span class="sd">        &gt;&gt;&gt; transform = ZNormalization()  # ZNormalization is a subclass of NormalizationTransform</span>
 <span class="sd">        &gt;&gt;&gt; transformed = transform(sample)  # use all values to compute mean and std</span>
-<span class="sd">        &gt;&gt;&gt; transform = ZNormalization(masking_method=&#39;label&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; transform = ZNormalization(masking_method=&#39;brain&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; transformed = transform(sample)  # use only values within the brain</span>
 <span class="sd">        &gt;&gt;&gt; transform = ZNormalization(masking_method=lambda x: x &gt; x.mean())</span>
 <span class="sd">        &gt;&gt;&gt; transformed = transform(sample)  # use values above the image mean</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">masking_method</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeCallable</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">masking_method</span><span class="p">:</span> <span class="n">TypeMaskingMethod</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
             <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        masking_method is used to choose the values used for normalization.</span>
@@ -198,7 +208,7 @@
 <span class="sd">         - A function: the mask will be computed using the function</span>
 <span class="sd">         - None: all values are used</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mask_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">masking_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">masking_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ones</span>
@@ -207,25 +217,21 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">masking_method</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mask_name</span> <span class="o">=</span> <span class="n">masking_method</span>
 
-    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">,</span> <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">masking_method</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">sample</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_name</span><span class="p">][</span><span class="n">DATA</span><span class="p">]</span><span class="o">.</span><span class="n">bool</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_image_dict</span><span class="p">(</span><span class="n">image_dict</span><span class="p">):</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">TYPE</span><span class="p">]</span> <span class="o">==</span> <span class="n">INTENSITY</span><span class="p">:</span>
-                <span class="k">continue</span>
+    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">image_dict</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">get_images_dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mask</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">DATA</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_normalization</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">image_name</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">sample</span>
 
     <span class="k">def</span> <span class="nf">apply_normalization</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">sample</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">sample</span><span class="p">:</span> <span class="n">Subject</span><span class="p">,</span>
             <span class="n">image_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">mask</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -256,11 +262,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Fernando Pérez-García
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -271,7 +285,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
